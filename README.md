@@ -1,2 +1,2 @@
-# ExampleExtension
- An example extension for Minestom based off of Sabre/kotlin libs.
+# KStom
+Kotlin standard libraries for Minestom
