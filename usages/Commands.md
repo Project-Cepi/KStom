@@ -21,9 +21,9 @@ addSyntax(argument) { sender, args ->
 Without KStom:
 
 ```kotlin
-setDefaultExecutor({ sender, _ ->
+setDefaultExecutor { sender, _ ->
 
-})
+}
 ```
 
 With KStom:
