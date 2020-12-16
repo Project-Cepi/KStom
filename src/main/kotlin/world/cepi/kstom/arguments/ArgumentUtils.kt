@@ -9,9 +9,4 @@ import net.minestom.server.entity.Player
 fun ArgumentWord.asSubcommand(): ArgumentWord = this.from(this.id)
 fun String.asSubcommand(): ArgumentWord = ArgumentType.Word(this).from(this)
 
-
-fun Arguments.getPlayer(id: String): Player {
-
-    val username = this.getString(id)
-    return MinecraftServer.getConnectionManager().onlinePlayers.first { it.username == username }
-}
+fun <T> Arguments.get(id: String) = this.getObject(id) as? T
