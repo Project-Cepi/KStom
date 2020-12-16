@@ -32,6 +32,42 @@ fun Command.addSyntax(vararg arguments: Argument<*>, lambda: (sender: CommandSen
     this.addSyntax({ sender, args -> lambda.invoke(sender, args)}, *arguments)
 }
 
+fun Command.addSyntax(vararg arguments: Argument<*>, condition: () -> Boolean, lambda: () -> Unit) {
+    this.addSyntax({ _, _ -> condition.invoke()}, { _, _ -> lambda.invoke()}, *arguments)
+}
+
+fun Command.addSyntax(vararg arguments: Argument<*>, condition: (source: CommandSender) -> Boolean, lambda: () -> Unit) {
+    this.addSyntax({ source, _ -> condition.invoke(source)}, { _, _ -> lambda.invoke()}, *arguments)
+}
+
+fun Command.addSyntax(vararg arguments: Argument<*>, condition: (source: CommandSender, commandString: String) -> Boolean, lambda: () -> Unit) {
+    this.addSyntax({ source, string -> condition.invoke(source, string ?: "")}, { _, _ -> lambda.invoke()}, *arguments)
+}
+
+fun Command.addSyntax(vararg arguments: Argument<*>, condition: () -> Boolean, lambda: (sender: CommandSender) -> Unit) {
+    this.addSyntax({ _, _ -> condition.invoke()}, { sender, _ -> lambda.invoke(sender)}, *arguments)
+}
+
+fun Command.addSyntax(vararg arguments: Argument<*>, condition: (source: CommandSender) -> Boolean, lambda: (sender: CommandSender) -> Unit) {
+    this.addSyntax({ source, _ -> condition.invoke(source)}, { sender, _ -> lambda.invoke(sender)}, *arguments)
+}
+
+fun Command.addSyntax(vararg arguments: Argument<*>, condition: (source: CommandSender, commandString: String) -> Boolean, lambda: (sender: CommandSender) -> Unit) {
+    this.addSyntax({ source, string -> condition.invoke(source, string ?: "")}, { sender, _ -> lambda.invoke(sender)}, *arguments)
+}
+
+fun Command.addSyntax(vararg arguments: Argument<*>, condition: () -> Boolean, lambda: (sender: CommandSender, args: Arguments) -> Unit) {
+    this.addSyntax({ _, _ -> condition.invoke()}, { sender, args -> lambda.invoke(sender, args)}, *arguments)
+}
+
+fun Command.addSyntax(vararg arguments: Argument<*>, condition: (source: CommandSender) -> Boolean, lambda: (sender: CommandSender, args: Arguments) -> Unit) {
+    this.addSyntax({ source, _ -> condition.invoke(source)}, { sender, args -> lambda.invoke(sender, args)}, *arguments)
+}
+
+fun Command.addSyntax(vararg arguments: Argument<*>, condition: (source: CommandSender, commandString: String) -> Boolean, lambda: (sender: CommandSender, args: Arguments) -> Unit) {
+    this.addSyntax({ source, string -> condition.invoke(source, string ?: "")}, { sender, args -> lambda.invoke(sender, args)}, *arguments)
+}
+
 fun Command.setArgumentCallback(arg: Argument<*>, lambda: () -> Unit) {
     this.setArgumentCallback({ _, _, _ -> lambda.invoke() }, arg)
 }
