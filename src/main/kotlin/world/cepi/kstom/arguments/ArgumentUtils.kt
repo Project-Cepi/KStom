@@ -6,7 +6,16 @@ import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.command.builder.arguments.ArgumentWord
 import net.minestom.server.entity.Player
 
+/**
+ * Automatically generates an ArgumentWord based on the ID
+ *
+ * @return an ArgumentWord based on the ID
+ */
 fun ArgumentWord.asSubcommand(): ArgumentWord = this.from(this.id)
-fun String.asSubcommand(): ArgumentWord = ArgumentType.Word(this).from(this)
 
-fun <T> Arguments.get(id: String) = this.getObject(id) as? T
+/**
+ * Automatically generates an ArgumentWord based on the String being passed
+ *
+ * @return an ArgumentWord based on the String being passed
+ */
+fun String.asSubcommand(): ArgumentWord = ArgumentType.Word(this).from(this)

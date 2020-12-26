@@ -4,10 +4,18 @@ import net.minestom.server.command.CommandProcessor
 import net.minestom.server.command.CommandSender
 import net.minestom.server.entity.Player
 
+/** Kotlin version of CommandProcessor using constructors instead of overriding methods */
 class KommandProcessor(
+        /** The name of the command. Used for bridager */
         val name: String,
-        val aliases: List<String> = listOf(),
+
+        /** Aliases, or alternative ways to type the command, stored in a list. */
+        val aliases: List<String> = emptyList(),
+
+        /** The condition the player needs to meet to see the command. */
         val condition: (player: Player) -> Boolean = { _ -> true },
+
+        /** What runs when the command is run. */
         val process: (sender: CommandSender, command: String, args: List<String>) -> Boolean = { _, _, _ -> true }
 ): CommandProcessor {
     override fun getCommandName(): String {
