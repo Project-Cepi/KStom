@@ -5,7 +5,7 @@ import net.minestom.server.command.CommandSender
 import net.minestom.server.entity.Player
 
 /** Kotlin version of CommandProcessor using constructors instead of overriding methods */
-class KommandProcessor(
+open class KommandProcessor(
         /** The name of the command. Used for bridager */
         val name: String,
 
