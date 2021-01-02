@@ -16,5 +16,3 @@ class ArgumentPlayer(id: String) : ArgumentWord(id) {
 }
 
 fun Arguments.getPlayer(id: String): Player = MinecraftServer.getConnectionManager().onlinePlayers.first { it.username == this.getString(id) }
-
-fun ArgumentType.Player(id: String) = ArgumentPlayer(id)
