@@ -15,9 +15,8 @@ import kotlin.reflect.KClass
  * @return True if the element is unique, false if it isn't and it wasn't added
  *
  */
-fun <E : Event> Player.addEventCallback(eventClass: KClass<E>, eventCallback: (E) -> Unit): Boolean {
-    val callbacks: MutableCollection<EventCallback<*>> = this.getEventCallbacks(eventClass.java)
-    return callbacks.add { eventCallback.invoke(it as E) }
+fun <E : Event> Player.addEventCallback(eventClass: KClass<E>, eventCallback: E.() -> Unit): Boolean {
+    return this.addEventCallback(eventClass.java, eventCallback)
 }
 
 /**
@@ -29,7 +28,6 @@ fun <E : Event> Player.addEventCallback(eventClass: KClass<E>, eventCallback: (E
  * @return True if the element is unique, false if it isn't and it wasn't added
  *
  */
-fun <E : Event> GlobalEventHandler.addEventCallback(eventClass: KClass<E>, eventCallback: (E) -> Unit): Boolean {
-    val callbacks: MutableCollection<EventCallback<*>> = this.getEventCallbacks(eventClass.java)
-    return callbacks.add { eventCallback.invoke(it as E) }
+fun <E : Event> GlobalEventHandler.addEventCallback(eventClass: KClass<E>, eventCallback: E.() -> Unit): Boolean {
+    return this.addEventCallback(eventClass.java, eventCallback)
 }
