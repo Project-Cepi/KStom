@@ -11,6 +11,8 @@ import net.minestom.server.command.builder.arguments.number.ArgumentLong
 import net.minestom.server.command.builder.arguments.relative.ArgumentRelativeBlockPosition
 import net.minestom.server.command.builder.arguments.relative.ArgumentRelativeVec2
 import net.minestom.server.command.builder.arguments.relative.ArgumentRelativeVec3
+import world.cepi.kstom.arguments.ArgumentEnum
+import world.cepi.kstom.arguments.ArgumentPlayer
 
 fun KArguments.string(name: String) = ArgumentString(name).also(argumentList::add)
 fun KArguments.integer(name: String) = ArgumentInteger(name).also(argumentList::add)
@@ -38,5 +40,7 @@ fun KArguments.potionEffect(name: String) = ArgumentPotionEffect(name).also(argu
 fun KArguments.relativeBlockPosition(name: String) = ArgumentRelativeBlockPosition(name).also(argumentList::add)
 fun KArguments.relativeVec2(name: String) = ArgumentRelativeVec2(name).also(argumentList::add)
 fun KArguments.relativeVec3(name: String) = ArgumentRelativeVec3(name).also(argumentList::add)
+fun KArguments.player(name: String) = ArgumentPlayer(name).also(argumentList::add)
+fun KArguments.enum(name: String, enumArray: Array<Enum<*>>) = ArgumentEnum(name, enumArray).also(argumentList::add)
 
 fun <T: KArguments> T.withArguments(arguments: Arguments) = apply { this.arguments = arguments }
