@@ -15,7 +15,7 @@ repositories {
 
     // Use mavenCentral
     maven(url = "https://repo1.maven.org/maven2/")
-    maven(url = "http://repo.spongepowered.org/maven")
+    maven(url = "https://repo.spongepowered.org/maven")
     maven(url = "https://libraries.minecraft.net")
     maven(url = "https://jitpack.io")
     maven(url = "https://jcenter.bintray.com/")
@@ -32,7 +32,7 @@ dependencies {
     implementation(kotlin("reflect"))
 
     // Compile Minestom into project
-    implementation("com.github.Minestom:Minestom:3026e46220")
+    implementation("com.github.Minestom:Minestom:735dd50f4e")
 
     // OkHttp
     implementation("com.squareup.okhttp3", "okhttp", "4.9.0")
