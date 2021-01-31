@@ -1,13 +1,11 @@
-package world.cepi.kstom
+package world.cepi.kstom.command
 
 import net.minestom.server.command.CommandSender
-import net.minestom.server.command.builder.ArgumentCallback
 import net.minestom.server.command.builder.Arguments
 import net.minestom.server.command.builder.Command
+import net.minestom.server.command.builder.CommandExecutor
 import net.minestom.server.command.builder.arguments.Argument
-import net.minestom.server.command.builder.condition.CommandCondition
 import net.minestom.server.command.builder.exception.ArgumentSyntaxException
-import org.jetbrains.annotations.NotNull
 
 fun Command.addSyntax(lambda: () -> Unit) {
     this.setDefaultExecutor { _, _ -> lambda.invoke()}
@@ -79,4 +77,8 @@ fun Command.setArgumentCallback(arg: Argument<*>, lambda: (source: CommandSender
 
 fun Command.setArgumentCallback(arg: Argument<*>, lambda: (source: CommandSender, value: ArgumentSyntaxException) -> Unit) {
     this.setArgumentCallback({ source, value -> lambda.invoke(source, value) }, arg)
+}
+
+fun Command.default(block: (sender: CommandSender, args: Arguments) -> Unit) {
+    defaultExecutor = CommandExecutor(block)
 }
