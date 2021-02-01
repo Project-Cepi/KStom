@@ -31,3 +31,11 @@ fun <E : Event> Player.addEventCallback(eventClass: KClass<E>, eventCallback: E.
 fun <E : Event> GlobalEventHandler.addEventCallback(eventClass: KClass<E>, eventCallback: E.() -> Unit): Boolean {
     return this.addEventCallback(eventClass.java, eventCallback)
 }
+
+
+inline fun <reified E : Event> Player.addEventCallback(noinline eventCallback: E.() -> Unit): Boolean {
+    return this.addEventCallback(E::class.java, eventCallback)
+}
+
+inline fun <reified E: Event> GlobalEventHandler.addEventCallback(noinline eventCallback: E.() -> Unit): Boolean =
+    addEventCallback(E::class.java, eventCallback)
