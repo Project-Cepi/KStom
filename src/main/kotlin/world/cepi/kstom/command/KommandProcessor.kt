@@ -1,4 +1,4 @@
-package world.cepi.kstom
+package world.cepi.kstom.command
 
 import net.minestom.server.command.CommandProcessor
 import net.minestom.server.command.CommandSender
