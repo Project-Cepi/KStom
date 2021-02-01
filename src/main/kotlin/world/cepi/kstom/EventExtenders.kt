@@ -2,7 +2,6 @@ package world.cepi.kstom
 
 import net.minestom.server.entity.Player
 import net.minestom.server.event.Event
-import net.minestom.server.event.EventCallback
 import net.minestom.server.event.GlobalEventHandler
 import kotlin.reflect.KClass
 
@@ -15,7 +14,7 @@ import kotlin.reflect.KClass
  * @return True if the element is unique, false if it isn't and it wasn't added
  *
  */
-fun <E : Event> Player.addEventCallback(eventClass: KClass<E>, eventCallback: E.() -> Unit): Boolean {
+public fun <E : Event> Player.addEventCallback(eventClass: KClass<E>, eventCallback: E.() -> Unit): Boolean {
     return this.addEventCallback(eventClass.java, eventCallback)
 }
 
@@ -28,14 +27,14 @@ fun <E : Event> Player.addEventCallback(eventClass: KClass<E>, eventCallback: E.
  * @return True if the element is unique, false if it isn't and it wasn't added
  *
  */
-fun <E : Event> GlobalEventHandler.addEventCallback(eventClass: KClass<E>, eventCallback: E.() -> Unit): Boolean {
+public fun <E : Event> GlobalEventHandler.addEventCallback(eventClass: KClass<E>, eventCallback: E.() -> Unit): Boolean {
     return this.addEventCallback(eventClass.java, eventCallback)
 }
 
 
-inline fun <reified E : Event> Player.addEventCallback(noinline eventCallback: E.() -> Unit): Boolean {
+public inline fun <reified E : Event> Player.addEventCallback(noinline eventCallback: E.() -> Unit): Boolean {
     return this.addEventCallback(E::class.java, eventCallback)
 }
 
-inline fun <reified E: Event> GlobalEventHandler.addEventCallback(noinline eventCallback: E.() -> Unit): Boolean =
+public inline fun <reified E: Event> GlobalEventHandler.addEventCallback(noinline eventCallback: E.() -> Unit): Boolean =
     addEventCallback(E::class.java, eventCallback)
