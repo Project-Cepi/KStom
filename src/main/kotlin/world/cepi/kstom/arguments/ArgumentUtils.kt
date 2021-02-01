@@ -1,11 +1,9 @@
 package world.cepi.kstom.arguments
 
 import net.minestom.server.chat.ChatColor
-import net.minestom.server.command.builder.Arguments
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.command.builder.arguments.ArgumentWord
-import net.minestom.server.command.builder.arguments.minecraft.ArgumentItemStack
 import net.minestom.server.entity.EntityType
 import net.minestom.server.item.Material
 import kotlin.reflect.KClass
@@ -17,14 +15,14 @@ import kotlin.reflect.full.valueParameters
  *
  * @return an ArgumentWord based on the ID
  */
-fun ArgumentWord.asSubcommand(): ArgumentWord = this.from(this.id)
+public fun ArgumentWord.asSubcommand(): ArgumentWord = this.from(this.id)
 
 /**
  * Automatically generates an ArgumentWord based on the String being passed
  *
  * @return an ArgumentWord based on the String being passed
  */
-fun String.asSubcommand(): ArgumentWord = ArgumentType.Word(this).from(this)
+public fun String.asSubcommand(): ArgumentWord = ArgumentType.Word(this).from(this)
 
 /**
  * Can generate a list of Arguments from a class constructor.
@@ -33,7 +31,7 @@ fun String.asSubcommand(): ArgumentWord = ArgumentType.Word(this).from(this)
  *
  * @return A organized hashmap of arguments and its classifier
  */
-fun argumentsFromConstructor(constructor: KFunction<*>): List<Argument<*>> =
+public fun argumentsFromConstructor(constructor: KFunction<*>): List<Argument<*>> =
         constructor.valueParameters.map { argumentFromClass(it.type.classifier!! as KClass<*>)!! }
 
 /**
@@ -44,7 +42,7 @@ fun argumentsFromConstructor(constructor: KFunction<*>): List<Argument<*>> =
  * @return An argument that matches with the class.
  *
  */
-fun argumentFromClass(clazz: KClass<*>): Argument<*>? {
+public fun argumentFromClass(clazz: KClass<*>): Argument<*>? {
 
     if (clazz.simpleName == null) return null
 

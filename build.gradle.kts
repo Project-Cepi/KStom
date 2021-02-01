@@ -9,6 +9,7 @@ plugins {
     java
 }
 
+
 repositories {
     // Use jcenter for resolving dependencies.
     jcenter()
@@ -43,6 +44,10 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+kotlin {
+    explicitApi()
 }
 
 java {
