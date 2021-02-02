@@ -41,5 +41,5 @@ public fun KArguments.relativeBlockPosition(name: String): ArgumentRelativeBlock
 public fun KArguments.relativeVec2(name: String): ArgumentRelativeVec2 = ArgumentRelativeVec2(name).also(argumentList::add)
 public fun KArguments.relativeVec3(name: String): ArgumentRelativeVec3 = ArgumentRelativeVec3(name).also(argumentList::add)
 public fun KArguments.player(name: String): ArgumentPlayer = ArgumentPlayer(name).also(argumentList::add)
-public fun KArguments.enum(name: String, enumArray: Array<Enum<*>>): ArgumentEnum = ArgumentEnum(name, enumArray).also(argumentList::add)
+public fun <T: Enum<T>> KArguments.enum(name: String, enumArray: Array<T>): ArgumentEnum<T> = ArgumentEnum(name, enumArray).also(argumentList::add)
 public fun <T: KArguments> T.withArguments(arguments: Arguments): T = apply { this.arguments = arguments }
