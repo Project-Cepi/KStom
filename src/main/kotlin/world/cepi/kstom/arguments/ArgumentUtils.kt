@@ -64,7 +64,6 @@ public fun argumentFromClass(clazz: KClass<*>): Argument<*>? {
                     clazz.java.enumConstants as Array<Enum<*>>
 
             return ArgumentEnum(clazz.simpleName!!, enumClz)
-                    .from(*enumClz.map { it.name.toLowerCase() }.toTypedArray())
         }
     }
 }
