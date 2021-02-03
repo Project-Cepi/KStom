@@ -32,6 +32,9 @@ dependencies {
     // Use the Kotlin reflect library.
     implementation(kotlin("reflect"))
 
+    // Add support for kotlinx courotines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
+
     // Compile Minestom into project
     implementation("com.github.Minestom:Minestom:735dd50f4e")
 

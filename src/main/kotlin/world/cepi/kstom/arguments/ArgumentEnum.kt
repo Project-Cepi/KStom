@@ -1,7 +1,6 @@
 package world.cepi.kstom.arguments
 
 import net.minestom.server.command.builder.arguments.Argument
-import net.minestom.server.command.builder.arguments.ArgumentWord
 import net.minestom.server.command.builder.exception.ArgumentSyntaxException
 import org.apache.commons.lang3.StringUtils
 
