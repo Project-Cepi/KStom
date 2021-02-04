@@ -1,4 +1,4 @@
-package world.cepi.kstom.arguments
+package world.cepi.kstom.command.arguments
 
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.exception.ArgumentSyntaxException

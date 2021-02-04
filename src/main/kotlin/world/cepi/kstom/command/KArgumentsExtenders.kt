@@ -11,8 +11,8 @@ import net.minestom.server.command.builder.arguments.number.ArgumentLong
 import net.minestom.server.command.builder.arguments.relative.ArgumentRelativeBlockPosition
 import net.minestom.server.command.builder.arguments.relative.ArgumentRelativeVec2
 import net.minestom.server.command.builder.arguments.relative.ArgumentRelativeVec3
-import world.cepi.kstom.arguments.ArgumentEnum
-import world.cepi.kstom.arguments.ArgumentPlayer
+import world.cepi.kstom.command.arguments.ArgumentEnum
+import world.cepi.kstom.command.arguments.ArgumentPlayer
 
 public fun KArguments.string(name: String): ArgumentString = ArgumentString(name).also(argumentList::add)
 public fun KArguments.integer(name: String): ArgumentInteger = ArgumentInteger(name).also(argumentList::add)
