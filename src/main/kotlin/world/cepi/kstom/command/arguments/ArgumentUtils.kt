@@ -56,6 +56,7 @@ public fun argumentFromClass(clazz: KClass<*>): Argument<*>? {
         ChatColor::class -> return ArgumentType.Color(clazz.simpleName!!)
         EntityType::class -> return ArgumentType.EntityType(clazz.simpleName!!)
         Material::class -> return ArgumentType.ItemStack(clazz.simpleName!!)
+        Boolean::class -> return ArgumentType.Boolean(clazz.simpleName!!)
         else -> {
             if (clazz.java.enumConstants == null) return null
 
