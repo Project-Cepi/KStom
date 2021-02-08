@@ -62,10 +62,10 @@ public fun argumentFromClass(clazz: KClass<*>): Argument<*>? {
             if (clazz.java.enumConstants == null) return null
 
             @Suppress("UNCHECKED_CAST") // We already check if the class is an enum or not.
-            val enumClz =
+            val enumConstraints =
                     clazz.java.enumConstants as Array<Enum<*>>
 
-            return ArgumentEnum(clazz.simpleName!!, enumClz)
+            return ArgumentEnum<Enum<*>>(clazz.simpleName!!).from(*enumConstraints)
         }
     }
 }
