@@ -5,7 +5,14 @@ import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.command.builder.arguments.ArgumentWord
 import net.minestom.server.entity.EntityType
+import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
+import net.minestom.server.utils.math.DoubleRange
+import net.minestom.server.utils.math.FloatRange
+import net.minestom.server.utils.math.IntRange
+import net.minestom.server.utils.time.TimeUnit
+import org.jglrxavpok.hephaistos.nbt.NBT
+import org.jglrxavpok.hephaistos.nbt.NBTCompound
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.valueParameters
@@ -58,6 +65,12 @@ public fun argumentFromClass(clazz: KClass<*>): Argument<*>? {
         Material::class -> return ArgumentType.ItemStack(clazz.simpleName!!)
         Boolean::class -> return ArgumentType.Boolean(clazz.simpleName!!)
         Float::class -> return ArgumentType.Float(clazz.simpleName!!)
+        ItemStack::class -> return ArgumentType.ItemStack(clazz.simpleName!!)
+        NBTCompound::class -> return ArgumentType.NbtCompound(clazz.simpleName!!)
+        NBT::class -> return ArgumentType.NBT(clazz.simpleName!!)
+        TimeUnit::class -> return ArgumentType.Time(clazz.simpleName!!)
+        IntRange::class -> return ArgumentType.IntRange(clazz.simpleName!!)
+        FloatRange::class -> return ArgumentType.FloatRange(clazz.simpleName!!)
         else -> {
             if (clazz.java.enumConstants == null) return null
 
