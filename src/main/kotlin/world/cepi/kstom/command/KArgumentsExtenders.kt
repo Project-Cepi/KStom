@@ -11,8 +11,8 @@ import net.minestom.server.command.builder.arguments.number.ArgumentLong
 import net.minestom.server.command.builder.arguments.relative.ArgumentRelativeBlockPosition
 import net.minestom.server.command.builder.arguments.relative.ArgumentRelativeVec2
 import net.minestom.server.command.builder.arguments.relative.ArgumentRelativeVec3
-import world.cepi.kstom.arguments.ArgumentEnum
-import world.cepi.kstom.arguments.ArgumentPlayer
+import world.cepi.kstom.command.arguments.ArgumentEnum
+import world.cepi.kstom.command.arguments.ArgumentPlayer
 
 public fun KArguments.string(name: String): ArgumentString = ArgumentString(name).also(argumentList::add)
 public fun KArguments.integer(name: String): ArgumentInteger = ArgumentInteger(name).also(argumentList::add)
@@ -41,5 +41,5 @@ public fun KArguments.relativeBlockPosition(name: String): ArgumentRelativeBlock
 public fun KArguments.relativeVec2(name: String): ArgumentRelativeVec2 = ArgumentRelativeVec2(name).also(argumentList::add)
 public fun KArguments.relativeVec3(name: String): ArgumentRelativeVec3 = ArgumentRelativeVec3(name).also(argumentList::add)
 public fun KArguments.player(name: String): ArgumentPlayer = ArgumentPlayer(name).also(argumentList::add)
-public fun <T: Enum<T>> KArguments.enum(name: String, enumArray: Array<T>): ArgumentEnum<T> = ArgumentEnum(name, enumArray).also(argumentList::add)
+public fun <T: Enum<T>> KArguments.enum(name: String, enumArray: Array<T>): ArgumentEnum<T> = ArgumentEnum<T>(name).from(*enumArray)
 public fun <T: KArguments> T.withArguments(arguments: Arguments): T = apply { this.arguments = arguments }

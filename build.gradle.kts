@@ -1,6 +1,6 @@
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.4.21-2"
+    id("org.jetbrains.kotlin.jvm") version "1.4.30"
     kotlin("plugin.serialization") version "1.4.10"
     `maven-publish`
     maven
@@ -31,6 +31,9 @@ dependencies {
 
     // Use the Kotlin reflect library.
     implementation(kotlin("reflect"))
+
+    // Add support for kotlinx courotines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
 
     // Compile Minestom into project
     implementation("com.github.Minestom:Minestom:735dd50f4e")
