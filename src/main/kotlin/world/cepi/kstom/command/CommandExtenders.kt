@@ -1,118 +1,166 @@
 package world.cepi.kstom.command
 
+import kotlinx.coroutines.launch
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Arguments
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.CommandExecutor
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.exception.ArgumentSyntaxException
+import world.cepi.kstom.IOScope
 
-public inline fun Command.addSyntax(crossinline lambda: () -> Unit) {
-    this.setDefaultExecutor { _, _ -> lambda.invoke()}
+public inline fun Command.addSyntax(crossinline lambda: suspend () -> Unit) {
+    setDefaultExecutor { _, _ -> IOScope.launch { lambda() }}
 }
 
-public inline fun Command.addSyntax(crossinline lambda: (sender: CommandSender) -> Unit) {
-    this.setDefaultExecutor { sender, _ -> lambda.invoke(sender)}
+public inline fun Command.addSyntax(crossinline lambda: suspend (sender: CommandSender) -> Unit) {
+    setDefaultExecutor { sender, _ -> IOScope.launch { lambda(sender) }}
 }
 
-public fun Command.addSyntax(lambda: (sender: CommandSender, args: Arguments) -> Unit) {
-    defaultExecutor = CommandExecutor(lambda)
-}
-
-public inline fun Command.addSyntax(vararg arguments: Argument<*>, crossinline lambda: () -> Unit) {
-    this.addSyntax({ _, _ -> lambda.invoke()}, *arguments)
-}
-
-public inline fun Command.addSyntax(vararg arguments: Argument<*>, crossinline lambda: (sender: CommandSender) -> Unit) {
-    this.addSyntax({ sender, _ -> lambda.invoke(sender)}, *arguments)
+public inline fun Command.addSyntax(crossinline lambda: suspend (sender: CommandSender, args: Arguments) -> Unit) {
+    defaultExecutor = CommandExecutor { sender, args -> IOScope.launch { lambda(sender, args) } }
 }
 
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
-    crossinline lambda: (sender: CommandSender, args: Arguments) -> Unit
+    crossinline lambda: suspend () -> Unit
 ) {
-    this.addSyntax({ sender, args -> lambda.invoke(sender, args)}, *arguments)
+    addSyntax({ _, _ -> IOScope.launch { lambda() }}, *arguments)
 }
 
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
-    crossinline condition: () -> Boolean,
-    crossinline lambda: () -> Unit
+    crossinline lambda: suspend (sender: CommandSender) -> Unit
 ) {
-    this.addSyntax({ _, _ -> condition.invoke()}, { _, _ -> lambda.invoke()}, *arguments)
-}
-
-public inline fun Command.addSyntax(vararg arguments: Argument<*>, crossinline condition: (source: CommandSender) -> Boolean, crossinline lambda: () -> Unit) {
-    this.addSyntax({ source, _ -> condition.invoke(source)}, { _, _ -> lambda.invoke()}, *arguments)
+    addSyntax({ sender, _ -> IOScope.launch { lambda(sender) }}, *arguments)
 }
 
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
-    crossinline condition: (source: CommandSender, commandString: String) -> Boolean,
-    crossinline lambda: () -> Unit
+    crossinline lambda: suspend (sender: CommandSender, args: Arguments) -> Unit
 ) {
-    this.addSyntax({ source, string -> condition.invoke(source, string ?: "")}, { _, _ -> lambda.invoke()}, *arguments)
+    addSyntax({ sender, args -> IOScope.launch { lambda(sender, args)} }, *arguments)
 }
 
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
     crossinline condition: () -> Boolean,
-    crossinline lambda: (sender: CommandSender) -> Unit
+    crossinline lambda: suspend () -> Unit
 ) {
-    this.addSyntax({ _, _ -> condition.invoke()}, { sender, _ -> lambda.invoke(sender)}, *arguments)
+    addSyntax(
+        { _, _ -> condition() },
+        { _, _ -> IOScope.launch { lambda() } },
+        *arguments
+    )
 }
 
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
     crossinline condition: (source: CommandSender) -> Boolean,
-    crossinline lambda: (sender: CommandSender) -> Unit
+    crossinline lambda: suspend () -> Unit
 ) {
-    this.addSyntax({ source, _ -> condition.invoke(source)}, { sender, _ -> lambda.invoke(sender)}, *arguments)
+    addSyntax(
+        { source, _ -> condition(source) },
+        { _, _ -> IOScope.launch { lambda() } },
+        *arguments
+    )
 }
 
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
     crossinline condition: (source: CommandSender, commandString: String) -> Boolean,
-    crossinline lambda: (sender: CommandSender) -> Unit
+    crossinline lambda: suspend () -> Unit
 ) {
-    this.addSyntax({ source, string -> condition.invoke(source, string ?: "")}, { sender, _ -> lambda.invoke(sender)}, *arguments)
+    addSyntax(
+        { source, string -> condition(source, string ?: "") },
+        { _, _ -> IOScope.launch { lambda() } },
+        *arguments
+    )
 }
 
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
     crossinline condition: () -> Boolean,
-    noinline lambda: (sender: CommandSender, args: Arguments) -> Unit
+    crossinline lambda: suspend (sender: CommandSender) -> Unit
 ) {
-    this.addSyntax({ _, _ -> condition.invoke()}, lambda, *arguments)
+    addSyntax(
+        { _, _ -> condition() },
+        { sender, _ -> IOScope.launch { lambda(sender) } },
+        *arguments
+    )
 }
 
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
     crossinline condition: (source: CommandSender) -> Boolean,
-    noinline lambda: (sender: CommandSender, args: Arguments) -> Unit
+    crossinline lambda: suspend (sender: CommandSender) -> Unit
 ) {
-    this.addSyntax({ source, _ -> condition.invoke(source)}, lambda, *arguments)
+    addSyntax(
+        { source, _ -> condition(source) },
+        { sender, _ -> IOScope.launch { lambda(sender) } },
+        *arguments
+    )
+}
+
+public inline fun Command.addSyntax(
+    vararg arguments: Argument<*>,
+    crossinline condition: (source: CommandSender, commandString: String) -> Boolean,
+    crossinline lambda: suspend (sender: CommandSender) -> Unit
+) {
+    addSyntax(
+        { source, string -> condition(source, string ?: "") },
+        { sender, _ -> IOScope.launch { lambda(sender) } },
+        *arguments
+    )
+}
+
+public inline fun Command.addSyntax(
+    vararg arguments: Argument<*>,
+    crossinline condition: () -> Boolean,
+    crossinline lambda: suspend (sender: CommandSender, args: Arguments) -> Unit
+) {
+    addSyntax(
+        { _, _ -> condition()},
+        { sender, args -> IOScope.launch { lambda(sender, args) } },
+        *arguments
+    )
+}
+
+public inline fun Command.addSyntax(
+    vararg arguments: Argument<*>,
+    crossinline condition: (source: CommandSender) -> Boolean,
+    crossinline lambda: suspend (sender: CommandSender, args: Arguments) -> Unit
+) {
+    addSyntax(
+        { source, _ -> condition(source)},
+        { sender, args -> IOScope.launch { lambda(sender, args) } },
+        *arguments
+    )
 }
 
 public inline fun Command.addSyntax(vararg arguments: Argument<*>, crossinline condition: (
     source: CommandSender,
     commandString: String
-) -> Boolean, noinline lambda: (sender: CommandSender, args: Arguments) -> Unit) {
-    this.addSyntax({ source, string -> condition.invoke(source, string ?: "")}, lambda, *arguments)
+) -> Boolean, crossinline lambda: suspend (sender: CommandSender, args: Arguments) -> Unit) {
+    addSyntax(
+        { source, string -> condition(source, string ?: "")},
+        { sender, args -> IOScope.launch { lambda(sender, args) } },
+        *arguments
+    )
 }
 
-public inline fun Command.setArgumentCallback(arg: Argument<*>, crossinline lambda: () -> Unit) {
-    this.setArgumentCallback({ _, _ -> lambda.invoke() }, arg)
+public inline fun Command.setArgumentCallback(arg: Argument<*>, crossinline lambda: suspend () -> Unit) {
+    setArgumentCallback({ _, _ -> IOScope.launch { lambda() } }, arg)
 }
 
-public inline fun Command.setArgumentCallback(arg: Argument<*>, crossinline lambda: (source: CommandSender) -> Unit) {
-    this.setArgumentCallback({ source, _ -> lambda.invoke(source) }, arg)
+public inline fun Command.setArgumentCallback(arg: Argument<*>, crossinline lambda: suspend (source: CommandSender) -> Unit) {
+    setArgumentCallback({ source, _ -> IOScope.launch { lambda(source) } }, arg)
 }
 
-public fun Command.setArgumentCallback(arg: Argument<*>, lambda: (source: CommandSender, value: ArgumentSyntaxException) -> Unit) {
-    this.setArgumentCallback(lambda, arg)
+public inline fun Command.setArgumentCallback(arg: Argument<*>, crossinline lambda: suspend (source: CommandSender, value: ArgumentSyntaxException) -> Unit) {
+    setArgumentCallback({ source, value -> IOScope.launch { lambda(source, value) } }, arg)
 }
 
-public fun Command.default(block: (sender: CommandSender, args: Arguments) -> Unit) {
-    defaultExecutor = CommandExecutor(block)
+public inline fun Command.default(crossinline block: suspend (sender: CommandSender, args: Arguments) -> Unit) {
+    defaultExecutor = CommandExecutor { sender, args -> IOScope.launch { block(sender, args) } }
 }

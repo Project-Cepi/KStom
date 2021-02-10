@@ -29,8 +29,5 @@ public class KItem(material: Material, amount: Byte = 1, damage: Int = 0): ItemS
  * @param amount The amount of item to have
  * @param init The DSL lambda
  */
-public inline fun kitem(material: Material = Material.PAPER, amount: Byte = 1, init: KItem.() -> Unit): KItem {
-    val item = KItem(material, amount)
-    item.init()
-    return item
-}
+public inline fun kitem(material: Material = Material.PAPER, amount: Byte = 1, init: KItem.() -> Unit): KItem =
+    KItem(material, amount).apply(init)

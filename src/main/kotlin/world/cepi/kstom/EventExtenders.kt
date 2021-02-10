@@ -1,5 +1,6 @@
 package world.cepi.kstom
 
+import kotlinx.coroutines.launch
 import net.minestom.server.event.Event
 import net.minestom.server.event.handler.EventHandler
 import kotlin.reflect.KClass
@@ -13,8 +14,10 @@ import kotlin.reflect.KClass
  * @return True if the element is unique, false if it isn't and it wasn't added
  *
  */
-public fun <E : Event> EventHandler.addEventCallback(eventClass: KClass<E>, eventCallback: E.() -> Unit): Boolean =
-    this.addEventCallback(eventClass.java, eventCallback)
+public inline fun <reified E : Event> EventHandler.addEventCallback(
+    eventClass: KClass<E>,
+    crossinline eventCallback: suspend E.() -> Unit
+): Boolean = addEventCallback(eventClass.java) { IOScope.launch { it.eventCallback() } }
 
 /**
  * Adds an event to an event handler using a Kotlin class, using Generics.
@@ -24,5 +27,6 @@ public fun <E : Event> EventHandler.addEventCallback(eventClass: KClass<E>, even
  * @return True if the element is unique, false if it isn't and it wasn't added
  *
  */
-public inline fun <reified E: Event> EventHandler.addEventCallback(noinline eventCallback: E.() -> Unit): Boolean =
-    addEventCallback(E::class.java, eventCallback)
+public inline fun <reified E: Event> EventHandler.addEventCallback(
+    crossinline eventCallback: suspend E.() -> Unit
+): Boolean = addEventCallback(E::class.java) { IOScope.launch { it.eventCallback() } }

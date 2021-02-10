@@ -8,5 +8,5 @@ import net.minestom.server.command.builder.Command
 public inline fun CommandManager.command(name: String, block: Command.() -> Unit): Unit =
     register(Command(name).apply(block))
 
-public fun CommandManager.register(name: String, block: (sender: CommandSender, args: Arguments) -> Unit): Unit =
+public fun CommandManager.register(name: String, block: suspend (sender: CommandSender, args: Arguments) -> Unit): Unit =
     register(Command(name).apply { default(block) })
