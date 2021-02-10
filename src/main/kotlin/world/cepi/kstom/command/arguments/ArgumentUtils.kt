@@ -7,7 +7,6 @@ import net.minestom.server.command.builder.arguments.ArgumentWord
 import net.minestom.server.entity.EntityType
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
-import net.minestom.server.utils.math.DoubleRange
 import net.minestom.server.utils.math.FloatRange
 import net.minestom.server.utils.math.IntRange
 import net.minestom.server.utils.time.TimeUnit
@@ -16,6 +15,7 @@ import org.jglrxavpok.hephaistos.nbt.NBTCompound
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.valueParameters
+import kotlin.reflect.jvm.jvmErasure
 
 /**
  * Automatically generates an ArgumentWord based on the ID
@@ -39,7 +39,7 @@ public fun String.asSubcommand(): ArgumentWord = ArgumentType.Word(this).from(th
  * @return A organized hashmap of arguments and its classifier
  */
 public fun argumentsFromConstructor(constructor: KFunction<*>): List<Argument<*>> =
-        constructor.valueParameters.map { argumentFromClass(it.type.classifier!! as KClass<*>)!! }
+        constructor.valueParameters.map { argumentFromClass(it.name ?: it.type.jvmErasure.simpleName!!, it.type.classifier!! as KClass<*>)!! }
 
 /**
  * Generates a Minestom argument based on the class
@@ -49,28 +49,28 @@ public fun argumentsFromConstructor(constructor: KFunction<*>): List<Argument<*>
  * @return An argument that matches with the class.
  *
  */
-public fun argumentFromClass(clazz: KClass<*>): Argument<*>? {
+public fun argumentFromClass(name: String, clazz: KClass<*>): Argument<*>? {
 
     if (clazz.simpleName == null) return null
 
     // TODO allow complex types
 
     when (clazz) {
-        String::class -> return ArgumentType.String(clazz.simpleName!!)
-        Int::class -> return ArgumentType.Integer(clazz.simpleName!!)
-        Double::class -> return ArgumentType.Double(clazz.simpleName!!)
-        Long::class -> return ArgumentType.Long(clazz.simpleName!!)
-        ChatColor::class -> return ArgumentType.Color(clazz.simpleName!!)
-        EntityType::class -> return ArgumentType.EntityType(clazz.simpleName!!)
-        Material::class -> return ArgumentType.ItemStack(clazz.simpleName!!)
-        Boolean::class -> return ArgumentType.Boolean(clazz.simpleName!!)
-        Float::class -> return ArgumentType.Float(clazz.simpleName!!)
-        ItemStack::class -> return ArgumentType.ItemStack(clazz.simpleName!!)
-        NBTCompound::class -> return ArgumentType.NbtCompound(clazz.simpleName!!)
-        NBT::class -> return ArgumentType.NBT(clazz.simpleName!!)
-        TimeUnit::class -> return ArgumentType.Time(clazz.simpleName!!)
-        IntRange::class -> return ArgumentType.IntRange(clazz.simpleName!!)
-        FloatRange::class -> return ArgumentType.FloatRange(clazz.simpleName!!)
+        String::class -> return ArgumentType.String(name)
+        Int::class -> return ArgumentType.Integer(name)
+        Double::class -> return ArgumentType.Double(name)
+        Long::class -> return ArgumentType.Long(name)
+        ChatColor::class -> return ArgumentType.Color(name)
+        EntityType::class -> return ArgumentType.EntityType(name)
+        Material::class -> return ArgumentType.ItemStack(name)
+        Boolean::class -> return ArgumentType.Boolean(name)
+        Float::class -> return ArgumentType.Float(name)
+        ItemStack::class -> return ArgumentType.ItemStack(name)
+        NBTCompound::class -> return ArgumentType.NbtCompound(name)
+        NBT::class -> return ArgumentType.NBT(name)
+        TimeUnit::class -> return ArgumentType.Time(name)
+        IntRange::class -> return ArgumentType.IntRange(name)
+        FloatRange::class -> return ArgumentType.FloatRange(name)
         else -> {
             if (clazz.java.enumConstants == null) return null
 
@@ -78,7 +78,7 @@ public fun argumentFromClass(clazz: KClass<*>): Argument<*>? {
             val enumConstraints =
                     clazz.java.enumConstants as Array<Enum<*>>
 
-            return ArgumentEnum<Enum<*>>(clazz.simpleName!!).from(*enumConstraints)
+            return ArgumentEnum<Enum<*>>(name).from(*enumConstraints)
         }
     }
 }
