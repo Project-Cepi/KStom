@@ -34,5 +34,3 @@ public class ArgumentPlayer(id: String) : Argument<Player>(id, false, false) {
         nodeMaker.addNodes(arrayOf(argumentNode))
     }
 }
-
-public fun Arguments.getPlayer(id: String): Player = MinecraftServer.getConnectionManager().onlinePlayers.first { it.username == this.getString(id) }
