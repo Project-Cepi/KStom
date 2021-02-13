@@ -2,6 +2,7 @@ package world.cepi.kstom.command.arguments
 
 import net.minestom.server.chat.ChatColor
 import net.minestom.server.command.builder.arguments.Argument
+import net.minestom.server.command.builder.arguments.ArgumentLiteral
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.command.builder.arguments.ArgumentWord
 import net.minestom.server.entity.EntityType
@@ -18,18 +19,11 @@ import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
 /**
- * Automatically generates an ArgumentWord based on the ID
- *
- * @return an ArgumentWord based on the ID
- */
-public fun ArgumentWord.asSubcommand(): ArgumentWord = this.from(this.id)
-
-/**
  * Automatically generates an ArgumentWord based on the String being passed
  *
  * @return an ArgumentWord based on the String being passed
  */
-public fun String.asSubcommand(): ArgumentWord = ArgumentType.Word(this).from(this)
+public fun String.asSubcommand(): ArgumentLiteral = ArgumentType.Literal(this)
 
 /**
  * Can generate a list of Arguments from a class constructor.

@@ -36,7 +36,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
 
     // Compile Minestom into project
-    implementation("com.github.Minestom:Minestom:735dd50f4e")
+    implementation("com.github.Minestom:Minestom:df2ee23a7c")
 
     // OkHttp
     implementation("com.squareup.okhttp3", "okhttp", "4.9.0")
