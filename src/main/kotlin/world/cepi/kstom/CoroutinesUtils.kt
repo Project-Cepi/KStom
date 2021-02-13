@@ -13,5 +13,3 @@ public val IOContext: ExecutorCoroutineDispatcher = Executors
     .newFixedThreadPool(Runtime.getRuntime().availableProcessors())
     .asCoroutineDispatcher()
 public val IOScope: CoroutineScope = CoroutineScope(IOContext)
-
-private const val eventBufferSize = 100
