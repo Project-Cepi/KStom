@@ -16,8 +16,8 @@ import kotlin.reflect.KClass
  */
 public inline fun <reified E : Event> EventHandler.addEventCallback(
     eventClass: KClass<E>,
-    crossinline eventCallback: suspend E.() -> Unit
-): Boolean = addEventCallback(eventClass.java) { IOScope.launch { it.eventCallback() } }
+    crossinline eventCallback: E.() -> Unit
+): Boolean = addEventCallback(eventClass.java) { it.eventCallback() }
 
 /**
  * Adds an event to an event handler using a Kotlin class, using Generics.
@@ -28,5 +28,18 @@ public inline fun <reified E : Event> EventHandler.addEventCallback(
  *
  */
 public inline fun <reified E: Event> EventHandler.addEventCallback(
+    crossinline eventCallback: E.() -> Unit
+): Boolean = addEventCallback(E::class.java) { it.eventCallback() }
+
+
+/**
+ * Adds an event to an asynchronous event handler using a Kotlin class, using Generics.
+ *
+ * @param eventCallback The lambda that runs when the event is triggered
+ *
+ * @return True if the element is unique, false if it isn't and it wasn't added
+ *
+ */
+public inline fun <reified E: Event> EventHandler.event(
     crossinline eventCallback: suspend E.() -> Unit
 ): Boolean = addEventCallback(E::class.java) { IOScope.launch { it.eventCallback() } }

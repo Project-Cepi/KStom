@@ -13,14 +13,3 @@ public val IOContext: ExecutorCoroutineDispatcher = Executors
     .newFixedThreadPool(Runtime.getRuntime().availableProcessors())
     .asCoroutineDispatcher()
 public val IOScope: CoroutineScope = CoroutineScope(IOContext)
-
-private const val eventBufferSize = 100
-
-/** Flow of all events */
-public val events: SharedFlow<Event> by lazy {
-    MutableSharedFlow<Event>(eventBufferSize).also { flow ->
-        MinecraftServer.getGlobalEventHandler().addEventCallback<Event> {
-            flow.emit(this)
-        }
-    }
-}
