@@ -43,6 +43,13 @@ dependencies {
 
     // import kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
+
+    // Use mworlza's canvas
+    implementation("com.github.mworzala:canvas:bb1772580e")
+
+    // Add Kyori Minestom implementation
+    implementation("com.github.mworzala:adventure-platform-minestom:2e12f45b2e")
+    implementation("net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT")
 }
 
 tasks.withType<Test> {
@@ -57,3 +64,6 @@ java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
 }
+
+val compileKotlin: org.jetbrains.kotlin.gradle.tasks.KotlinCompile by tasks
+compileKotlin.kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
