@@ -42,7 +42,7 @@ dependencies {
     implementation("com.squareup.okhttp3", "okhttp", "4.9.0")
 
     // import kotlinx serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
 
     // Use mworlza's canvas
     implementation("com.github.mworzala:canvas:bb1772580e")
