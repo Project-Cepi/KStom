@@ -6,6 +6,19 @@ import net.minestom.server.event.handler.EventHandler
 import kotlin.reflect.KClass
 
 /**
+ * Removes an event from an event handler using a Kotlin class.
+ *
+ * @param eventClass the class to listen to from the player.
+ * @param eventCallback the lambda that runs when the event is triggered
+ *
+ * @return `true` if the callback was removed as a result of this call, `false` otherwise
+ */
+public inline fun <reified E: Event> EventHandler.removeEventCallback(
+    eventClass: KClass<E>,
+    crossinline eventCallback: E.() -> Unit
+): Boolean = removeEventCallback(eventClass.java) { it.eventCallback() }
+
+/**
  * Adds an event to an event handler using a Kotlin class
  *
  * @param eventClass The class to listen to from the player.
