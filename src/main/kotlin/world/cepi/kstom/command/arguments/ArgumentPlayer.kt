@@ -2,9 +2,14 @@ package world.cepi.kstom.command.arguments
 
 import net.minestom.server.MinecraftServer
 import net.minestom.server.command.builder.Arguments
+import net.minestom.server.command.builder.NodeMaker
 import net.minestom.server.command.builder.arguments.Argument
+import net.minestom.server.command.builder.arguments.minecraft.SuggestionType
 import net.minestom.server.command.builder.exception.ArgumentSyntaxException
 import net.minestom.server.entity.Player
+import net.minestom.server.network.packet.server.play.DeclareCommandsPacket
+import net.minestom.server.utils.binary.BinaryWriter
+import java.util.function.Consumer
 
 public class ArgumentPlayer(id: String) : Argument<Player>(id, false, false) {
 
@@ -16,6 +21,16 @@ public class ArgumentPlayer(id: String) : Argument<Player>(id, false, false) {
             throw ArgumentSyntaxException("The player does not exist!", value, 1)
         }
     }
-}
 
-public fun Arguments.getPlayer(id: String): Player = MinecraftServer.getConnectionManager().onlinePlayers.first { it.username == this.getString(id) }
+    override fun processNodes(nodeMaker: NodeMaker, executable: Boolean) {
+        val argumentNode = simpleArgumentNode(this, executable, false, true)
+
+        argumentNode.parser = "brigadier:string"
+        argumentNode.properties = Consumer { packetWriter: BinaryWriter ->
+            packetWriter.writeVarInt(0) // Single word
+        }
+        argumentNode.suggestionsType = SuggestionType.ASK_SERVER.identifier
+
+        nodeMaker.addNodes(arrayOf(argumentNode))
+    }
+}
