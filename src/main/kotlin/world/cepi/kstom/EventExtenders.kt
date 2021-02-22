@@ -56,3 +56,15 @@ public inline fun <reified E: Event> EventHandler.addEventCallback(
 public inline fun <reified E: Event> EventHandler.event(
     crossinline eventCallback: suspend E.() -> Unit
 ): Boolean = addEventCallback(E::class.java) { IOScope.launch { it.eventCallback() } }
+
+/**
+ * Removes an event from an event handler using a Kotlin class, using Generics.
+ *
+ * @param eventCallback The lambda that runs when the event is triggered
+ *
+ * @return True if the element was removed, false if it wasn't there
+ *
+ */
+public inline fun <reified E: Event> EventHandler.removeEventCallback(
+    crossinline eventCallback: E.() -> Unit
+): Boolean = removeEventCallback(E::class.java) { it.eventCallback() }
