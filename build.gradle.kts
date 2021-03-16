@@ -11,15 +11,11 @@ plugins {
 
 
 repositories {
-    // Use jcenter for resolving dependencies.
     jcenter()
-
-    // Use mavenCentral
-    maven(url = "https://repo1.maven.org/maven2/")
+    mavenCentral()
     maven(url = "https://repo.spongepowered.org/maven")
     maven(url = "https://libraries.minecraft.net")
     maven(url = "https://jitpack.io")
-    maven(url = "https://jcenter.bintray.com/")
 }
 
 dependencies {
@@ -36,7 +32,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
 
     // Compile Minestom into project
-    implementation("com.github.kezz:Minestom:c9b928eb75")
+    implementation("com.github.kezz", "Minestom", "ec9b2023e5")
 
     // OkHttp
     implementation("com.squareup.okhttp3", "okhttp", "4.9.0")
