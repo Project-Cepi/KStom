@@ -48,7 +48,7 @@ dependencies {
     implementation("com.github.mworzala:canvas:bb1772580e")
 
     // Add MiniMessage
-    implementation("net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT")
+    implementation("net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT")
 }
 
 tasks.withType<Test> {
