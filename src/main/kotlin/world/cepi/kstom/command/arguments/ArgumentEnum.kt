@@ -60,7 +60,7 @@ public class ArgumentEnum<T: Enum<T>>(id: String)
                 DeclareCommandsPacket.NodeType.LITERAL,
                 executable, false, false
             )
-            argumentNode.name = this.enumArray.get(i).name.toLowerCase()
+            argumentNode.name = this.enumArray[i].name.toLowerCase()
             wordConsumer.accept(argumentNode)
             nodes[i] = argumentNode
         }

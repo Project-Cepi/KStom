@@ -2,8 +2,8 @@ package world.cepi.kstom.command
 
 import kotlinx.coroutines.launch
 import net.minestom.server.command.CommandSender
-import net.minestom.server.command.builder.Arguments
 import net.minestom.server.command.builder.Command
+import net.minestom.server.command.builder.CommandContext
 import net.minestom.server.command.builder.CommandExecutor
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.exception.ArgumentSyntaxException
@@ -17,7 +17,7 @@ public inline fun Command.addSyntax(crossinline lambda: suspend (sender: Command
     setDefaultExecutor { sender, _ -> IOScope.launch { lambda(sender) }}
 }
 
-public inline fun Command.addSyntax(crossinline lambda: suspend (sender: CommandSender, args: Arguments) -> Unit) {
+public inline fun Command.addSyntax(crossinline lambda: suspend (sender: CommandSender, args: CommandContext) -> Unit) {
     defaultExecutor = CommandExecutor { sender, args -> IOScope.launch { lambda(sender, args) } }
 }
 
@@ -37,7 +37,7 @@ public inline fun Command.addSyntax(
 
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
-    crossinline lambda: suspend (sender: CommandSender, args: Arguments) -> Unit
+    crossinline lambda: suspend (sender: CommandSender, args: CommandContext) -> Unit
 ) {
     addSyntax({ sender, args -> IOScope.launch { lambda(sender, args)} }, *arguments)
 }
@@ -117,7 +117,7 @@ public inline fun Command.addSyntax(
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
     crossinline condition: () -> Boolean,
-    crossinline lambda: suspend (sender: CommandSender, args: Arguments) -> Unit
+    crossinline lambda: suspend (sender: CommandSender, args: CommandContext) -> Unit
 ) {
     addSyntax(
         { _, _ -> condition()},
@@ -129,7 +129,7 @@ public inline fun Command.addSyntax(
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
     crossinline condition: (source: CommandSender) -> Boolean,
-    crossinline lambda: suspend (sender: CommandSender, args: Arguments) -> Unit
+    crossinline lambda: suspend (sender: CommandSender, args: CommandContext) -> Unit
 ) {
     addSyntax(
         { source, _ -> condition(source)},
@@ -141,7 +141,7 @@ public inline fun Command.addSyntax(
 public inline fun Command.addSyntax(vararg arguments: Argument<*>, crossinline condition: (
     source: CommandSender,
     commandString: String
-) -> Boolean, crossinline lambda: suspend (sender: CommandSender, args: Arguments) -> Unit) {
+) -> Boolean, crossinline lambda: suspend (sender: CommandSender, args: CommandContext) -> Unit) {
     addSyntax(
         { source, string -> condition(source, string ?: "")},
         { sender, args -> IOScope.launch { lambda(sender, args) } },
@@ -161,6 +161,6 @@ public inline fun Command.setArgumentCallback(arg: Argument<*>, crossinline lamb
     setArgumentCallback({ source, value -> IOScope.launch { lambda(source, value) } }, arg)
 }
 
-public inline fun Command.default(crossinline block: suspend (sender: CommandSender, args: Arguments) -> Unit) {
+public inline fun Command.default(crossinline block: suspend (sender: CommandSender, args: CommandContext) -> Unit) {
     defaultExecutor = CommandExecutor { sender, args -> IOScope.launch { block(sender, args) } }
 }
