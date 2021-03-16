@@ -36,7 +36,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
 
     // Compile Minestom into project
-    implementation("com.github.Minestom:Minestom:c960bb297b")
+    implementation("com.github.kezz:Minestom:c9b928eb75")
 
     // OkHttp
     implementation("com.squareup.okhttp3", "okhttp", "4.9.0")
@@ -47,8 +47,7 @@ dependencies {
     // Use mworlza's canvas
     implementation("com.github.mworzala:canvas:bb1772580e")
 
-    // Add Kyori Minestom implementation
-    implementation("com.github.mworzala:adventure-platform-minestom:2e12f45b2e")
+    // Add MiniMessage
     implementation("net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT")
 }
 
