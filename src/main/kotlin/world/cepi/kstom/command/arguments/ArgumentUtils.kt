@@ -2,12 +2,15 @@ package world.cepi.kstom.command.arguments
 
 import net.minestom.server.chat.ChatColor
 import net.minestom.server.command.builder.arguments.Argument
+import net.minestom.server.command.builder.arguments.ArgumentEnum
 import net.minestom.server.command.builder.arguments.ArgumentLiteral
 import net.minestom.server.command.builder.arguments.ArgumentType
-import net.minestom.server.command.builder.arguments.ArgumentWord
 import net.minestom.server.entity.EntityType
+import net.minestom.server.item.Enchantment
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
+import net.minestom.server.utils.entity.EntityFinder
+import net.minestom.server.utils.location.RelativeVec
 import net.minestom.server.utils.math.FloatRange
 import net.minestom.server.utils.math.IntRange
 import net.minestom.server.utils.time.TimeUnit
@@ -53,7 +56,6 @@ public fun argumentFromClass(name: String, clazz: KClass<*>): Argument<*>? {
         String::class -> return ArgumentType.String(name)
         Int::class -> return ArgumentType.Integer(name)
         Double::class -> return ArgumentType.Double(name)
-        Long::class -> return ArgumentType.Long(name)
         ChatColor::class -> return ArgumentType.Color(name)
         EntityType::class -> return ArgumentType.EntityType(name)
         Material::class -> return ArgumentType.ItemStack(name)
@@ -65,14 +67,14 @@ public fun argumentFromClass(name: String, clazz: KClass<*>): Argument<*>? {
         TimeUnit::class -> return ArgumentType.Time(name)
         IntRange::class -> return ArgumentType.IntRange(name)
         FloatRange::class -> return ArgumentType.FloatRange(name)
+        EntityFinder::class -> return ArgumentType.Entity(name)
+        Enchantment::class -> return ArgumentType.Enchantment(name)
+        RelativeVec::class -> return ArgumentType.RelativeVec3(name)
         else -> {
             if (clazz.java.enumConstants == null) return null
 
             @Suppress("UNCHECKED_CAST") // We already check if the class is an enum or not.
-            val enumConstraints =
-                    clazz.java.enumConstants as Array<Enum<*>>
-
-            return ArgumentEnum<Enum<*>>(name).from(*enumConstraints)
+            return ArgumentEnum(name, clazz.java as Class<Enum<*>>)
         }
     }
 }

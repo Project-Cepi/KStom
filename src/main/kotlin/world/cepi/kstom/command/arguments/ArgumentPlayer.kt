@@ -9,6 +9,9 @@ import net.minestom.server.entity.Player
 import net.minestom.server.utils.binary.BinaryWriter
 import java.util.function.Consumer
 
+/**
+ * Raw, no tab completion Player argument for big amounts of Players.
+ */
 public class ArgumentPlayer(id: String) : Argument<Player>(id, false, false) {
 
     @Throws(ArgumentSyntaxException::class)
