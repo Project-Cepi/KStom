@@ -1,6 +1,7 @@
 package world.cepi.kstom.command.arguments
 
 import net.minestom.server.chat.ChatColor
+import net.minestom.server.color.Color
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentEnum
 import net.minestom.server.command.builder.arguments.ArgumentLiteral
@@ -9,6 +10,7 @@ import net.minestom.server.entity.EntityType
 import net.minestom.server.item.Enchantment
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
+import net.minestom.server.utils.BlockPosition
 import net.minestom.server.utils.entity.EntityFinder
 import net.minestom.server.utils.location.RelativeVec
 import net.minestom.server.utils.math.FloatRange
@@ -56,7 +58,7 @@ public fun argumentFromClass(name: String, clazz: KClass<*>): Argument<*>? {
         String::class -> return ArgumentType.String(name)
         Int::class -> return ArgumentType.Integer(name)
         Double::class -> return ArgumentType.Double(name)
-        ChatColor::class -> return ArgumentType.Color(name)
+        Color::class -> return ArgumentType.Color(name)
         EntityType::class -> return ArgumentType.EntityType(name)
         Material::class -> return ArgumentType.ItemStack(name)
         Boolean::class -> return ArgumentType.Boolean(name)
@@ -70,6 +72,7 @@ public fun argumentFromClass(name: String, clazz: KClass<*>): Argument<*>? {
         EntityFinder::class -> return ArgumentType.Entity(name)
         Enchantment::class -> return ArgumentType.Enchantment(name)
         RelativeVec::class -> return ArgumentType.RelativeVec3(name)
+        BlockPosition::class -> return ArgumentType.RelativeBlockPosition(name)
         else -> {
             if (clazz.java.enumConstants == null) return null
 
