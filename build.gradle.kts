@@ -41,7 +41,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
 
     // Use mworlza's canvas
-    implementation("com.github.mworzala:canvas:bb1772580e")
+    implementation("com.github.mworzala:canvas:407c072b23")
 
     // Add MiniMessage
     implementation("net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT")
