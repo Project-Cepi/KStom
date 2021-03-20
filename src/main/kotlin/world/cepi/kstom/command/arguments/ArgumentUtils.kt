@@ -1,6 +1,6 @@
 package world.cepi.kstom.command.arguments
 
-import net.minestom.server.chat.ChatColor
+import net.kyori.adventure.text.Component
 import net.minestom.server.color.Color
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentEnum
@@ -66,6 +66,7 @@ public fun argumentFromClass(name: String, clazz: KClass<*>): Argument<*>? {
         ItemStack::class -> return ArgumentType.ItemStack(name)
         NBTCompound::class -> return ArgumentType.NbtCompound(name)
         NBT::class -> return ArgumentType.NBT(name)
+        Component::class -> return ArgumentType.Component(name)
         TimeUnit::class -> return ArgumentType.Time(name)
         IntRange::class -> return ArgumentType.IntRange(name)
         FloatRange::class -> return ArgumentType.FloatRange(name)
