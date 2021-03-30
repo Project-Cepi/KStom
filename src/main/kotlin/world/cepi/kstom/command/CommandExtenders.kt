@@ -9,6 +9,7 @@ import net.minestom.server.command.builder.CommandSyntax
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.exception.ArgumentSyntaxException
 import world.cepi.kstom.IOScope
+import world.cepi.kstom.Manager
 
 public inline fun Command.addSyntax(crossinline lambda: suspend () -> Unit) {
     setDefaultExecutor { _, _ -> IOScope.launch { lambda() }}
@@ -164,4 +165,8 @@ public inline fun Command.setArgumentCallback(arg: Argument<*>, crossinline lamb
 
 public inline fun Command.default(crossinline block: suspend (sender: CommandSender, args: CommandContext) -> Unit) {
     defaultExecutor = CommandExecutor { sender, args -> IOScope.launch { block(sender, args) } }
+}
+
+public fun Command.register() {
+    Manager.command.register(this)
 }
