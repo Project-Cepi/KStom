@@ -170,3 +170,7 @@ public inline fun Command.default(crossinline block: suspend (sender: CommandSen
 public fun Command.register() {
     Manager.command.register(this)
 }
+
+public fun Command.unregister() {
+    Manager.command.unregister(this)
+}
