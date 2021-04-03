@@ -1,6 +1,6 @@
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.4.30"
+    id("org.jetbrains.kotlin.jvm") version "1.4.32"
     kotlin("plugin.serialization") version "1.4.10"
     `maven-publish`
     maven
@@ -11,15 +11,14 @@ plugins {
 
 
 repositories {
-    // Use jcenter for resolving dependencies.
     jcenter()
-
-    // Use mavenCentral
-    maven(url = "https://repo1.maven.org/maven2/")
+    mavenCentral()
     maven(url = "https://repo.spongepowered.org/maven")
     maven(url = "https://libraries.minecraft.net")
     maven(url = "https://jitpack.io")
-    maven(url = "https://jcenter.bintray.com/")
+    maven(url = "https://oss.sonatype.org/content/repositories/snapshots/") {
+        name = "sonatype-oss-snapshots"
+    }
 }
 
 dependencies {
@@ -33,10 +32,10 @@ dependencies {
     implementation(kotlin("reflect"))
 
     // Add support for kotlinx courotines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
 
     // Compile Minestom into project
-    implementation("com.github.Minestom:Minestom:df2ee23a7c")
+    implementation("com.github.Project-Cepi", "Minestom", "c26756c487")
 
     // OkHttp
     implementation("com.squareup.okhttp3", "okhttp", "4.9.0")
@@ -45,11 +44,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
 
     // Use mworlza's canvas
-    implementation("com.github.mworzala:canvas:bb1772580e")
+    implementation("com.github.mworzala:canvas:407c072b23")
 
-    // Add Kyori Minestom implementation
-    implementation("com.github.mworzala:adventure-platform-minestom:2e12f45b2e")
-    implementation("net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT")
+    // Add MiniMessage
+    implementation("net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT")
 }
 
 tasks.withType<Test> {
