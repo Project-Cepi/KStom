@@ -11,7 +11,6 @@ import net.minestom.server.instance.Chunk
 import net.minestom.server.instance.IChunkLoader
 import net.minestom.server.instance.Instance
 import net.minestom.server.instance.InstanceContainer
-import net.minestom.server.instance.batch.BlockBatch
 import net.minestom.server.utils.Position
 import java.util.*
 import java.util.concurrent.Executors
@@ -42,5 +41,3 @@ public suspend fun Instance.suspendSaveChunkToStorage(chunk: Chunk): Unit = susp
 public suspend fun Instance.suspendSaveChunksToStorage(): Unit = suspendCoroutine { saveChunksToStorage { it.resume(Unit) } }
 
 public suspend fun InstanceContainer.suspendSaveInstance(): Unit = suspendCoroutine { saveInstance { it.resume(Unit) } }
-
-public suspend fun BlockBatch.flush(shouldLoadChunks: Boolean = false): Unit = suspendCoroutine { flush({ it.resume(Unit) }, shouldLoadChunks) }
