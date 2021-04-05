@@ -38,7 +38,17 @@ public fun String.asSubcommand(): ArgumentLiteral = ArgumentType.Literal(this)
  * @return A organized hashmap of arguments and its classifier
  */
 public fun argumentsFromConstructor(constructor: KFunction<*>): List<Argument<*>> =
-        constructor.valueParameters.map { argumentFromClass(it.name ?: it.type.jvmErasure.simpleName!!, it.type.classifier!! as KClass<*>)!! }
+    safeArgumentsFromConstructor(constructor).map { it!! }
+
+/**
+ * Can generate a list of Arguments from a class constructor.
+ *
+ * @param constructor The constructor to use to generate args from.
+ *
+ * @return A organized hashmap of arguments and its classifier
+ */
+public fun safeArgumentsFromConstructor(constructor: KFunction<*>): List<Argument<*>?> =
+    constructor.valueParameters.map { argumentFromClass(it.name ?: it.type.jvmErasure.simpleName!!, it.type.classifier!! as KClass<*>) }
 
 /**
  * Generates a Minestom argument based on the class
