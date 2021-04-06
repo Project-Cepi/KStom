@@ -16,6 +16,7 @@ import net.minestom.server.utils.location.RelativeVec
 import net.minestom.server.utils.math.FloatRange
 import net.minestom.server.utils.math.IntRange
 import net.minestom.server.utils.time.TimeUnit
+import net.minestom.server.utils.time.UpdateOption
 import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
 import kotlin.reflect.KClass
@@ -77,7 +78,7 @@ public fun argumentFromClass(name: String, clazz: KClass<*>): Argument<*>? {
         NBTCompound::class -> return ArgumentType.NbtCompound(name)
         NBT::class -> return ArgumentType.NBT(name)
         Component::class -> return ArgumentType.Component(name)
-        TimeUnit::class -> return ArgumentType.Time(name)
+        UpdateOption::class -> return ArgumentType.Time(name)
         IntRange::class -> return ArgumentType.IntRange(name)
         FloatRange::class -> return ArgumentType.FloatRange(name)
         EntityFinder::class -> return ArgumentType.Entity(name)
