@@ -3,7 +3,6 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.4.32"
     kotlin("plugin.serialization") version "1.4.10"
     `maven-publish`
-    maven
 
     // Apply the application plugin to add support for building a jar
     java
