@@ -5,7 +5,9 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.AbstractEncoder
+import kotlinx.serialization.encoding.CompositeEncoder
 import kotlinx.serialization.internal.NamedValueEncoder
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
@@ -17,6 +19,8 @@ import org.jglrxavpok.hephaistos.nbt.NBTCompound
 class NBTEncoder : NamedValueEncoder() {
     val nbt = NBTCompound()
 
+    override val serializersModule: SerializersModule = EmptySerializersModule
+
     override fun encodeTaggedBoolean(tag: String, value: Boolean): Unit = run { nbt.setByte(tag, if (value) 1 else 0) }
     override fun encodeTaggedByte(tag: String, value: Byte): Unit = run { nbt.setByte(tag, value) }
     override fun encodeTaggedInt(tag: String, value: Int): Unit = run { nbt.setInt(tag, value) }
@@ -26,8 +30,12 @@ class NBTEncoder : NamedValueEncoder() {
     override fun encodeTaggedDouble(tag: String, value: Double): Unit = run { nbt.setDouble(tag, value) }
     override fun encodeTaggedChar(tag: String, value: Char): Unit = run { nbt.setString(tag, value.toString()) }
     override fun encodeTaggedString(tag: String, value: String): Unit = run { nbt.setString(tag, value) }
-    override fun encodeTaggedNull(tag: String): Unit = run { nbt.setByte(tag, 0) }
     override fun encodeTaggedEnum(tag: String, enumDescriptor: SerialDescriptor, ordinal: Int): Unit = run { nbt.setInt(tag, ordinal) }
+    override fun encodeTaggedNull(tag: String): Unit = run { nbt.setByte(tag, 0) }
+
+    override fun encodeTaggedValue(tag: String, value: Any) {
+        nbt.setString(tag, value.toString())
+    }
 
 }
 

@@ -9,10 +9,11 @@ data class PrimitiveClass(
     val second: Byte,
     val third: Short
 ) {
-    fun createNonAutoNBT() {
+    fun createNonAutoNBT(): NBTCompound {
         val compound = NBTCompound()
         compound.setInt("first", first)
         compound.setByte("second", second)
         compound.setShort("third", third)
+        return compound
     }
 }

@@ -1,0 +1,24 @@
+package world.cepi.kstom.nbt.classes
+
+import kotlinx.serialization.Serializable
+import org.jglrxavpok.hephaistos.nbt.NBTCompound
+
+@Serializable
+class InterestingClass(
+    val woo: String,
+    val ooo: Char
+)
+
+@Serializable
+data class ComplexClass(
+    val first: Int,
+    val second: Byte,
+    val third: Short,
+    val interesting: InterestingClass
+) {
+    fun createNonAutoNBT(): NBTCompound {
+        val compound = NBTCompound().setInt("first", first).setByte("second", second).setShort("third", third)
+        compound["interesting"] = NBTCompound().setString("woo", interesting.woo).setString("ooo", interesting.ooo.toString())
+        return compound
+    }
+}
