@@ -10,7 +10,6 @@ plugins {
 
 
 repositories {
-    jcenter()
     mavenCentral()
     maven(url = "https://repo.spongepowered.org/maven")
     maven(url = "https://libraries.minecraft.net")
@@ -30,6 +29,9 @@ dependencies {
 
     // Use the Kotlin reflect library.
     implementation(kotlin("reflect"))
+
+    // Use the JUpiter test library.
+    testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
 
     // Add support for kotlinx courotines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
@@ -52,6 +54,10 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions.jvmTarget = "11"
 }
 
 configurations {
