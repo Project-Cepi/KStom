@@ -15,6 +15,7 @@ repositories {
     maven(url = "https://repo.spongepowered.org/maven")
     maven(url = "https://libraries.minecraft.net")
     maven(url = "https://jitpack.io")
+    maven(url = "https://repo.velocitypowered.com/snapshots/")
     maven(url = "https://oss.sonatype.org/content/repositories/snapshots/") {
         name = "sonatype-oss-snapshots"
     }
@@ -34,7 +35,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
 
     // Compile Minestom into project
-    implementation("com.github.Project-Cepi", "Minestom", "c26756c487")
+    implementation("com.github.Project-Cepi", "Minestom", "7d574317dc")
 
     // OkHttp
     implementation("com.squareup.okhttp3", "okhttp", "4.9.0")
@@ -53,8 +54,10 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-kotlin {
-    explicitApi()
+configurations {
+    testImplementation {
+        extendsFrom(configurations.compileOnly.get())
+    }
 }
 
 java {
@@ -64,3 +67,6 @@ java {
 
 val compileKotlin: org.jetbrains.kotlin.gradle.tasks.KotlinCompile by tasks
 compileKotlin.kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
+compileKotlin.kotlinOptions {
+    freeCompilerArgs = listOf("-Xinline-classes")
+}

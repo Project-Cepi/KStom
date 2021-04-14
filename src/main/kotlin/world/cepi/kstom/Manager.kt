@@ -3,9 +3,7 @@ package world.cepi.kstom
 import net.minestom.server.MinecraftServer
 import net.minestom.server.UpdateManager
 import net.minestom.server.advancements.AdvancementManager
-import net.minestom.server.adventure.BossBarManager
-import net.minestom.server.adventure.SerializationManager
-import net.minestom.server.benchmark.BenchmarkManager
+import net.minestom.server.adventure.bossbar.BossBarManager
 import net.minestom.server.command.CommandManager
 import net.minestom.server.data.DataManager
 import net.minestom.server.exception.ExceptionManager
@@ -15,6 +13,7 @@ import net.minestom.server.gamedata.tags.TagManager
 import net.minestom.server.instance.InstanceManager
 import net.minestom.server.instance.block.BlockManager
 import net.minestom.server.listener.manager.PacketListenerManager
+import net.minestom.server.monitoring.BenchmarkManager
 import net.minestom.server.network.ConnectionManager
 import net.minestom.server.recipe.RecipeManager
 import net.minestom.server.scoreboard.TeamManager
@@ -70,9 +69,6 @@ public object Manager {
 
     public val exception: ExceptionManager
         get() = MinecraftServer.getExceptionManager()
-
-    public val serialization: SerializationManager
-        get() = MinecraftServer.getSerializationManager()
 
     public val lootTable: LootTableManager
         get() = MinecraftServer.getLootTableManager()

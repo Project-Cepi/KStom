@@ -49,7 +49,7 @@ public inline fun Command.addSyntax(
     crossinline condition: () -> Boolean,
     crossinline lambda: suspend () -> Unit
 ): Collection<CommandSyntax> {
-    return addSyntax(
+    return addConditionalSyntax(
         { _, _ -> condition() },
         { _, _ -> IOScope.launch { lambda() } },
         *arguments
@@ -61,7 +61,7 @@ public inline fun Command.addSyntax(
     crossinline condition: (source: CommandSender) -> Boolean,
     crossinline lambda: suspend () -> Unit
 ): Collection<CommandSyntax> {
-    return addSyntax(
+    return addConditionalSyntax(
         { source, _ -> condition(source) },
         { _, _ -> IOScope.launch { lambda() } },
         *arguments
@@ -73,7 +73,7 @@ public inline fun Command.addSyntax(
     crossinline condition: (source: CommandSender, commandString: String) -> Boolean,
     crossinline lambda: suspend () -> Unit
 ): Collection<CommandSyntax> {
-    return addSyntax(
+    return addConditionalSyntax(
         { source, string -> condition(source, string ?: "") },
         { _, _ -> IOScope.launch { lambda() } },
         *arguments
@@ -85,7 +85,7 @@ public inline fun Command.addSyntax(
     crossinline condition: () -> Boolean,
     crossinline lambda: suspend (sender: CommandSender) -> Unit
 ): Collection<CommandSyntax> {
-    return addSyntax(
+    return addConditionalSyntax(
         { _, _ -> condition() },
         { sender, _ -> IOScope.launch { lambda(sender) } },
         *arguments
@@ -97,7 +97,7 @@ public inline fun Command.addSyntax(
     crossinline condition: (source: CommandSender) -> Boolean,
     crossinline lambda: suspend (sender: CommandSender) -> Unit
 ) {
-    addSyntax(
+    addConditionalSyntax(
         { source, _ -> condition(source) },
         { sender, _ -> IOScope.launch { lambda(sender) } },
         *arguments
@@ -109,7 +109,7 @@ public inline fun Command.addSyntax(
     crossinline condition: (source: CommandSender, commandString: String) -> Boolean,
     crossinline lambda: suspend (sender: CommandSender) -> Unit
 ): Collection<CommandSyntax> {
-    return addSyntax(
+    return addConditionalSyntax(
         { source, string -> condition(source, string ?: "") },
         { sender, _ -> IOScope.launch { lambda(sender) } },
         *arguments
@@ -121,7 +121,7 @@ public inline fun Command.addSyntax(
     crossinline condition: () -> Boolean,
     crossinline lambda: suspend (sender: CommandSender, args: CommandContext) -> Unit
 ): Collection<CommandSyntax> {
-    return addSyntax(
+    return addConditionalSyntax(
         { _, _ -> condition()},
         { sender, args -> IOScope.launch { lambda(sender, args) } },
         *arguments
@@ -133,7 +133,7 @@ public inline fun Command.addSyntax(
     crossinline condition: (source: CommandSender) -> Boolean,
     crossinline lambda: suspend (sender: CommandSender, args: CommandContext) -> Unit
 ) {
-    addSyntax(
+    addConditionalSyntax(
         { source, _ -> condition(source)},
         { sender, args -> IOScope.launch { lambda(sender, args) } },
         *arguments
@@ -144,7 +144,7 @@ public inline fun Command.addSyntax(vararg arguments: Argument<*>, crossinline c
     source: CommandSender,
     commandString: String
 ) -> Boolean, crossinline lambda: suspend (sender: CommandSender, args: CommandContext) -> Unit): Collection<CommandSyntax> {
-    return addSyntax(
+    return addConditionalSyntax(
         { source, string -> condition(source, string ?: "")},
         { sender, args -> IOScope.launch { lambda(sender, args) } },
         *arguments
