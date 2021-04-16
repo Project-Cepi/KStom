@@ -74,5 +74,5 @@ java {
 val compileKotlin: org.jetbrains.kotlin.gradle.tasks.KotlinCompile by tasks
 compileKotlin.kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
 compileKotlin.kotlinOptions {
-    freeCompilerArgs = listOf("-Xinline-classes")
+    freeCompilerArgs = listOf("-Xinline-classes", "-Xopt-in=kotlin.RequiresOptIn")
 }
