@@ -26,4 +26,6 @@ val item = item {
         }
     }
 
+}.and {
+    amount = 7
 }

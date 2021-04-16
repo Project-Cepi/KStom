@@ -1,6 +1,7 @@
 package world.cepi.kstom.item
 
 import net.kyori.adventure.text.Component
+import net.minestom.server.item.ItemStack
 import net.minestom.server.item.ItemStackBuilder
 
 public var ItemStackBuilder.amount: Int
@@ -14,3 +15,7 @@ public var ItemStackBuilder.lore: List<Component>
 public var ItemStackBuilder.displayName: Component
     get() = Component.empty()
     set(value) = run { this.displayName(value) }
+
+public fun ItemStack.and(init: ItemStackBuilder.() -> Unit) {
+    this.with(init)
+}
