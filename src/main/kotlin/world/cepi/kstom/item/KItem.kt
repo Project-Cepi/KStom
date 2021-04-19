@@ -3,7 +3,6 @@ package world.cepi.kstom.item
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.ItemStackBuilder
 import net.minestom.server.item.Material
-import org.jetbrains.annotations.NotNull
 
 /**
  * DSL for Items.

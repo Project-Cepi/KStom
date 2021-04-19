@@ -1,31 +1,38 @@
 package world.cepi.kstom.item
 
 import net.kyori.adventure.text.Component
-import net.minestom.server.item.ItemStack
-import net.minestom.server.item.ItemTag
-import net.minestom.server.item.Material
-import world.cepi.kstom.item.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import world.cepi.kstom.nbt.classes.ComplexClass
 import world.cepi.kstom.nbt.classes.InterestingClass
 
-val item = item {
-    amount = 5
-    lore = listOf(Component.text("Hey!"))
-    displayName = Component.text("Hey!")
+object ItemTests {
 
-    withMeta {
-        damage = 5
-        unbreakable = true
+    val item = item {
+        amount = 5
+        lore = listOf(Component.text("Hello!"))
+        displayName = Component.text("Hey!")
 
-        clientData {
-            this["myCoolData"] = 50
+        withMeta {
+            damage = 5
+            unbreakable = true
+
+//            clientData {
+//                this["myCoolData"] = 50
+//            }
+
+            serverData {
+                this["someOtherData"] = ComplexClass(5, 4, 2, InterestingClass("hey", 'h'))
+            }
         }
 
-        serverData {
-            this["someOtherData"] = ComplexClass(5, 4, 2, InterestingClass("hey", 'h'))
-        }
+    }.and {
+        amount = 7
     }
 
-}.and {
-    amount = 7
+    @Test
+    fun `check amount is mutated`() {
+        assertEquals(item.amount, 7)
+    }
+
 }

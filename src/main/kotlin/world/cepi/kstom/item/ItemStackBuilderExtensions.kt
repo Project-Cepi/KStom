@@ -16,6 +16,6 @@ public var ItemStackBuilder.displayName: Component
     get() = Component.empty()
     set(value) = run { this.displayName(value) }
 
-public fun ItemStack.and(init: ItemStackBuilder.() -> Unit) {
-    this.with(init)
+public fun ItemStack.and(init: ItemStackBuilder.() -> Unit): ItemStack {
+    return this.with(init)
 }
