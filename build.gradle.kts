@@ -39,9 +39,6 @@ dependencies {
     // Compile Minestom into project
     implementation("com.github.Project-Cepi", "Minestom", "7d574317dc")
 
-    // OkHttp
-    implementation("com.squareup.okhttp3", "okhttp", "4.9.0")
-
     // import kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
 

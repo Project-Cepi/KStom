@@ -3,9 +3,11 @@ package world.cepi.kstom.nbt
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.SerializationStrategy
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.AbstractEncoder
 import kotlinx.serialization.encoding.CompositeEncoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.internal.NamedValueEncoder
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.modules.EmptySerializersModule
@@ -13,6 +15,7 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
 import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
+import org.jglrxavpok.hephaistos.nbt.NBTInt
 
 @InternalSerializationApi
 @ExperimentalSerializationApi
@@ -35,6 +38,22 @@ class NBTEncoder : NamedValueEncoder() {
 
     override fun encodeTaggedValue(tag: String, value: Any) {
         nbt.setString(tag, value.toString())
+    }
+
+    override fun encodeTaggedInline(tag: String, inlineDescriptor: SerialDescriptor): Encoder {
+        return object : AbstractEncoder() {
+            override val serializersModule = EmptySerializersModule
+
+            override fun encodeInt(value: Int): Unit = encodeTaggedInt(tag, value)
+            override fun encodeBoolean(value: Boolean) = encodeTaggedBoolean(tag, value)
+        }
+    }
+
+    override fun <T> encodeSerializableValue(serializer: SerializationStrategy<T>, value: T) {
+        when(serializer) {
+            Int.serializer() -> NBTInt(value as Int)
+            else -> serializer.serialize(this, value)
+        }
     }
 
 }
