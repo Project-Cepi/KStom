@@ -5,6 +5,7 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.encoding.AbstractEncoder
 import kotlinx.serialization.encoding.CompositeEncoder
 import kotlinx.serialization.encoding.Encoder
@@ -14,6 +15,7 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
 import org.jglrxavpok.hephaistos.nbt.*
 import world.cepi.kstom.nbt.list.NBTListEncoder
+import java.lang.IllegalArgumentException
 
 @InternalSerializationApi
 @ExperimentalSerializationApi
@@ -38,10 +40,6 @@ class NBTCompoundEncoder : NamedValueEncoder() {
         nbt.setString(tag, value.toString())
     }
 
-    override fun beginCollection(descriptor: SerialDescriptor, collectionSize: Int): CompositeEncoder {
-        return NBTListEncoder(descriptor.kind)
-    }
-
     override fun encodeTaggedInline(tag: String, inlineDescriptor: SerialDescriptor): Encoder {
         return object : AbstractEncoder() {
             override val serializersModule = EmptySerializersModule
@@ -52,7 +50,7 @@ class NBTCompoundEncoder : NamedValueEncoder() {
     }
 }
 
-@OptIn(kotlinx.serialization.InternalSerializationApi::class)
+@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 fun <T> encodeToCompoundNBT(serializer: SerializationStrategy<T>, value: T): NBTCompound {
     val encoder = NBTCompoundEncoder()
     encoder.encodeSerializableValue(serializer, value)
