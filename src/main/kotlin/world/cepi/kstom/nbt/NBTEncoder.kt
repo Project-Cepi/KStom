@@ -48,14 +48,6 @@ class NBTEncoder : NamedValueEncoder() {
             override fun encodeBoolean(value: Boolean) = encodeTaggedBoolean(tag, value)
         }
     }
-
-    override fun <T> encodeSerializableValue(serializer: SerializationStrategy<T>, value: T) {
-        when(serializer) {
-            Int.serializer() -> NBTInt(value as Int)
-            else -> serializer.serialize(this, value)
-        }
-    }
-
 }
 
 @InternalSerializationApi

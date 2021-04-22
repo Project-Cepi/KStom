@@ -49,7 +49,9 @@ public fun argumentsFromConstructor(constructor: KFunction<*>): List<Argument<*>
  * @return A organized hashmap of arguments and its classifier
  */
 public fun safeArgumentsFromConstructor(constructor: KFunction<*>): List<Argument<*>?> =
-    constructor.valueParameters.map { argumentFromClass(it.name ?: it.type.jvmErasure.simpleName!!, it.type.classifier!! as KClass<*>) }
+    constructor.valueParameters.map {
+        argumentFromClass(it.name ?: it.type.jvmErasure.simpleName!!, it.type.classifier!! as KClass<*>)
+    }
 
 /**
  * Generates a Minestom argument based on the class
@@ -65,31 +67,31 @@ public fun argumentFromClass(name: String, clazz: KClass<*>): Argument<*>? {
 
     // TODO allow complex types
 
-    when (clazz) {
-        String::class -> return ArgumentType.String(name)
-        Int::class -> return ArgumentType.Integer(name)
-        Double::class -> return ArgumentType.Double(name)
-        Color::class -> return ArgumentType.Color(name)
-        EntityType::class -> return ArgumentType.EntityType(name)
-        Material::class -> return ArgumentType.ItemStack(name)
-        Boolean::class -> return ArgumentType.Boolean(name)
-        Float::class -> return ArgumentType.Float(name)
-        ItemStack::class -> return ArgumentType.ItemStack(name)
-        NBTCompound::class -> return ArgumentType.NbtCompound(name)
-        NBT::class -> return ArgumentType.NBT(name)
-        Component::class -> return ArgumentType.Component(name)
-        UpdateOption::class -> return ArgumentType.Time(name)
-        IntRange::class -> return ArgumentType.IntRange(name)
-        FloatRange::class -> return ArgumentType.FloatRange(name)
-        EntityFinder::class -> return ArgumentType.Entity(name)
-        Enchantment::class -> return ArgumentType.Enchantment(name)
-        RelativeVec::class -> return ArgumentType.RelativeVec3(name)
-        BlockPosition::class -> return ArgumentType.RelativeBlockPosition(name)
+    return when (clazz) {
+        String::class -> ArgumentType.String(name)
+        Int::class -> ArgumentType.Integer(name)
+        Double::class -> ArgumentType.Double(name)
+        Color::class -> ArgumentType.Color(name)
+        EntityType::class -> ArgumentType.EntityType(name)
+        Material::class -> ArgumentType.ItemStack(name)
+        Boolean::class -> ArgumentType.Boolean(name)
+        Float::class -> ArgumentType.Float(name)
+        ItemStack::class -> ArgumentType.ItemStack(name)
+        NBTCompound::class -> ArgumentType.NbtCompound(name)
+        NBT::class -> ArgumentType.NBT(name)
+        Component::class -> ArgumentType.Component(name)
+        UpdateOption::class -> ArgumentType.Time(name)
+        IntRange::class -> ArgumentType.IntRange(name)
+        FloatRange::class -> ArgumentType.FloatRange(name)
+        EntityFinder::class -> ArgumentType.Entity(name)
+        Enchantment::class -> ArgumentType.Enchantment(name)
+        RelativeVec::class -> ArgumentType.RelativeVec3(name)
+        BlockPosition::class -> ArgumentType.RelativeBlockPosition(name)
         else -> {
             if (clazz.java.enumConstants == null) return null
 
             @Suppress("UNCHECKED_CAST") // We already check if the class is an enum or not.
-            return ArgumentEnum(name, clazz.java as Class<Enum<*>>)
+            ArgumentEnum(name, clazz.java as Class<Enum<*>>)
         }
     }
 }
