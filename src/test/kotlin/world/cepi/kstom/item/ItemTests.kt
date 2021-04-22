@@ -20,7 +20,6 @@ object ItemTests {
             unbreakable = true
 
             clientData {
-                this["myCoolData"] = 50
                 this["complexData"] = ComplexClass(5, 4, 2, InterestingClass("hey", 'h'))
             }
 

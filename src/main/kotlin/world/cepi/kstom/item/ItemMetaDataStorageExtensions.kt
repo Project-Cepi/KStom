@@ -4,10 +4,11 @@ import net.minestom.server.item.ItemMetaBuilder
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.serializer
 import net.minestom.server.item.ItemMeta
 import net.minestom.server.item.ItemTag
-import world.cepi.kstom.nbt.decodeFromNBT
-import world.cepi.kstom.nbt.encodeToNBT
+import world.cepi.kstom.nbt.NBTParser
+import world.cepi.kstom.nbt.NbtFormat
 
 @Target(AnnotationTarget.CLASS, AnnotationTarget.PROPERTY, AnnotationTarget.FUNCTION, AnnotationTarget.TYPEALIAS)
 @RequiresOptIn("Literally doesn't garbage collect at all.", level = RequiresOptIn.Level.WARNING)
@@ -15,8 +16,8 @@ public annotation class ExperimentalServerStorageAPI
 
 class ItemMetaClientData(val metaBuilder: ItemMetaBuilder) {
 
-    inline operator fun <reified T: @Serializable Any> set(tag: String, item: @Serializable T?) {
-        metaBuilder.set(ItemTag.NBT(tag), encodeToNBT(item))
+    inline operator fun <reified T: @Serializable Any> set(tag: String, item: @Serializable T) {
+        metaBuilder.set(ItemTag.NBT(tag), NBTParser.serialize(item))
     }
 }
 
@@ -58,7 +59,7 @@ object ItemMetaServerData {
 public fun ItemMetaBuilder.clientData(receiver: ItemMetaClientData.() -> Unit) = ItemMetaClientData(this).receiver()
 
 inline public fun <reified T: @Serializable Any> ItemMeta.get(tag: String): T? = this.get(ItemTag.NBT(tag))?.let {
-    return@let decodeFromNBT(it)
+    return@let NBTParser.deserialize<T>(it)
 }
 
 @ExperimentalServerStorageAPI

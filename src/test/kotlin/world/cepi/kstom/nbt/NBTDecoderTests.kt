@@ -15,7 +15,7 @@ class NBTDecoderTests {
     fun `basic primitive classes are decoded correctly`() {
         val primitive = PrimitiveClass(5, 6, 5)
 
-        assertEquals(primitive, decodeFromNBT<PrimitiveClass>(primitive.createNonAutoNBT()))
+        assertEquals(primitive, NBTParser.deserialize<PrimitiveClass>(primitive.createNonAutoNBT()))
 
     }
 
@@ -23,8 +23,8 @@ class NBTDecoderTests {
     fun `basic primitives are decoded correctly`() {
         val primitive = 5
 
-        assertEquals(5, decodeFromNBT(NBTInt(5)))
-        assertEquals(5L, decodeFromNBT(NBTLong(5L)))
+        assertEquals(5, NBTParser.deserialize(NBTInt(5)))
+        assertEquals(5L, NBTParser.deserialize(NBTLong(5L)))
 
     }
 
@@ -32,7 +32,7 @@ class NBTDecoderTests {
     fun `complex primitive classes are decoded correctly`() {
         val data = ComplexClass(5, 4, 2, InterestingClass("hey", 'h'))
 
-        assertEquals(data, decodeFromNBT<ComplexClass>(data.createNonAutoNBT()))
+        assertEquals(data, NBTParser.deserialize<ComplexClass>(data.createNonAutoNBT()))
     }
 
 }
