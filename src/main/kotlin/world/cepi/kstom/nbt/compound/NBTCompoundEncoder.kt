@@ -6,12 +6,14 @@ import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.AbstractEncoder
+import kotlinx.serialization.encoding.CompositeEncoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.internal.NamedValueEncoder
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
 import org.jglrxavpok.hephaistos.nbt.*
+import world.cepi.kstom.nbt.list.NBTListEncoder
 
 @InternalSerializationApi
 @ExperimentalSerializationApi
@@ -34,6 +36,10 @@ class NBTCompoundEncoder : NamedValueEncoder() {
 
     override fun encodeTaggedValue(tag: String, value: Any) {
         nbt.setString(tag, value.toString())
+    }
+
+    override fun beginCollection(descriptor: SerialDescriptor, collectionSize: Int): CompositeEncoder {
+        return NBTListEncoder(descriptor.kind)
     }
 
     override fun encodeTaggedInline(tag: String, inlineDescriptor: SerialDescriptor): Encoder {
