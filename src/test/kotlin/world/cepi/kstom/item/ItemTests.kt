@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import world.cepi.kstom.nbt.classes.CollectionClass
 import world.cepi.kstom.nbt.classes.ComplexClass
 import world.cepi.kstom.nbt.classes.InterestingClass
 import java.util.*
@@ -21,6 +22,7 @@ object ItemTests {
 
             clientData {
                 this["complexData"] = ComplexClass(5, 4, 2, InterestingClass("hey", 'h'))
+                this["complexListData"] = CollectionClass(5, 9, 3, listOf(4, 3))
             }
 
             serverData {
@@ -40,8 +42,10 @@ object ItemTests {
     @Test
     fun `ensure complex data is translated`() {
         val data = ComplexClass(5, 4, 2, InterestingClass("hey", 'h'))
+        val otherData = CollectionClass(5, 9, 3, listOf(4, 3))
 
         assertEquals(data, item.meta.get<ComplexClass>("complexData"))
+        assertEquals(otherData, item.meta.get<CollectionClass>("complexListData"))
     }
 
 }
