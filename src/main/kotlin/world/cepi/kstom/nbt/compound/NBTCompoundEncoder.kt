@@ -54,20 +54,3 @@ fun <T> encodeToCompoundNBT(serializer: SerializationStrategy<T>, value: T): NBT
 }
 
 inline fun <reified T> encodeToCompoundNBT(value: T) = encodeToCompoundNBT(serializer(), value)
-
-inline fun <reified T> encodeToNBT(value: T): NBT? {
-
-    return when (serializer<T>()) {
-        Int.serializer() -> NBTInt(value as Int)
-        Double.serializer() -> NBTDouble(value as Double)
-        Long.serializer() -> NBTLong(value as Long)
-        String.serializer() -> NBTString(value as String)
-        else -> {
-            return try {
-                encodeToCompoundNBT(value)
-            } catch (e: Exception) {
-                null
-            }
-        }
-    }
-}
