@@ -5,6 +5,7 @@ import org.jglrxavpok.hephaistos.nbt.NBTLong
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import world.cepi.kstom.nbt.classes.CollectionClass
 import world.cepi.kstom.nbt.classes.ComplexClass
 import world.cepi.kstom.nbt.classes.InterestingClass
 import world.cepi.kstom.nbt.classes.PrimitiveClass
@@ -32,6 +33,12 @@ class NBTEncoderTests {
     fun `complex primitive classes are encoded correctly`() {
         val data = ComplexClass(5, 4, 2, InterestingClass("hey", 'h'))
 
+        assertEquals(data.createNonAutoNBT(), NBTParser.serialize(data))
+    }
+
+    @Test
+    fun `collections are encoded correctly`() {
+        val data = CollectionClass(5, 9, 3, listOf(4, 3))
         assertEquals(data.createNonAutoNBT(), NBTParser.serialize(data))
     }
 

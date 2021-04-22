@@ -145,14 +145,19 @@ private class NullableListEncoder(format: NbtFormat, nodeConsumer: (NBT) -> Unit
 
 private class TagListEncoder(json: NbtFormat, nodeConsumer: (NBT) -> Unit) :
     AbstractTagEncoder(json, nodeConsumer) {
-    private val list: NBTList<NBT> = NBTList(0)
+    private var list: NBTList<NBT>? = null
 
     override fun elementName(descriptor: SerialDescriptor, index: Int): String = index.toString()
 
 
     override fun putElement(key: String, element: NBT) {
-        list.add(element)
+
+        if (list == null) {
+            list = NBTList(NBTTypes.getID(element::class.java))
+        }
+
+        list?.add(element)
     }
 
-    override fun getCurrent(): NBT = list
+    override fun getCurrent(): NBT = list ?: NBTList<NBT>(0)
 }
