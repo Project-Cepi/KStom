@@ -24,7 +24,7 @@ class NBTTests {
 
     @ExperimentalSerializationApi
     @InternalSerializationApi
-    @Test
+    @Disabled
     fun `basic primitives are encoded correctly`() {
         val primitive = 5
 
