@@ -74,7 +74,6 @@ object ForEndTag : KSerializer<NBTEnd> {
 }
 
 @Serializer(forClass = NBTByteArray::class)
-//TODO: optimizable by making the inner byte array public with a getter mixin
 object ForByteArrayTag : KSerializer<NBTByteArray> {
     override val descriptor: SerialDescriptor = PublicedListLikeDescriptorImpl(ForByteTag.descriptor, "ByteArrayTag")
 
@@ -85,7 +84,6 @@ object ForByteArrayTag : KSerializer<NBTByteArray> {
         NBTByteArray(ListSerializer(ForByteTag).deserialize(decoder).map { it.value }.toByteArray())
 }
 
-//TODO: optimizable by making the inner int array public with a getter mixin
 @Serializer(forClass = NBTIntArray::class)
 object ForIntArrayTag : KSerializer<NBTIntArray> {
     override val descriptor: SerialDescriptor = PublicedListLikeDescriptorImpl(ForIntTag.descriptor, "IntArrayTag")
@@ -97,7 +95,7 @@ object ForIntArrayTag : KSerializer<NBTIntArray> {
         NBTIntArray(ListSerializer(ForIntTag).deserialize(decoder).map { it.value }.toIntArray())
 }
 
-//TODO: optimizable by making the inner long array public with a getter mixin
+
 @Serializer(forClass = NBTLongArray::class)
 object ForLongArrayTag : KSerializer<NBTLongArray> {
     override val descriptor: SerialDescriptor = PublicedListLikeDescriptorImpl(ForLongTag.descriptor, "LongArrayTag")
@@ -109,7 +107,7 @@ object ForLongArrayTag : KSerializer<NBTLongArray> {
         NBTLongArray(ListSerializer(ForLongTag).deserialize(decoder).map { it.value }.toLongArray())
 }
 
-//TODO: optimizable by using the exisiting encoding system
+
 @OptIn(InternalSerializationApi::class)
 @Serializer(forClass = NBT::class)
 object ForTag : KSerializer<NBT> {
