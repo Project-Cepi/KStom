@@ -37,7 +37,7 @@ object ItemTests {
         assertEquals(item.amount, 7)
     }
 
-    @Disabled("Need to get collections & arrays to work first")
+    @Test
     fun `ensure complex data is translated`() {
         val data = ComplexClass(5, 4, 2, InterestingClass("hey", 'h'))
 

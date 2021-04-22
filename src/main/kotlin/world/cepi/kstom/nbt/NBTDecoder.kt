@@ -62,8 +62,8 @@ private sealed class AbstractTagDecoder(val format: NbtFormat, open val map: NBT
     protected abstract fun currentElement(tag: String): NBT
 
     override fun decodeTaggedChar(tag: String): Char {
-        val o = getValue(tag)
-        val str = o.toString()
+        val o = getValue(tag) as? NBTString ?: throw SerializationException("Non-string can't be represented as Char")
+        val str = o.value
         return if (str.length == 1) str[0] else throw SerializationException("$o can't be represented as Char")
     }
 
