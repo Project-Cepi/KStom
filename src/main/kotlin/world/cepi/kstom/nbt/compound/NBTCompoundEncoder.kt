@@ -1,4 +1,4 @@
-package world.cepi.kstom.nbt
+package world.cepi.kstom.nbt.compound
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
@@ -6,20 +6,16 @@ import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.AbstractEncoder
-import kotlinx.serialization.encoding.CompositeEncoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.internal.NamedValueEncoder
-import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
-import org.jglrxavpok.hephaistos.nbt.NBT
-import org.jglrxavpok.hephaistos.nbt.NBTCompound
-import org.jglrxavpok.hephaistos.nbt.NBTInt
+import org.jglrxavpok.hephaistos.nbt.*
 
 @InternalSerializationApi
 @ExperimentalSerializationApi
-class NBTEncoder : NamedValueEncoder() {
+class NBTCompoundEncoder : NamedValueEncoder() {
     val nbt = NBTCompound()
 
     override val serializersModule: SerializersModule = EmptySerializersModule
@@ -50,14 +46,28 @@ class NBTEncoder : NamedValueEncoder() {
     }
 }
 
-@InternalSerializationApi
-@ExperimentalSerializationApi
-fun <T> encodeToNBT(serializer: SerializationStrategy<T>, value: T): NBTCompound {
-    val encoder = NBTEncoder()
+@OptIn(kotlinx.serialization.InternalSerializationApi::class)
+fun <T> encodeToCompoundNBT(serializer: SerializationStrategy<T>, value: T): NBTCompound {
+    val encoder = NBTCompoundEncoder()
     encoder.encodeSerializableValue(serializer, value)
     return encoder.nbt
 }
 
-@InternalSerializationApi
-@ExperimentalSerializationApi
-inline fun <reified T> encodeToNBT(value: T) = encodeToNBT(serializer(), value)
+inline fun <reified T> encodeToCompoundNBT(value: T) = encodeToCompoundNBT(serializer(), value)
+
+inline fun <reified T> encodeToNBT(value: T): NBT? {
+
+    return when (serializer<T>()) {
+        Int.serializer() -> NBTInt(value as Int)
+        Double.serializer() -> NBTDouble(value as Double)
+        Long.serializer() -> NBTLong(value as Long)
+        String.serializer() -> NBTString(value as String)
+        else -> {
+            return try {
+                encodeToCompoundNBT(value)
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+}

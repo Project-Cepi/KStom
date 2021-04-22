@@ -1,10 +1,13 @@
 package world.cepi.kstom.item
 
-import com.google.common.annotations.Beta
 import net.minestom.server.item.ItemMetaBuilder
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.serialization.Serializable
+import net.minestom.server.item.ItemMeta
+import net.minestom.server.item.ItemTag
+import world.cepi.kstom.nbt.decodeFromNBT
+import world.cepi.kstom.nbt.encodeToNBT
 
 @Target(AnnotationTarget.CLASS, AnnotationTarget.PROPERTY, AnnotationTarget.FUNCTION, AnnotationTarget.TYPEALIAS)
 @RequiresOptIn("Literally doesn't garbage collect at all.", level = RequiresOptIn.Level.WARNING)
@@ -12,12 +15,8 @@ public annotation class ExperimentalServerStorageAPI
 
 class ItemMetaClientData(val metaBuilder: ItemMetaBuilder) {
 
-    operator fun <T: @Serializable Any> set(tag: String, item: @Serializable T?) {
-        TODO("Not yet implemented")
-    }
-
-    operator fun <T: @Serializable Any> get(tag: String): T? {
-        TODO("Not yet implemented")
+    inline operator fun <reified T: @Serializable Any> set(tag: String, item: @Serializable T?) {
+        metaBuilder.set(ItemTag.NBT(tag), encodeToNBT(item))
     }
 }
 
@@ -57,6 +56,10 @@ object ItemMetaServerData {
 }
 
 public fun ItemMetaBuilder.clientData(receiver: ItemMetaClientData.() -> Unit) = ItemMetaClientData(this).receiver()
+
+inline public fun <reified T: @Serializable Any> ItemMeta.get(tag: String): T? = this.get(ItemTag.NBT(tag))?.let {
+    return@let decodeFromNBT(it)
+}
 
 @ExperimentalServerStorageAPI
 public fun ItemMetaBuilder.serverData(receiver: ItemMetaServerDataProvider.() -> Unit) = ItemMetaServerDataProvider(this).receiver()

@@ -1,19 +1,23 @@
-package world.cepi.kstom.nbt
+package world.cepi.kstom.nbt.compound
 
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.internal.NamedValueDecoder
 import kotlinx.serialization.serializer
-import org.jglrxavpok.hephaistos.nbt.NBTCompound
+import org.jglrxavpok.hephaistos.nbt.*
 
 @InternalSerializationApi
 @ExperimentalSerializationApi
-class NBTDecoder(val nbt: NBTCompound) : NamedValueDecoder() {
+class NBTCompoundDecoder(val nbt: NBTCompound) : NamedValueDecoder() {
     private var elementIndex = 0
 
-    override fun decodeElementIndex(descriptor: SerialDescriptor): Int = 0
+    override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
+        if (elementIndex == descriptor.elementsCount) return CompositeDecoder.DECODE_DONE
+        return elementIndex++
+    }
 
     override fun decodeTaggedBoolean(tag: String): Boolean = nbt.getAsByte(tag) != 0.toByte()
     override fun decodeTaggedByte(tag: String): Byte = nbt.getAsByte(tag)!!
@@ -27,13 +31,27 @@ class NBTDecoder(val nbt: NBTCompound) : NamedValueDecoder() {
     override fun decodeTaggedInt(tag: String): Int = nbt.getAsInt(tag)!!
 }
 
-@InternalSerializationApi
-@ExperimentalSerializationApi
-fun <T> decodeFromList(compound: NBTCompound, deserializer: DeserializationStrategy<T>): T {
-    val decoder = NBTDecoder(compound)
+@OptIn(kotlinx.serialization.InternalSerializationApi::class)
+fun <T> decodeFromCompoundNBT(compound: NBTCompound, deserializer: DeserializationStrategy<T>): T {
+    val decoder = NBTCompoundDecoder(compound)
     return decoder.decodeSerializableValue(deserializer)
 }
 
-@InternalSerializationApi
-@ExperimentalSerializationApi
-inline fun <reified T> decodeFromList(compound: NBTCompound): T = decodeFromList(compound, serializer())
+inline fun <reified T> decodeFromCompoundNBT(compound: NBTCompound): T = decodeFromCompoundNBT(compound, serializer())
+
+inline fun <reified T> decodeFromNBT(nbt: NBT): T? {
+    return when (nbt::class) {
+        NBTInt::class -> (nbt as NBTInt).value as T
+        NBTString::class -> (nbt as NBTString).value as T
+        NBTLong::class -> (nbt as NBTLong).value as T
+        NBTCompound::class -> {
+            return try {
+                decodeFromCompoundNBT<T>(nbt as NBTCompound)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+        else -> null
+    }
+}

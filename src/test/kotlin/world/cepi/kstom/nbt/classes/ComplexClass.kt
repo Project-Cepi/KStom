@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
 
 @Serializable
-class InterestingClass(
+data class InterestingClass(
     val woo: String,
     val ooo: Char
 )
