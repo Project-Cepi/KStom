@@ -97,8 +97,8 @@ private sealed class AbstractTagDecoder(val format: NbtFormat, open val map: NBT
         stringGetter: String.() -> T
     ): T {
         val value = getValue(tag)
-        if (value is NBTNumber<*>) return value.getter()
-        else return value.cast<NBTString>().value.stringGetter()
+        return if (value is NBTNumber<*>) value.getter()
+        else value.cast<NBTString>().value.stringGetter()
     }
 }
 
@@ -130,7 +130,7 @@ private open class TagDecoder(json: NbtFormat, override val map: NBTCompound) : 
         return CompositeDecoder.DECODE_DONE
     }
 
-    override fun currentElement(tag: String): NBT = map.get(tag)!!
+    override fun currentElement(tag: String): NBT = map[tag]!!
 
 }
 
@@ -153,7 +153,7 @@ private class TagMapDecoder(json: NbtFormat, override val map: NBTCompound) : Ta
     }
 
     override fun currentElement(tag: String): NBT {
-        return if (position % 2 == 0) NBTString(tag) else map.get(tag)!!
+        return if (position % 2 == 0) NBTString(tag) else map[tag]!!
     }
 
     override fun endStructure(descriptor: SerialDescriptor) {

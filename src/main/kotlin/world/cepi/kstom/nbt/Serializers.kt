@@ -17,6 +17,7 @@ private inline fun <T> missingField(missingField: String, deserializing: String,
     return defaultValue()
 }
 
+@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 @Serializer(forClass = NBTByte::class)
 object ForByteTag : KSerializer<NBTByte> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("ByteTag", PrimitiveKind.BYTE)
@@ -24,6 +25,7 @@ object ForByteTag : KSerializer<NBTByte> {
     override fun deserialize(decoder: Decoder): NBTByte = NBTByte(decoder.decodeByte())
 }
 
+@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 @Serializer(forClass = NBTShort::class)
 object ForShortTag : KSerializer<NBTShort> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("ShortTag", PrimitiveKind.SHORT)
@@ -31,6 +33,7 @@ object ForShortTag : KSerializer<NBTShort> {
     override fun deserialize(decoder: Decoder): NBTShort = NBTShort(decoder.decodeShort())
 }
 
+@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 @Serializer(forClass = NBTInt::class)
 object ForIntTag : KSerializer<NBTInt> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("IntTag",PrimitiveKind.INT)
@@ -38,6 +41,7 @@ object ForIntTag : KSerializer<NBTInt> {
     override fun deserialize(decoder: Decoder): NBTInt = NBTInt(decoder.decodeInt())
 }
 
+@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 @Serializer(forClass = NBTLong::class)
 object ForLongTag : KSerializer<NBTLong> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("LongTag",PrimitiveKind.LONG)
@@ -45,6 +49,7 @@ object ForLongTag : KSerializer<NBTLong> {
     override fun deserialize(decoder: Decoder): NBTLong = NBTLong(decoder.decodeLong())
 }
 
+@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 @Serializer(forClass = NBTFloat::class)
 object ForFloatTag : KSerializer<NBTFloat> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("FloatTag",PrimitiveKind.FLOAT)
@@ -52,6 +57,7 @@ object ForFloatTag : KSerializer<NBTFloat> {
     override fun deserialize(decoder: Decoder): NBTFloat = NBTFloat(decoder.decodeFloat())
 }
 
+@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 @Serializer(forClass = NBTDouble::class)
 object ForDoubleTag : KSerializer<NBTDouble> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("DoubleTag",PrimitiveKind.DOUBLE)
@@ -59,6 +65,7 @@ object ForDoubleTag : KSerializer<NBTDouble> {
     override fun deserialize(decoder: Decoder): NBTDouble = NBTDouble(decoder.decodeDouble())
 }
 
+@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 @Serializer(forClass = NBTString::class)
 object ForStringTag : KSerializer<NBTString> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("StringTag",PrimitiveKind.STRING)
@@ -66,6 +73,7 @@ object ForStringTag : KSerializer<NBTString> {
     override fun deserialize(decoder: Decoder): NBTString = NBTString(decoder.decodeString())
 }
 
+@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 @Serializer(forClass = NBTEnd::class)
 object ForEndTag : KSerializer<NBTEnd> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("EndTag",PrimitiveKind.BYTE)
@@ -73,6 +81,7 @@ object ForEndTag : KSerializer<NBTEnd> {
     override fun deserialize(decoder: Decoder): NBTEnd = NBTEnd().also { decoder.decodeByte() }
 }
 
+@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 @Serializer(forClass = NBTByteArray::class)
 object ForByteArrayTag : KSerializer<NBTByteArray> {
     override val descriptor: SerialDescriptor = PublicedListLikeDescriptorImpl(ForByteTag.descriptor, "ByteArrayTag")
@@ -84,6 +93,7 @@ object ForByteArrayTag : KSerializer<NBTByteArray> {
         NBTByteArray(ListSerializer(ForByteTag).deserialize(decoder).map { it.value }.toByteArray())
 }
 
+@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 @Serializer(forClass = NBTIntArray::class)
 object ForIntArrayTag : KSerializer<NBTIntArray> {
     override val descriptor: SerialDescriptor = PublicedListLikeDescriptorImpl(ForIntTag.descriptor, "IntArrayTag")
@@ -95,7 +105,7 @@ object ForIntArrayTag : KSerializer<NBTIntArray> {
         NBTIntArray(ListSerializer(ForIntTag).deserialize(decoder).map { it.value }.toIntArray())
 }
 
-
+@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 @Serializer(forClass = NBTLongArray::class)
 object ForLongArrayTag : KSerializer<NBTLongArray> {
     override val descriptor: SerialDescriptor = PublicedListLikeDescriptorImpl(ForLongTag.descriptor, "LongArrayTag")
@@ -108,7 +118,7 @@ object ForLongArrayTag : KSerializer<NBTLongArray> {
 }
 
 
-@OptIn(InternalSerializationApi::class)
+@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 @Serializer(forClass = NBT::class)
 object ForTag : KSerializer<NBT> {
     override val descriptor: SerialDescriptor =         buildSerialDescriptor("kotlinx.serialization.Polymorphic", PolymorphicKind.OPEN) {
@@ -124,14 +134,15 @@ object ForTag : KSerializer<NBT> {
     }
 
     override fun deserialize(decoder: Decoder): NBT {
-        if (decoder is ICanDecodeTag) return decoder.decodeTag()
-        else return PolymorphicSerializer(NBT::class).deserialize(decoder)
+        return if (decoder is ICanDecodeTag) decoder.decodeTag()
+        else PolymorphicSerializer(NBT::class).deserialize(decoder)
     }
 }
 
 /**
  * ListTag can only hold one type of tag
  */
+@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 @Serializer(forClass = NBTList::class)
 object ForListTag : KSerializer<NBTList<*>> {
     override val descriptor: SerialDescriptor = PublicedListLikeDescriptorImpl(ForTag.descriptor, "ListTag")
@@ -158,6 +169,7 @@ object ForListTag : KSerializer<NBTList<*>> {
     }
 }
 
+@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 @Serializer(forClass = NBTCompound::class)
 object ForCompoundTag : KSerializer<NBTCompound> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("CompoundTag"){

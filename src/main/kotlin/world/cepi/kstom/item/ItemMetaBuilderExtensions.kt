@@ -1,7 +1,6 @@
 package world.cepi.kstom.item
 
 import net.minestom.server.item.ItemMetaBuilder
-import net.minestom.server.item.ItemTag
 
 public var ItemMetaBuilder.damage: Int
     get() = 0

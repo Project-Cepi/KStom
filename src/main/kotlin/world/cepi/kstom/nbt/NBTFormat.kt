@@ -37,8 +37,8 @@ internal val TagModule = SerializersModule {
 open class NbtFormat(context: SerializersModule = EmptySerializersModule) : SerialFormat {
 
     /**
-     * Converts [obj] into a [CompoundTag] that represents [obj].
-     * Later [deserialize] can be called to retrieve an identical instance of [obj] from the [CompoundTag].
+     * Converts [obj] into a [NBTCompound] that represents [obj].
+     * Later [deserialize] can be called to retrieve an identical instance of [obj] from the [NBTCompound].
      *
      * These functions are not documented because I think they would be confusing.
      * Do you want these to be an official part of the API? Please make an issue.

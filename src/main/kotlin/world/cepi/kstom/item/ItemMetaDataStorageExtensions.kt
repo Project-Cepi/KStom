@@ -24,11 +24,7 @@ class ItemMetaClientData(val metaBuilder: ItemMetaBuilder) {
 @ExperimentalServerStorageAPI
 class ItemMetaServerDataProvider(val itemMetaBuilder: ItemMetaBuilder) {
 
-    val uuid: UUID
-
-    init {
-        uuid = UUID.randomUUID()
-    }
+    val uuid: UUID = UUID.randomUUID()
 
     operator fun <T> get(tag: String): T? {
         return ItemMetaServerData[uuid, tag]
@@ -58,7 +54,7 @@ object ItemMetaServerData {
 
 public fun ItemMetaBuilder.clientData(receiver: ItemMetaClientData.() -> Unit) = ItemMetaClientData(this).receiver()
 
-inline public fun <reified T: @Serializable Any> ItemMeta.get(tag: String): T? = this.get(ItemTag.NBT(tag))?.let {
+public inline fun <reified T: @Serializable Any> ItemMeta.get(tag: String): T? = this.get(ItemTag.NBT(tag))?.let {
     return@let NBTParser.deserialize<T>(it)
 }
 
