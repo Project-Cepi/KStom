@@ -22,8 +22,6 @@ class NBTEncoderTests {
 
     @Disabled("They arent!")
     fun `basic primitives are encoded correctly`() {
-        val primitive = 5
-
         assertEquals(NBTInt(5), NBTParser.serialize(5))
         assertEquals(NBTLong(5L), NBTParser.serialize(5L))
 
