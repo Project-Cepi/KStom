@@ -73,3 +73,11 @@ compileKotlin.kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
 compileKotlin.kotlinOptions {
     freeCompilerArgs = listOf("-Xinline-classes", "-Xopt-in=kotlin.RequiresOptIn")
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
+}
