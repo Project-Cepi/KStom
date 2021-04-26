@@ -40,7 +40,7 @@ dependencies {
     implementation("com.github.Project-Cepi", "Minestom", "844671daab")
 
     // import kotlinx serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.0")
 
     // Use mworlza's canvas
     implementation("com.github.mworzala:canvas:407c072b23")
