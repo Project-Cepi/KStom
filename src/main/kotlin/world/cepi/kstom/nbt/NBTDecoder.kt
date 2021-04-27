@@ -68,7 +68,7 @@ private sealed class AbstractTagDecoder(val format: NbtFormat, open val map: NBT
     }
 
     override fun decodeTaggedEnum(tag: String, enumDescriptor: SerialDescriptor): Int =
-        enumDescriptor.getElementIndex(getValue(tag).toString())
+        enumDescriptor.getElementIndex((getValue(tag) as NBTString).value)
 
     override fun decodeTaggedNull(tag: String): Nothing? = null
 
