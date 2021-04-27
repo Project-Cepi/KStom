@@ -5,7 +5,6 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.serializer
 import net.minestom.server.item.ItemMeta
 import net.minestom.server.item.ItemTag
 import world.cepi.kstom.nbt.NBTParser
@@ -61,6 +60,10 @@ public fun ItemMetaBuilder.clientData(receiver: ItemMetaClientData.() -> Unit) =
 
 public inline fun <reified T: @Serializable Any> ItemMeta.get(tag: String): T? = this.get(ItemTag.NBT(tag))?.let {
     return@let NBTParser.deserialize<T>(it)
+}
+
+public inline fun <reified T: @Serializable Any> ItemMeta.get(tag: String, module: SerializersModule): T? = this.get(ItemTag.NBT(tag))?.let {
+    return@let NbtFormat(module).deserialize<T>(it)
 }
 
 @ExperimentalServerStorageAPI
