@@ -4,6 +4,7 @@ import net.minestom.server.item.ItemMetaBuilder
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
 import net.minestom.server.item.ItemMeta
 import net.minestom.server.item.ItemTag
@@ -18,6 +19,10 @@ class ItemMetaClientData(val metaBuilder: ItemMetaBuilder) {
 
     inline operator fun <reified T: @Serializable Any> set(tag: String, item: @Serializable T) {
         metaBuilder.set(ItemTag.NBT(tag), NBTParser.serialize(item))
+    }
+
+    inline operator fun <reified T: @Serializable Any> set(tag: String, module: SerializersModule, item: @Serializable T) {
+        metaBuilder.set(ItemTag.NBT(tag), NbtFormat(module).serialize(item))
     }
 }
 

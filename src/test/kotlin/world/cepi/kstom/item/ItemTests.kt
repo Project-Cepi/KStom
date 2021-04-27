@@ -2,7 +2,6 @@ package world.cepi.kstom.item
 
 import net.kyori.adventure.text.Component
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import world.cepi.kstom.nbt.classes.CollectionClass
 import world.cepi.kstom.nbt.classes.ComplexClass
