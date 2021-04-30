@@ -17,7 +17,7 @@ import java.io.StringReader
 import java.lang.IllegalArgumentException
 
 /**
- * Keeping this class public for now in case you want to serializer an object directly to tag and vise versa.
+ * Objects to and from NBT!
  *
  * @author CmdrNorthpaw
  */
