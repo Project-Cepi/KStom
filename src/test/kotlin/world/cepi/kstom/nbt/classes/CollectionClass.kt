@@ -14,7 +14,7 @@ data class CollectionClass(
     val list: List<Int>
 ) {
     fun createNonAutoNBT(): NBTCompound {
-        val compound = NBTCompound().setInt("first", first).setByte("second", second).setShort("third", third)
+        val compound = NBTCompound().setInt("first", first).setInt("second", second.toInt()).setInt("third", third.toInt())
         compound["list"] = NBTList<NBTInt>(NBTTypes.TAG_Int).apply {
             list.forEach { add(NBTInt(it)) }
         }

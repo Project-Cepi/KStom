@@ -17,7 +17,7 @@ data class ComplexClass(
     val interesting: InterestingClass
 ) {
     fun createNonAutoNBT(): NBTCompound {
-        val compound = NBTCompound().setInt("first", first).setByte("second", second).setShort("third", third)
+        val compound = NBTCompound().setInt("first", first).setInt("second", second.toInt()).setInt("third", third.toInt())
         compound["interesting"] = NBTCompound().setString("woo", interesting.woo).setString("ooo", interesting.ooo.toString())
         return compound
     }

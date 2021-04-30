@@ -4,37 +4,43 @@ import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.SerialKind
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.plus
 import kotlinx.serialization.modules.polymorphic
 import org.jglrxavpok.hephaistos.nbt.*
+import java.io.StringReader
 import java.lang.IllegalArgumentException
 
-internal val TagModule = SerializersModule {
-    polymorphic(NBT::class) {
-        subclass(NBTByte::class, ForByteTag)
-        subclass(NBTShort::class, ForShortTag)
-        subclass(NBTInt::class, ForIntTag)
-        subclass(NBTLong::class, ForLongTag)
-        subclass(NBTFloat::class, ForFloatTag)
-        subclass(NBTDouble::class, ForDoubleTag)
-        subclass(NBTString::class, ForStringTag)
-        subclass(NBTEnd::class, ForEndTag)
-        subclass(NBTByteArray::class, ForByteArrayTag)
-        subclass(NBTIntArray::class, ForIntArrayTag)
-        subclass(NBTLongArray::class, ForLongArrayTag)
-        subclass(NBTList::class, ForListTag)
-        subclass(NBTCompound::class, ForCompoundTag)
+object NBTSerializer : KSerializer<NBTCompound> {
+    override val descriptor: SerialDescriptor = SerializableNBT.serializer().descriptor
+    override fun deserialize(decoder: Decoder): NBTCompound {
+        println(decoder.decodeSerializableValue(SerializableNBT.serializer()).nbt)
+        return SNBTParser(StringReader(decoder.decodeSerializableValue(SerializableNBT.serializer()).nbt)).parse() as NBTCompound
     }
+
+    override fun serialize(encoder: Encoder, value: NBTCompound) {
+        encoder.encodeSerializableValue(SerializableNBT.serializer(), SerializableNBT(value.toSNBT()))
+    }
+
+    fun NBTCompound.serializer() = this@NBTSerializer
+
+    @Serializable
+    private class SerializableNBT(val nbt: String)
 }
-
-
 /**
  * Keeping this class public for now in case you want to serializer an object directly to tag and vise versa.
  */
 @OptIn(ExperimentalSerializationApi::class)
-open class NbtFormat(context: SerializersModule = EmptySerializersModule) : SerialFormat {
+open class NbtFormat(context: SerializersModule = EmptySerializersModule) {
+
+    val json = Json {
+        serializersModule = context
+    }
 
     /**
      * Converts [obj] into a [NBTCompound] that represents [obj].
@@ -43,53 +49,22 @@ open class NbtFormat(context: SerializersModule = EmptySerializersModule) : Seri
      * These functions are not documented because I think they would be confusing.
      * Do you want these to be an official part of the API? Please make an issue.
      */
-    fun <T> serialize(serializer: SerializationStrategy<T>, obj: T): NBT {
-        return writeNbt(obj, serializer)
+    fun <T> serialize(serializer: SerializationStrategy<T>, obj: T): NBTCompound {
+        return SNBTParser(StringReader(json.encodeToString(serializer, obj))).parse() as NBTCompound
     }
 
-    inline fun <reified T> serialize(obj: T): NBT {
+    inline fun <reified T> serialize(obj: T): NBTCompound {
         return serialize(serializer(), obj)
     }
 
-    fun <T> deserialize(deserializer: DeserializationStrategy<T>, tag: NBT): T {
-        return readNbt(tag, deserializer)
+    fun <T> deserialize(deserializer: DeserializationStrategy<T>, tag: NBTCompound): T {
+        return json.decodeFromString(deserializer, tag.toSNBT())
     }
 
-    inline fun <reified T> deserialize(tag: NBT): T {
+    inline fun <reified T> deserialize(tag: NBTCompound): T {
         return deserialize(serializer(), tag)
     }
-
-    internal companion object {
-        const val Null = 1.toByte()
-    }
-
-    override val serializersModule = context + TagModule
 
 }
 
 object NBTParser : NbtFormat()
-
-internal const val ClassDiscriminator = "type"
-
-@OptIn(ExperimentalSerializationApi::class)
-internal fun compoundTagInvalidKeyKind(keyDescriptor: SerialDescriptor) = IllegalArgumentException(
-    "Value of type ${keyDescriptor.serialName} can't be used in a compound tag as map key. " +
-            "It should have either primitive or enum kind, but its kind is ${keyDescriptor.kind}."
-)
-
-// This is an extension in case we want to have an option to not allow lists
-@OptIn(ExperimentalSerializationApi::class)
-internal inline fun <T, R1 : T, R2 : T> NbtFormat.selectMapMode(
-    mapDescriptor: SerialDescriptor,
-    ifMap: () -> R1,
-    ifList: () -> R2
-): T {
-    val keyDescriptor = mapDescriptor.getElementDescriptor(0)
-    val keyKind = keyDescriptor.kind
-    return if (keyKind is PrimitiveKind || keyKind == SerialKind.ENUM) {
-        ifMap()
-    } else {
-        ifList()
-    }
-}
-

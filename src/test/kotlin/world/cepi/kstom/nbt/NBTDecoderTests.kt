@@ -21,15 +21,6 @@ class NBTDecoderTests {
     }
 
     @Test
-    fun `basic primitives are decoded correctly`() {
-        val primitive = 5
-
-        assertEquals(5, NBTParser.deserialize(NBTInt(5)))
-        assertEquals(5L, NBTParser.deserialize(NBTLong(5L)))
-
-    }
-
-    @Disabled("still need complex types!")
     fun `complex primitive classes are decoded correctly`() {
         val data = ComplexClass(5, 4, 2, InterestingClass("hey", 'h'))
 

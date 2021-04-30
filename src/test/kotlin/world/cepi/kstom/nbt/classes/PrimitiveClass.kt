@@ -12,8 +12,8 @@ data class PrimitiveClass(
     fun createNonAutoNBT(): NBTCompound {
         val compound = NBTCompound()
         compound.setInt("first", first)
-        compound.setByte("second", second)
-        compound.setShort("third", third)
+        compound.setInt("second", second.toInt())
+        compound.setInt("third", third.toInt())
         return compound
     }
 }

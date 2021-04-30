@@ -7,6 +7,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import net.minestom.server.item.ItemMeta
 import net.minestom.server.item.ItemTag
+import org.jglrxavpok.hephaistos.nbt.NBT
+import org.jglrxavpok.hephaistos.nbt.NBTCompound
 import world.cepi.kstom.nbt.NBTParser
 import world.cepi.kstom.nbt.NbtFormat
 
@@ -59,11 +61,11 @@ object ItemMetaServerData {
 public fun ItemMetaBuilder.clientData(receiver: ItemMetaClientData.() -> Unit) = ItemMetaClientData(this).receiver()
 
 public inline fun <reified T: @Serializable Any> ItemMeta.get(tag: String): T? = this.get(ItemTag.NBT(tag))?.let {
-    return@let NBTParser.deserialize<T>(it)
+    return@let NBTParser.deserialize<T>(it as NBTCompound)
 }
 
 public inline fun <reified T: @Serializable Any> ItemMeta.get(tag: String, module: SerializersModule): T? = this.get(ItemTag.NBT(tag))?.let {
-    return@let NbtFormat(module).deserialize<T>(it)
+    return@let NbtFormat(module).deserialize<T>(it as NBTCompound)
 }
 
 @ExperimentalServerStorageAPI
