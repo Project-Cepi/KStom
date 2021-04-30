@@ -16,24 +16,10 @@ import org.jglrxavpok.hephaistos.nbt.*
 import java.io.StringReader
 import java.lang.IllegalArgumentException
 
-object NBTSerializer : KSerializer<NBTCompound> {
-    override val descriptor: SerialDescriptor = SerializableNBT.serializer().descriptor
-    override fun deserialize(decoder: Decoder): NBTCompound {
-        println(decoder.decodeSerializableValue(SerializableNBT.serializer()).nbt)
-        return SNBTParser(StringReader(decoder.decodeSerializableValue(SerializableNBT.serializer()).nbt)).parse() as NBTCompound
-    }
-
-    override fun serialize(encoder: Encoder, value: NBTCompound) {
-        encoder.encodeSerializableValue(SerializableNBT.serializer(), SerializableNBT(value.toSNBT()))
-    }
-
-    fun NBTCompound.serializer() = this@NBTSerializer
-
-    @Serializable
-    private class SerializableNBT(val nbt: String)
-}
 /**
  * Keeping this class public for now in case you want to serializer an object directly to tag and vise versa.
+ *
+ * @author CmdrNorthpaw
  */
 @OptIn(ExperimentalSerializationApi::class)
 open class NbtFormat(context: SerializersModule = EmptySerializersModule) {
