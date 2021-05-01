@@ -20,6 +20,9 @@ import net.minestom.server.scoreboard.TeamManager
 import net.minestom.server.storage.StorageManager
 import net.minestom.server.world.biomes.BiomeManager
 
+/**
+ * Shorthand utilities for MinecraftServer
+ */
 public object Manager {
 
     public val command: CommandManager

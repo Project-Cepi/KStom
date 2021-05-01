@@ -10,12 +10,11 @@ import net.minestom.server.entity.EntityType
 import net.minestom.server.item.Enchantment
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
-import net.minestom.server.utils.BlockPosition
 import net.minestom.server.utils.entity.EntityFinder
+import net.minestom.server.utils.location.RelativeBlockPosition
 import net.minestom.server.utils.location.RelativeVec
 import net.minestom.server.utils.math.FloatRange
 import net.minestom.server.utils.math.IntRange
-import net.minestom.server.utils.time.TimeUnit
 import net.minestom.server.utils.time.UpdateOption
 import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
@@ -61,11 +60,9 @@ public fun safeArgumentsFromConstructor(constructor: KFunction<*>): List<Argumen
  * @return An argument that matches with the class.
  *
  */
-public fun argumentFromClass(name: String, clazz: KClass<*>): Argument<*>? {
+public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<Annotation> = emptyList()): Argument<*>? {
 
     if (clazz.simpleName == null) return null
-
-    // TODO allow complex types
 
     return when (clazz) {
         String::class -> ArgumentType.String(name)
@@ -86,7 +83,7 @@ public fun argumentFromClass(name: String, clazz: KClass<*>): Argument<*>? {
         EntityFinder::class -> ArgumentType.Entity(name)
         Enchantment::class -> ArgumentType.Enchantment(name)
         RelativeVec::class -> ArgumentType.RelativeVec3(name)
-        BlockPosition::class -> ArgumentType.RelativeBlockPosition(name)
+        RelativeBlockPosition::class -> ArgumentType.RelativeBlockPosition(name)
         else -> {
             if (clazz.java.enumConstants == null) return null
 

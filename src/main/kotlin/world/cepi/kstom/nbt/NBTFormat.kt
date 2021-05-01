@@ -17,7 +17,7 @@ import java.io.StringReader
 import java.lang.IllegalArgumentException
 
 /**
- * Objects to and from NBT!
+ * Convert objects to and from NBT
  *
  * @author CmdrNorthpaw
  */
@@ -53,4 +53,7 @@ open class NbtFormat(context: SerializersModule = EmptySerializersModule) {
 
 }
 
+/**
+ * Utility Object that extends NBTFormat -- use if you don't need context serialization.
+ */
 object NBTParser : NbtFormat()

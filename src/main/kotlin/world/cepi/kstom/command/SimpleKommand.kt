@@ -9,14 +9,14 @@ public open class SimpleKommand(
     name: String,
 
     /** Aliases, or alternative ways to type the command, stored in a list. */
-    aliases: List<String> = emptyList(),
+    vararg aliases: String,
 
     /** The condition the player needs to meet to see the command. */
     public val condition: (sender: CommandSender, commandString: String?) -> Boolean = { _, _ -> true },
 
     /** What runs when the command is run. */
     public val process: (sender: CommandSender, command: String, args: Array<out String>) -> Boolean = { _, _, _ -> true }
-): SimpleCommand(name, *aliases.toTypedArray()) {
+): SimpleCommand(name, *aliases) {
 
     override fun process(sender: CommandSender, command: String, args: Array<out String>): Boolean {
         return process.invoke(sender, command, args)
