@@ -18,6 +18,7 @@ import net.minestom.server.network.ConnectionManager
 import net.minestom.server.recipe.RecipeManager
 import net.minestom.server.scoreboard.TeamManager
 import net.minestom.server.storage.StorageManager
+import net.minestom.server.timer.SchedulerManager
 import net.minestom.server.world.biomes.BiomeManager
 
 /**
@@ -78,5 +79,8 @@ public object Manager {
 
     public val extension: ExtensionManager
         get() = MinecraftServer.getExtensionManager()
+
+    public val scheduler: SchedulerManager
+        get() = MinecraftServer.getSchedulerManager()
 
 }
