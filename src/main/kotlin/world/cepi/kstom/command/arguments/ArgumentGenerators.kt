@@ -2,6 +2,7 @@ package world.cepi.kstom.command.arguments
 
 import net.kyori.adventure.text.Component
 import net.minestom.server.color.Color
+import net.minestom.server.command.builder.CommandContext
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentEnum
 import net.minestom.server.command.builder.arguments.ArgumentType
@@ -19,18 +20,41 @@ import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
+class GeneratedArguments<T : Any>(val clazz: KClass<T>, val args: Array<Argument<*>>) {
+
+    fun createInstance(context: CommandContext): T {
+        return clazz.primaryConstructor!!.call(args.map { context.get(it) })
+    }
+
+}
+
 /**
- * Can generate a list of Arguments from a class constructor.
+ * Can generate a list of Arguments from a class.
  *
- * @param constructor The constructor to use to generate args from.
+ * @param T The class (type) to generate from
  *
  * @return A organized hashmap of arguments and its classifier
+ *
+ * @throws NullPointerException If the constructor or any arguments are invalid.
  */
-public fun argumentsFromConstructor(constructor: KFunction<*>): List<Argument<*>> =
-    safeArgumentsFromConstructor(constructor).map { it!! }
+public inline fun <reified T : Any> argumentsFromClass(): GeneratedArguments<T> =
+    argumentsFromClass(T::class)
+
+/**
+ * Can generate a list of Arguments from a class.
+ *
+ * @param clazz The class to generate from
+ *
+ * @return A organized hashmap of arguments and its classifier
+ *
+ * @throws NullPointerException If the constructor or any arguments are invalid.
+ */
+public fun <T : Any> argumentsFromClass(clazz: KClass<T>): GeneratedArguments<T> =
+    GeneratedArguments(clazz, argumentsFromFunction(clazz.primaryConstructor!!).map { it!! }.toTypedArray())
 
 /**
  * Can generate a list of Arguments from a class constructor.
@@ -39,7 +63,7 @@ public fun argumentsFromConstructor(constructor: KFunction<*>): List<Argument<*>
  *
  * @return A organized hashmap of arguments and its classifier
  */
-public fun safeArgumentsFromConstructor(constructor: KFunction<*>): List<Argument<*>?> =
+public fun argumentsFromFunction(constructor: KFunction<*>): List<Argument<*>?> =
     constructor.valueParameters.map {
         argumentFromClass(it.name ?: it.type.jvmErasure.simpleName!!, it.type.classifier!! as KClass<*>)
     }
