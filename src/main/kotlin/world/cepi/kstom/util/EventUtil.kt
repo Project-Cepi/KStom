@@ -1,6 +1,7 @@
 package world.cepi.kstom
 
 import kotlinx.coroutines.launch
+import net.minestom.server.event.CancellableEvent
 import net.minestom.server.event.Event
 import net.minestom.server.event.handler.EventHandler
 import kotlin.reflect.KClass
@@ -17,6 +18,30 @@ public inline fun <reified E: Event> EventHandler.addEventCallback(
     crossinline eventCallback: E.() -> Unit
 ): Boolean = addEventCallback(E::class.java) { it.eventCallback() }
 
+/**
+ * Calls a cancellable event (reified function)
+ *
+ * @param E the event type
+ * @param event The event object to call
+ * @param callback The result if the event wasn't cancelled
+ *
+ */
+public inline fun <reified E> EventHandler.callCancellableEvent(
+    event: E,
+    noinline callback: () -> Unit
+): Unit where E : CancellableEvent, E : Event = callCancellableEvent(E::class.java, event, callback)
+
+/**
+ * Calls a event (reified function)
+ *
+ * @param E the event type
+ * @param event The event object to call
+ *
+ */
+public inline fun <reified E> EventHandler.callEvent(
+    event: E,
+    noinline callback: () -> Unit
+): Unit where E : CancellableEvent, E : Event = callEvent(E::class.java, event)
 
 /**
  * Adds an event to an asynchronous event handler using a Kotlin class, using Generics.
