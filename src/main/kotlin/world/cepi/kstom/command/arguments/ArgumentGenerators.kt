@@ -3,9 +3,11 @@ package world.cepi.kstom.command.arguments
 import net.kyori.adventure.text.Component
 import net.minestom.server.color.Color
 import net.minestom.server.command.builder.CommandContext
+import net.minestom.server.command.builder.CommandResult
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentEnum
 import net.minestom.server.command.builder.arguments.ArgumentType
+import net.minestom.server.command.builder.arguments.minecraft.ArgumentItemStack
 import net.minestom.server.entity.EntityType
 import net.minestom.server.item.Enchantment
 import net.minestom.server.item.ItemStack
@@ -28,15 +30,27 @@ import kotlin.reflect.jvm.jvmErasure
 class GeneratedArguments<T : Any>(val clazz: KClass<T>, val args: Array<Argument<*>>) {
 
     fun createInstance(context: CommandContext): T {
-        return clazz.primaryConstructor!!.call(args.map {
 
-            val value = context.get(it)
+        val classes = clazz.primaryConstructor!!.valueParameters.map {
+            it.type.classifier as KClass<*>
+        }
 
-            if (value is EntityFinder) {
-                return@map SerializableEntityFinder(context.getRaw(it.id))
+        return clazz.primaryConstructor!!.call(args.mapIndexed { index, argument ->
+
+            val correspondingClass = classes[index]
+            val value = context.get(argument)
+
+            // Special Material type class
+            if (correspondingClass == Material::class && value is ItemStack) {
+                return@mapIndexed value.material
             }
 
-            return@map value
+            // Entity finder serializable exception
+            if (value is EntityFinder) {
+                return@mapIndexed SerializableEntityFinder(context.getRaw(argument.id))
+            }
+
+            return@mapIndexed value
         })
     }
 
@@ -100,16 +114,18 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
         Boolean::class -> ArgumentType.Boolean(name)
         Float::class -> ArgumentType.Float(name)
         ItemStack::class -> ArgumentType.ItemStack(name)
+        Material::class -> ArgumentType.ItemStack(name)
         NBTCompound::class -> ArgumentType.NbtCompound(name)
         NBT::class -> ArgumentType.NBT(name)
         Component::class -> ArgumentType.Component(name)
         UpdateOption::class -> ArgumentType.Time(name)
         IntRange::class -> ArgumentType.IntRange(name)
         FloatRange::class -> ArgumentType.FloatRange(name)
-        EntityFinder::class -> ArgumentType.Entity(name)
+        SerializableEntityFinder::class -> ArgumentType.Entity(name)
         Enchantment::class -> ArgumentType.Enchantment(name)
         RelativeVec::class -> ArgumentType.RelativeVec3(name)
         RelativeBlockPosition::class -> ArgumentType.RelativeBlockPosition(name)
+        CommandResult::class -> ArgumentType.Command(name)
         else -> {
             if (clazz.java.enumConstants == null) return null
 
