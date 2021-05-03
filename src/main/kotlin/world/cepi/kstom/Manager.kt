@@ -6,6 +6,7 @@ import net.minestom.server.advancements.AdvancementManager
 import net.minestom.server.adventure.bossbar.BossBarManager
 import net.minestom.server.command.CommandManager
 import net.minestom.server.data.DataManager
+import net.minestom.server.event.GlobalEventHandler
 import net.minestom.server.exception.ExceptionManager
 import net.minestom.server.extensions.ExtensionManager
 import net.minestom.server.gamedata.loottables.LootTableManager
@@ -82,5 +83,8 @@ public object Manager {
 
     public val scheduler: SchedulerManager
         get() = MinecraftServer.getSchedulerManager()
+
+    public val globalEvent: GlobalEventHandler
+        get() = MinecraftServer.getGlobalEventHandler()
 
 }
