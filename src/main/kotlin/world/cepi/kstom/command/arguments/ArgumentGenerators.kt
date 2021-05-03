@@ -18,6 +18,7 @@ import net.minestom.server.utils.math.IntRange
 import net.minestom.server.utils.time.UpdateOption
 import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
+import world.cepi.kstom.serializer.SerializableEntityFinder
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.primaryConstructor
@@ -27,7 +28,16 @@ import kotlin.reflect.jvm.jvmErasure
 class GeneratedArguments<T : Any>(val clazz: KClass<T>, val args: Array<Argument<*>>) {
 
     fun createInstance(context: CommandContext): T {
-        return clazz.primaryConstructor!!.call(args.map { context.get(it) })
+        return clazz.primaryConstructor!!.call(args.map {
+
+            val value = context.get(it)
+
+            if (value is EntityFinder) {
+                return@map SerializableEntityFinder(context.getRaw(it.id))
+            }
+
+            return@map value
+        })
     }
 
 }
