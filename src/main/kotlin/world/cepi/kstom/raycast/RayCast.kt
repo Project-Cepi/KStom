@@ -6,6 +6,7 @@ import net.minestom.server.instance.Instance
 import net.minestom.server.utils.BlockPosition
 import net.minestom.server.utils.Position
 import net.minestom.server.utils.Vector
+import world.cepi.kstom.blockUtilsAt
 import world.cepi.kstom.toBlockPosition
 
 /**
@@ -33,9 +34,9 @@ object RayCast {
         start: Vector,
         direction: Vector,
         maxDistance: Double = 100.0,
-        stepLength: Double = 1.0,
-        shouldContinue: (BlockPosition) -> Boolean = { true },
-        onBlockStep: (BlockPosition) -> Unit = { }
+        stepLength: Double = .25,
+        shouldContinue: (Vector) -> Boolean = { !instance.blockUtilsAt(it.toBlockPosition()).block.isSolid },
+        onBlockStep: (Vector) -> Unit = { }
     ): Result {
 
         require(start == Vector(0.0, 0.0, 0.0)) { "Start can not be 0!" }
@@ -48,9 +49,7 @@ object RayCast {
          */
         direction.normalize().multiply(stepLength)
 
-        // Wrap the start in a block position variable -- initialized to stop making the same object again
-        val blockPos = BlockPosition(start)
-        var lastBlockPosition = blockPos.clone()
+        var lastVector = start.clone()
 
         // current step, always starts at the origin.
         var step = 0.0
@@ -59,7 +58,7 @@ object RayCast {
         while (step < maxDistance) {
 
             // checks the [shouldContinue] lambda, if it returns false this most likely hit some sort of block.
-            if (!shouldContinue.invoke(blockPos)) {
+            if (!shouldContinue.invoke(start)) {
                 return Result(start, HitType.BLOCK, null)
             }
 
@@ -69,13 +68,13 @@ object RayCast {
                 return Result(start, HitType.ENTITY, target)
             }
 
-            if (lastBlockPosition != blockPos) {
-                onBlockStep.invoke(blockPos)
+            if (lastVector != start) {
+                onBlockStep.invoke(start)
             }
 
             // add the precalculated direction to the block position, and refresh the lastBlockCache
-            lastBlockPosition = blockPos.clone()
-            blockPos.add(direction.toBlockPosition())
+            lastVector = start.clone()
+            start.add(direction)
 
             step += stepLength
         }
