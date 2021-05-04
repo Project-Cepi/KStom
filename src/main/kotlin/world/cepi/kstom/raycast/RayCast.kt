@@ -17,11 +17,11 @@ object RayCast {
      * Casts a ray from a point, pointing to a direction, and seeing if that ray hits an entity.
      *
      * @param instance The instance to cast the ray in.
-     * @param origin The entity requesting this raycast -- used to check if the entity it sees isn't itself
-     * @param start The start point of this ray cast.
+     * @param origin The entity requesting this raycast. Used to skip itself if it sees itself.
+     * @param start The start point of this ray cast. Can't be (0, 0, 0)
      * @param direction The direction this raycast should go in. TODO specifics on direction
-     * @param maxDistance The max distance this raycast should go in before stopping.
-     * @param stepLength The length per step.
+     * @param maxDistance The max distance this raycast should go in before stopping. Must be greater than 0.
+     * @param stepLength The length per step. Must be greater than 0.
      * @param shouldContinue Optional lambda to see if the raycast should stop -- EX at water or a solid block.
      * @param onBlockStep Callback for whenever this raycast completes a step.
      *
@@ -38,13 +38,15 @@ object RayCast {
         onBlockStep: (BlockPosition) -> Unit = { }
     ): Result {
 
+        require(start == Vector(0.0, 0.0, 0.0)) { "Start can not be 0!" }
+        require(maxDistance > 0) { "Max distance must be greater than 0!" }
+        require(stepLength > 0) { "Step length must be greater than 0!" }
+
         /*
          Normalize the direction, making it less/equal to (1, 1, 1)
           then multiply by step to properly add to the step length.
          */
         direction.normalize().multiply(stepLength)
-
-        val reachedPosition = mutableSetOf<BlockPosition>()
 
         // Wrap the start in a block position variable -- initialized to stop making the same object again
         val blockPos = BlockPosition(start)
@@ -66,10 +68,7 @@ object RayCast {
                 return Result(start, HitType.ENTITY, target)
             }
 
-            if (!reachedPosition.contains(blockPos)) {
-                reachedPosition.add(BlockPosition(blockPos.x, blockPos.y, blockPos.z))
-                onBlockStep.invoke(blockPos)
-            }
+            onBlockStep.invoke(blockPos)
 
             // add the precalculated direction to the block position
             blockPos.add(direction.toBlockPosition())
