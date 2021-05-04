@@ -61,19 +61,11 @@ object ItemMetaServerData {
 public fun ItemMetaBuilder.clientData(receiver: ItemMetaClientData.() -> Unit) = ItemMetaClientData(this).receiver()
 
 public inline fun <reified T: @Serializable Any> ItemMeta.get(tag: String): T? = this.get(ItemTag.NBT(tag))?.let {
-    return@let try {
-        NBTParser.deserialize<T>(it as? NBTCompound ?: return null)
-    } catch (e: Exception) {
-        null
-    }
+    return@let NBTParser.deserialize<T>(it as? NBTCompound ?: return null)
 }
 
 public inline fun <reified T: @Serializable Any> ItemMeta.get(tag: String, module: SerializersModule): T? = this.get(ItemTag.NBT(tag))?.let {
-    return@let try {
-        NbtFormat(module).deserialize<T>(it as? NBTCompound ?: return null)
-    } catch (e: Exception) {
-        null
-    }
+    return@let NbtFormat(module).deserialize<T>(it as? NBTCompound ?: return null)
 }
 
 @ExperimentalServerStorageAPI
