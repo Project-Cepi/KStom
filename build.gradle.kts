@@ -1,6 +1,6 @@
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.5.0"
+    id("org.jetbrains.kotlin.jvm") version "1.5.0-RC"
     kotlin("plugin.serialization") version "1.4.10"
     `maven-publish`
 
@@ -21,14 +21,12 @@ repositories {
 }
 
 dependencies {
-    // Align versions of all Kotlin components
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
 
     // Use the Kotlin JDK 8 standard library.
-    implementation(kotlin("stdlib"))
+    implementation(kotlin("stdlib", "1.5.0-RC"))
 
     // Use the Kotlin reflect library.
-    implementation(kotlin("reflect"))
+    implementation(kotlin("reflect", "1.5.0-RC"))
 
     // Use the JUpiter test library.
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
@@ -37,7 +35,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
 
     // Compile Minestom into project
-    implementation("com.github.Project-Cepi", "Minestom", "844671daab")
+    implementation("com.github.Minestom", "Minestom", "22eb5c6")
+    implementation("com.github.jglrxavpok", "Hephaistos", "1.1.8")
 
     // import kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.0")
