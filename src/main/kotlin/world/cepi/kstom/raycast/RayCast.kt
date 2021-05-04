@@ -50,6 +50,7 @@ object RayCast {
 
         // Wrap the start in a block position variable -- initialized to stop making the same object again
         val blockPos = BlockPosition(start)
+        var lastBlockPosition = blockPos.clone()
 
         // current step, always starts at the origin.
         var step = 0.0
@@ -68,9 +69,12 @@ object RayCast {
                 return Result(start, HitType.ENTITY, target)
             }
 
-            onBlockStep.invoke(blockPos)
+            if (lastBlockPosition != blockPos) {
+                onBlockStep.invoke(blockPos)
+            }
 
-            // add the precalculated direction to the block position
+            // add the precalculated direction to the block position, and refresh the lastBlockCache
+            lastBlockPosition = blockPos.clone()
             blockPos.add(direction.toBlockPosition())
 
             step += stepLength
