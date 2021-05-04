@@ -6,9 +6,13 @@ import net.minestom.server.instance.Instance
 import net.minestom.server.utils.BlockPosition
 import net.minestom.server.utils.Position
 import net.minestom.server.utils.Vector
-import kotlin.math.floor
+import world.cepi.kstom.toBlockPosition
 
+/**
+ * Ray cast utilities for Minestom.
+ */
 object RayCast {
+
     /**
      * Casts a ray from a point, pointing to a direction, and seeing if that ray hits an entity.
      *
@@ -40,9 +44,10 @@ object RayCast {
          */
         direction.normalize().multiply(stepLength)
 
-        // Wrap the start in a block position variable -- this will be mutated
-        val blockPos = BlockPosition(start)
         val reachedPosition = mutableSetOf<BlockPosition>()
+
+        // Wrap the start in a block position variable -- initialized to stop making the same object again
+        val blockPos = BlockPosition(start)
 
         // current step, always starts at the origin.
         var step = 0.0
@@ -50,18 +55,13 @@ object RayCast {
         // step again and again until the max distance is reached.
         while (step < maxDistance) {
 
-            // refresh start, as it is mutated when the direction is added to it.
-            blockPos.x = floor(start.x).toInt()
-            blockPos.y = floor(start.y).toInt()
-            blockPos.z = floor(start.z).toInt()
-
             // checks the [shouldContinue] lambda, if it returns false this most likely hit some sort of block.
             if (!shouldContinue.invoke(blockPos)) {
                 return Result(start, HitType.BLOCK, null)
             }
 
             // checks if there is an entity in this step -- if so, return that.
-            val target = getLookingAt(instance, start.toPosition(), origin)
+            val target = positionInEntity(instance, start.toPosition(), origin)
             if (target != null) {
                 return Result(start, HitType.ENTITY, target)
             }
@@ -71,7 +71,8 @@ object RayCast {
                 onBlockStep.invoke(blockPos)
             }
 
-            start.add(direction)
+            // add the precalculated direction to the block position
+            blockPos.add(direction.toBlockPosition())
 
             step += stepLength
         }
@@ -79,13 +80,21 @@ object RayCast {
         return Result(start, HitType.NONE, null)
     }
 
-    private fun getLookingAt(instance: Instance, position: Position, origin: LivingEntity?): LivingEntity? {
+    /**
+     * Check if this position is inside a [LivingEntity]
+     *
+     * @param instance The instance to find the entities in.
+     * @param position The position to check against the entities
+     * @param origin The entity who requested this function, used to make sure it doesn't intersect with itself.
+     */
+    private fun positionInEntity(instance: Instance, position: Position, origin: LivingEntity?): LivingEntity? {
         // get all the entities in the chunk
         val chunkEntities = instance.getChunkEntities(instance.getChunkAt(position))
 
         // find the first entity that isn't this entity and that the position is in this entity.
         return chunkEntities
-            .firstOrNull { check -> check != origin && collides(check.boundingBox, position) && check is LivingEntity } as? LivingEntity
+            .filterIsInstance<LivingEntity>()
+            .firstOrNull { it != origin && collides(it.boundingBox, position) }
     }
 
     private fun collides(boundingBox: BoundingBox, rayPos: Position): Boolean {
@@ -93,6 +102,8 @@ object RayCast {
                 (minY(rayPos) <= boundingBox.maxY && maxY(rayPos) >= boundingBox.minY) &&
                 (minZ(rayPos) <= boundingBox.maxZ && maxZ(rayPos) >= boundingBox.minZ)
     }
+
+    // Fuzzy positioning logic, leaves room for human error
 
     private fun minX(position: Position) = position.x - 0.125
 

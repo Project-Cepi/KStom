@@ -5,8 +5,10 @@ import net.minestom.server.instance.Instance
 import net.minestom.server.instance.block.Block
 import net.minestom.server.utils.BlockPosition
 import net.minestom.server.utils.Position
+import net.minestom.server.utils.Vector
 import net.minestom.server.utils.block.BlockUtils
 import net.minestom.server.utils.chunk.ChunkUtils
+import kotlin.math.roundToInt
 
 public fun Chunk.getBlockStateId(position: BlockPosition): Short = this.getBlockStateId(position.x, position.y, position.z)
 
@@ -19,3 +21,6 @@ public fun Instance.chunksInRange(position: Position, range: Int): List<Pair<Int
     .getChunksInRange(position, range)
     .map { ChunkUtils.getChunkCoordX(it) to ChunkUtils.getChunkCoordZ(it) }
 public fun Instance.isChunkLoaded(x: Double, y: Double): Boolean = ChunkUtils.isLoaded(this, x, y)
+
+public fun Vector.toBlockPosition(): BlockPosition =
+    BlockPosition(this.x.roundToInt(), this.y.roundToInt(), this.z.roundToInt())
