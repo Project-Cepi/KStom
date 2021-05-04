@@ -7,7 +7,7 @@ import net.minestom.server.utils.BlockPosition
 import net.minestom.server.utils.Position
 import net.minestom.server.utils.Vector
 import world.cepi.kstom.blockUtilsAt
-import world.cepi.kstom.toBlockPosition
+import world.cepi.kstom.toExactBlockPosition
 
 /**
  * Ray cast utilities for Minestom.
@@ -35,11 +35,11 @@ object RayCast {
         direction: Vector,
         maxDistance: Double = 100.0,
         stepLength: Double = .25,
-        shouldContinue: (Vector) -> Boolean = { !instance.blockUtilsAt(it.toBlockPosition()).block.isSolid },
+        shouldContinue: (Vector) -> Boolean = { !instance.blockUtilsAt(it.toExactBlockPosition()).block.isSolid },
         onBlockStep: (Vector) -> Unit = { }
     ): Result {
 
-        require(start == Vector(0.0, 0.0, 0.0)) { "Start can not be 0!" }
+        require(start.x == 0.0 && start.y == 0.0 && start.z == 0.0) { "Start can not be 0!" }
         require(maxDistance > 0) { "Max distance must be greater than 0!" }
         require(stepLength > 0) { "Step length must be greater than 0!" }
 
@@ -105,7 +105,7 @@ object RayCast {
                 (minZ(rayPos) <= boundingBox.maxZ && maxZ(rayPos) >= boundingBox.minZ)
     }
 
-    // Fuzzy positioning logic, leaves room for human error
+    // Fuzzy positioning logic, leaves room for parts of entity models that fall outside the hitbox and human error.
 
     private fun minX(position: Position) = position.x - 0.125
 
