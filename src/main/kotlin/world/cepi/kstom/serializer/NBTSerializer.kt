@@ -1,4 +1,4 @@
-package world.cepi.kstom.nbt
+package world.cepi.kstom.serializer
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
