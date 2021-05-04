@@ -166,11 +166,3 @@ public inline fun Command.setArgumentCallback(arg: Argument<*>, crossinline lamb
 public inline fun Command.default(crossinline block: suspend (sender: CommandSender, args: CommandContext) -> Unit) {
     defaultExecutor = CommandExecutor { sender, args -> IOScope.launch { block(sender, args) } }
 }
-
-public fun Command.register() {
-    Manager.command.register(this)
-}
-
-public fun Command.unregister() {
-    Manager.command.unregister(this)
-}

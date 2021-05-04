@@ -84,3 +84,10 @@ publishing {
         }
     }
 }
+sourceSets.create("demo") {
+    java.srcDir("src/demo/java")
+    java.srcDir("build/generated/source/apt/demo")
+    resources.srcDir("src/demo/resources")
+    compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
+    runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
+}
