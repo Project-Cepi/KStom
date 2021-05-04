@@ -35,7 +35,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
 
     // Compile Minestom into project
-    implementation("com.github.Minestom", "Minestom", "22eb5c6")
+    implementation("com.github.Minestom", "Minestom", "2fdfce703d")
     implementation("com.github.jglrxavpok", "Hephaistos", "1.1.8")
 
     // import kotlinx serialization
