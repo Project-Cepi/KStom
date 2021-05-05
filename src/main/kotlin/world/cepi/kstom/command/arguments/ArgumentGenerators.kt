@@ -35,7 +35,7 @@ class GeneratedArguments<T : Any>(val clazz: KClass<T>, val args: Array<Argument
             it.type.classifier as KClass<*>
         }
 
-        return clazz.primaryConstructor!!.call(args.mapIndexed { index, argument ->
+        return clazz.primaryConstructor!!.call(*args.mapIndexed { index, argument ->
 
             val correspondingClass = classes[index]
             val value = context.get(argument)
@@ -51,7 +51,7 @@ class GeneratedArguments<T : Any>(val clazz: KClass<T>, val args: Array<Argument
             }
 
             return@mapIndexed value
-        })
+        }.toTypedArray())
     }
 
 }
