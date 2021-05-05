@@ -8,8 +8,7 @@ import net.minestom.server.command.builder.CommandExecutor
 import net.minestom.server.command.builder.CommandSyntax
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.exception.ArgumentSyntaxException
-import world.cepi.kstom.IOScope
-import world.cepi.kstom.Manager
+import world.cepi.kstom.util.IOScope
 
 public inline fun Command.addSyntax(crossinline lambda: suspend () -> Unit) {
     setDefaultExecutor { _, _ -> IOScope.launch { lambda() }}

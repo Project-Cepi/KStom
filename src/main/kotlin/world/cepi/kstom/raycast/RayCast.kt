@@ -3,11 +3,10 @@ package world.cepi.kstom.raycast
 import net.minestom.server.collision.BoundingBox
 import net.minestom.server.entity.LivingEntity
 import net.minestom.server.instance.Instance
-import net.minestom.server.utils.BlockPosition
 import net.minestom.server.utils.Position
 import net.minestom.server.utils.Vector
-import world.cepi.kstom.blockUtilsAt
-import world.cepi.kstom.toExactBlockPosition
+import world.cepi.kstom.util.blockUtilsAt
+import world.cepi.kstom.util.toExactBlockPosition
 
 /**
  * Ray cast utilities for Minestom.

@@ -1,8 +1,7 @@
-package world.cepi.kstom
+package world.cepi.kstom.util
 
 import net.minestom.server.instance.Chunk
 import net.minestom.server.instance.Instance
-import net.minestom.server.instance.block.Block
 import net.minestom.server.utils.BlockPosition
 import net.minestom.server.utils.Position
 import net.minestom.server.utils.Vector

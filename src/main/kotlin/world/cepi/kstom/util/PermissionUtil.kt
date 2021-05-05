@@ -1,4 +1,4 @@
-package world.cepi.kstom
+package world.cepi.kstom.util
 
 import net.minestom.server.entity.Player
 import net.minestom.server.permission.Permission

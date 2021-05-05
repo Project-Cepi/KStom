@@ -1,4 +1,4 @@
-package world.cepi.kstom
+package world.cepi.kstom.util
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
