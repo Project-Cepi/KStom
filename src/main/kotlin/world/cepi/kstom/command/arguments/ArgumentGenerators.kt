@@ -2,25 +2,30 @@ package world.cepi.kstom.command.arguments
 
 import net.kyori.adventure.text.Component
 import net.minestom.server.color.Color
+import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.CommandContext
 import net.minestom.server.command.builder.CommandResult
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentEnum
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.command.builder.arguments.minecraft.ArgumentItemStack
+import net.minestom.server.entity.Entity
 import net.minestom.server.entity.EntityType
 import net.minestom.server.item.Enchantment
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
+import net.minestom.server.potion.PotionEffect
 import net.minestom.server.utils.entity.EntityFinder
 import net.minestom.server.utils.location.RelativeBlockPosition
 import net.minestom.server.utils.location.RelativeVec
 import net.minestom.server.utils.math.FloatRange
 import net.minestom.server.utils.math.IntRange
 import net.minestom.server.utils.time.UpdateOption
+import org.jetbrains.annotations.Nullable
 import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
 import world.cepi.kstom.serializer.SerializableEntityFinder
+import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.primaryConstructor
@@ -29,7 +34,7 @@ import kotlin.reflect.jvm.jvmErasure
 
 class GeneratedArguments<T : Any>(val clazz: KClass<T>, val args: Array<Argument<*>>) {
 
-    fun createInstance(context: CommandContext): T {
+    fun createInstance(context: CommandContext, sender: CommandSender): T {
 
         val classes = clazz.primaryConstructor!!.valueParameters.map {
             it.type.classifier as KClass<*>
@@ -41,8 +46,10 @@ class GeneratedArguments<T : Any>(val clazz: KClass<T>, val args: Array<Argument
             val value = context.get(argument)
 
             // Special Material type class
-            if (correspondingClass == Material::class && value is ItemStack) {
-                return@mapIndexed value.material
+
+            when (correspondingClass) {
+                Material::class -> if (value is ItemStack) return@mapIndexed value.material
+                Vector::class -> if (value is RelativeVec) return@mapIndexed value.from(sender as? Entity)
             }
 
             // Entity finder serializable exception
@@ -124,8 +131,11 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
         SerializableEntityFinder::class -> ArgumentType.Entity(name)
         Enchantment::class -> ArgumentType.Enchantment(name)
         RelativeVec::class -> ArgumentType.RelativeVec3(name)
+        Vector::class -> ArgumentType.RelativeVec3(name)
         RelativeBlockPosition::class -> ArgumentType.RelativeBlockPosition(name)
         CommandResult::class -> ArgumentType.Command(name)
+        PotionEffect::class -> ArgumentType.Potion(name)
+        UUID::class -> ArgumentType.UUID(name)
         else -> {
             if (clazz.java.enumConstants == null) return null
 
