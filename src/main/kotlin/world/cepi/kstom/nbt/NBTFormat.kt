@@ -1,20 +1,11 @@
 package world.cepi.kstom.nbt
 
 import kotlinx.serialization.*
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.descriptors.SerialKind
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.plus
-import kotlinx.serialization.modules.polymorphic
 import org.jglrxavpok.hephaistos.nbt.*
 import java.io.StringReader
-import java.lang.IllegalArgumentException
 
 /**
  * Objects to and from NBT!
