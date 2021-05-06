@@ -4,7 +4,7 @@ import kotlinx.coroutines.launch
 import net.minestom.server.event.CancellableEvent
 import net.minestom.server.event.Event
 import net.minestom.server.event.handler.EventHandler
-import kotlin.reflect.KClass
+import world.cepi.kstom.util.IOScope
 
 /**
  * Adds an event to an event handler using a Kotlin class, using Generics.

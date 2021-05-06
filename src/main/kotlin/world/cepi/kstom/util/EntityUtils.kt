@@ -1,4 +1,4 @@
-package world.cepi.kstom
+package world.cepi.kstom.util
 
 import net.minestom.server.entity.Entity
 import net.minestom.server.instance.Chunk

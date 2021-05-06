@@ -47,4 +47,9 @@ object ItemTests {
         assertEquals(otherData, item.meta.get<CollectionClass>("complexListData"))
     }
 
+    @Test
+    fun `return null if NBT is not found`() {
+        assertEquals(item.meta.get<ComplexClass>("weirdData"), null)
+    }
+
 }
