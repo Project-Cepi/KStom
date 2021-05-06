@@ -1,7 +1,7 @@
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.5.0-RC"
-    kotlin("plugin.serialization") version "1.4.10"
+    id("org.jetbrains.kotlin.jvm") version "1.5.0"
+    kotlin("plugin.serialization") version "1.5.0"
     `maven-publish`
 
     // Apply the application plugin to add support for building a jar
@@ -23,10 +23,10 @@ repositories {
 dependencies {
 
     // Use the Kotlin JDK 8 standard library.
-    implementation(kotlin("stdlib", "1.5.0-RC"))
+    implementation(kotlin("stdlib", "1.5.0"))
 
     // Use the Kotlin reflect library.
-    implementation(kotlin("reflect", "1.5.0-RC"))
+    implementation(kotlin("reflect", "1.5.0"))
 
     // Use the JUpiter test library.
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")

@@ -24,5 +24,6 @@ object NBTSerializer : KSerializer<NBT> {
     fun NBT.serializer() = this@NBTSerializer
     // Inline class because stdlib is weirdly outdated
     @Serializable
-    private inline class SerializableNBT(val nbt: String)
+    @JvmInline
+    private value class SerializableNBT(val nbt: String)
 }
