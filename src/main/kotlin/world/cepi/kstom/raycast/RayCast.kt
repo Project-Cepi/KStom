@@ -37,8 +37,6 @@ object RayCast {
         shouldContinue: (Vector) -> Boolean = { !instance.blockUtilsAt(it.toExactBlockPosition()).block.isSolid },
         onBlockStep: (Vector) -> Unit = { }
     ): Result {
-
-        require(start.x == 0.0 && start.y == 0.0 && start.z == 0.0) { "Start can not be 0!" }
         require(maxDistance > 0) { "Max distance must be greater than 0!" }
         require(stepLength > 0) { "Step length must be greater than 0!" }
 
