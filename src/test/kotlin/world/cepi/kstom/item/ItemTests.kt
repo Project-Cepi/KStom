@@ -20,7 +20,7 @@ object ItemTests {
             unbreakable = true
 
             clientData {
-                this["complexData"] = ComplexClass(5, 4, 2, InterestingClass("hey", 'h'))
+                this["complexData"] = ComplexClass(5, 4, 2, true, InterestingClass("hey", 'h'))
                 this["complexListData"] = CollectionClass(5, 9, 3, listOf(4, 3))
             }
 
@@ -40,7 +40,7 @@ object ItemTests {
 
     @Test
     fun `ensure complex data is translated`() {
-        val data = ComplexClass(5, 4, 2, InterestingClass("hey", 'h'))
+        val data = ComplexClass(5, 4, 2, true, InterestingClass("hey", 'h'))
         val otherData = CollectionClass(5, 9, 3, listOf(4, 3))
 
         assertEquals(data, item.meta.get<ComplexClass>("complexData"))

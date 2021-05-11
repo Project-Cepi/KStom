@@ -29,7 +29,14 @@ class NBTEncoderTests {
 
     @Test
     fun `complex primitive classes are encoded correctly`() {
-        val data = ComplexClass(5, 4, 2, InterestingClass("hey", 'h'))
+        val data = ComplexClass(5, 4, 2, false, InterestingClass("hey", 'h'))
+
+        assertEquals(data.createNonAutoNBT(), NBTParser.serialize(data))
+    }
+
+    @Test
+    fun `complex primitive classes are encoded correctly with true boolean`() {
+        val data = ComplexClass(5, 4, 2, true, InterestingClass("hey", 'h'))
 
         assertEquals(data.createNonAutoNBT(), NBTParser.serialize(data))
     }

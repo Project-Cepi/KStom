@@ -22,7 +22,14 @@ class NBTDecoderTests {
 
     @Test
     fun `complex primitive classes are decoded correctly`() {
-        val data = ComplexClass(5, 4, 2, InterestingClass("hey", 'h'))
+        val data = ComplexClass(5, 4, 2, true, InterestingClass("hey", 'h'))
+
+        assertEquals(data, NBTParser.deserialize<ComplexClass>(data.createNonAutoNBT()))
+    }
+
+    @Test
+    fun `complex primitive classes are decoded with false boolean correctly`() {
+        val data = ComplexClass(5, 4, 2, false, InterestingClass("hey", 'h'))
 
         assertEquals(data, NBTParser.deserialize<ComplexClass>(data.createNonAutoNBT()))
     }

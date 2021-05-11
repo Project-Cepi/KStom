@@ -27,7 +27,9 @@ open class NbtFormat(context: SerializersModule = EmptySerializersModule) {
      * Do you want these to be an official part of the API? Please make an issue.
      */
     fun <T> serialize(serializer: SerializationStrategy<T>, obj: T): NBTCompound {
-        return SNBTParser(StringReader(json.encodeToString(serializer, obj))).parse() as NBTCompound
+        return SNBTParser(
+            StringReader(json.encodeToString(serializer, obj))
+        ).parse() as NBTCompound
     }
 
     inline fun <reified T> serialize(obj: T): NBTCompound {
@@ -35,7 +37,11 @@ open class NbtFormat(context: SerializersModule = EmptySerializersModule) {
     }
 
     fun <T> deserialize(deserializer: DeserializationStrategy<T>, tag: NBTCompound): T {
-        return json.decodeFromString(deserializer, tag.toSNBT())
+        return json.decodeFromString(
+            deserializer, tag.toSNBT()
+                .replace("1B", "true")
+                .replace("0B", "false")
+        )
     }
 
     inline fun <reified T> deserialize(tag: NBTCompound): T {

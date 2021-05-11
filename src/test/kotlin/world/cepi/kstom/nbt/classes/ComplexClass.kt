@@ -14,11 +14,18 @@ data class ComplexClass(
     val first: Int,
     val second: Byte,
     val third: Short,
+    val boolean: Boolean,
     val interesting: InterestingClass
 ) {
     fun createNonAutoNBT(): NBTCompound {
-        val compound = NBTCompound().setInt("first", first).setInt("second", second.toInt()).setInt("third", third.toInt())
-        compound["interesting"] = NBTCompound().setString("woo", interesting.woo).setString("ooo", interesting.ooo.toString())
+        val compound = NBTCompound()
+            .setInt("first", first)
+            .setInt("second", second.toInt())
+            .setInt("third", third.toInt())
+            .setByte("boolean", if (boolean) 1 else 0)
+
+        compound["interesting"] =
+            NBTCompound().setString("woo", interesting.woo).setString("ooo", interesting.ooo.toString())
         return compound
     }
 }
