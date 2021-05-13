@@ -165,3 +165,7 @@ public inline fun Command.setArgumentCallback(arg: Argument<*>, crossinline lamb
 public inline fun Command.default(crossinline block: suspend (sender: CommandSender, args: CommandContext) -> Unit) {
     defaultExecutor = CommandExecutor { sender, args -> IOScope.launch { block(sender, args) } }
 }
+
+public fun Command.addSubcommands(vararg subcommands: Command) {
+    subcommands.forEach { this.addSubcommand(it) }
+}
