@@ -29,7 +29,7 @@ dependencies {
     implementation(kotlin("reflect", "1.5.0"))
 
     // Use the JUpiter test library.
-    testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.7.2")
 
     // Add support for kotlinx courotines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
