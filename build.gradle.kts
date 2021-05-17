@@ -39,7 +39,7 @@ dependencies {
     implementation("com.github.jglrxavpok", "Hephaistos", "1.1.8")
 
     // import kotlinx serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
 
     // Add MiniMessage
     implementation("net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT")
