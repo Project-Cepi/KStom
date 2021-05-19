@@ -4,8 +4,8 @@ import net.minestom.server.utils.Position
 
 fun old(position: Position) {
     val x = position.x
-    val y = position.x
-    val z = position.x
+    val y = position.y
+    val z = position.z
 }
 
 fun new(position: Position) {
