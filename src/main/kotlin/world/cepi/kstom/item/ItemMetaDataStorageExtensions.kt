@@ -6,8 +6,7 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import net.minestom.server.item.ItemMeta
-import net.minestom.server.item.ItemTag
-import org.jglrxavpok.hephaistos.nbt.NBT
+import net.minestom.server.tag.Tag
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
 import world.cepi.kstom.nbt.NBTParser
 import world.cepi.kstom.nbt.NbtFormat
@@ -19,11 +18,11 @@ public annotation class ExperimentalServerStorageAPI
 class ItemMetaClientData(val metaBuilder: ItemMetaBuilder) {
 
     inline operator fun <reified T: @Serializable Any> set(tag: String, item: @Serializable T) {
-        metaBuilder.set(ItemTag.NBT(tag), NBTParser.serialize(item))
+        metaBuilder.set(Tag.NBT(tag), NBTParser.serialize(item))
     }
 
     inline operator fun <reified T: @Serializable Any> set(tag: String, module: SerializersModule, item: @Serializable T) {
-        metaBuilder.set(ItemTag.NBT(tag), NbtFormat(module).serialize(item))
+        metaBuilder.set(Tag.NBT(tag), NbtFormat(module).serialize(item))
     }
 }
 
@@ -60,11 +59,11 @@ object ItemMetaServerData {
 
 public fun ItemMetaBuilder.clientData(receiver: ItemMetaClientData.() -> Unit) = ItemMetaClientData(this).receiver()
 
-public inline fun <reified T: @Serializable Any> ItemMeta.get(tag: String): T? = this.get(ItemTag.NBT(tag))?.let {
+public inline fun <reified T: @Serializable Any> ItemMeta.get(tag: String): T? = this.getTag(Tag.NBT(tag))?.let {
     return@let NBTParser.deserialize<T>(it as? NBTCompound ?: return null)
 }
 
-public inline fun <reified T: @Serializable Any> ItemMeta.get(tag: String, module: SerializersModule): T? = this.get(ItemTag.NBT(tag))?.let {
+public inline fun <reified T: @Serializable Any> ItemMeta.get(tag: String, module: SerializersModule): T? = this.getTag(Tag.NBT(tag))?.let {
     return@let NbtFormat(module).deserialize<T>(it as? NBTCompound ?: return null)
 }
 
