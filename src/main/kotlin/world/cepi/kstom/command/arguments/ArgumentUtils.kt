@@ -50,9 +50,9 @@ public fun <T> Argument<T>.defaultValue(value: T): Argument<T> =
  */
 @Beta
 @Contract("_ -> this")
-public fun Argument<*>.suggest(
+public fun <T> Argument<T>.suggest(
     lambda: (sender: CommandSender, context: CommandContext) -> MutableList<SuggestionEntry>
-): Argument<*>
+): Argument<T>
     = this.setSuggestionCallback { sender, context, suggestion ->
 
         lambda(sender, context)
