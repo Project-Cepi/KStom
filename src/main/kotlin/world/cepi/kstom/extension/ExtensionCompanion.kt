@@ -10,7 +10,7 @@ import kotlin.reflect.KClass
 /**
  * Kotlin utilities that can be attatched per extension class.
  */
-class ExtensionCompanion<T: Extension>(val extensionClass: KClass<out Extension>) {
+open class ExtensionCompanion<T: Extension>(val extensionClass: KClass<out Extension>) {
 
     val instance: T
         get() = ExtensionUtils.currentExtension() as T
