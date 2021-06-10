@@ -13,7 +13,7 @@ import kotlin.reflect.KClass
 open class ExtensionCompanion<T: Extension>(val extensionClass: KClass<out Extension>) {
 
     val instance: T
-        get() = ExtensionUtils.currentExtension() as T
+        get() = ExtensionUtils.currentExtension(extensionClass) as T
 
     val eventNode: EventNode<Event>
         get() = instance.eventNode

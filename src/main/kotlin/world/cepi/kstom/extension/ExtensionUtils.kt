@@ -1,7 +1,9 @@
 package world.cepi.kstom.extension
 
 import net.minestom.server.extras.selfmodification.MinestomExtensionClassLoader
+import net.minestom.server.extras.selfmodification.MinestomRootClassLoader
 import world.cepi.kstom.Manager
+import kotlin.reflect.KClass
 
 /**
  * Unsafe utilities for handling extensions.
@@ -10,9 +12,6 @@ import world.cepi.kstom.Manager
  */
 internal object ExtensionUtils {
 
-    inline fun currentExtensionClassLoader() =
-        this::class.java.classLoader as MinestomExtensionClassLoader
-
-    inline fun currentExtension() =
-        Manager.extension.getExtension(currentExtensionClassLoader().extensionName)!!
+    inline fun currentExtension(clazz: KClass<*>) =
+        Manager.extension.getExtension(MinestomRootClassLoader.findExtensionObjectOwner(clazz)!!)!!
 }
