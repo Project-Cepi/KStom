@@ -12,7 +12,7 @@ fun old(): Data {
     return data
 }
 
-fun new(): Data = data {
+fun new() = data {
     this["test"] = 1
     this["woo"] = 3
 }
