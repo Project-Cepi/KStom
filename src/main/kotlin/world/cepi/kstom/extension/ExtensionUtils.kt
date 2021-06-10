@@ -10,9 +10,9 @@ import world.cepi.kstom.Manager
  */
 internal object ExtensionUtils {
 
-    fun currentExtensionClassLoader() =
+    inline fun currentExtensionClassLoader() =
         this::class.java.classLoader as MinestomExtensionClassLoader
 
-    fun currentExtension() =
+    inline fun currentExtension() =
         Manager.extension.getExtension(currentExtensionClassLoader().extensionName)!!
 }
