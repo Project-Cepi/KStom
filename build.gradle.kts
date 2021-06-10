@@ -10,15 +10,15 @@ plugins {
 
 
 repositories {
+    // Use mavenCentral
     mavenCentral()
-    maven(url = "https://repo.spongepowered.org/maven")
-    maven(url = "https://libraries.minecraft.net")
+
     maven(url = "https://jitpack.io")
+    maven(url = "https://repo.spongepowered.org/maven")
+    maven(url = "https://repo.minestom.com/repository/maven-public/")
     maven(url = "https://repo.velocitypowered.com/snapshots/")
-    maven(url = "https://oss.sonatype.org/content/repositories/snapshots/") {
-        name = "sonatype-oss-snapshots"
-    }
 }
+
 
 dependencies {
 
