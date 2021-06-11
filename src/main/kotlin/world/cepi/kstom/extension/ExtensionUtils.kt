@@ -13,5 +13,5 @@ import kotlin.reflect.KClass
 internal object ExtensionUtils {
 
     inline fun currentExtension(clazz: KClass<*>) =
-        Manager.extension.getExtension(MinestomRootClassLoader.findExtensionObjectOwner(clazz)!!)!!
+        Manager.extension.getExtension((clazz.java.classLoader as MinestomExtensionClassLoader).extensionName)!!
 }
