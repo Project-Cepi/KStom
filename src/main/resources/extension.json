@@ -1,0 +1,5 @@
+{
+  "entrypoint": "world.cepi.kstom.KStom",
+  "name": "KStom",
+  "version": "1.0.0"
+}
