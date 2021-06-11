@@ -16,7 +16,7 @@ import kotlin.reflect.KClass
 open class ExtensionCompanion<T: Extension>(val obj: Any) {
 
     val instance: T
-        get() = Manager.extension.getExtension(MinestomRootClassLoader.findExtensionObjectOwner(obj)!!)!! as T
+        get() = Manager.extension.getExtension(obj.javaClass.classLoader.name)!! as T
 
     val eventNode: EventNode<Event>
         get() = instance.eventNode
