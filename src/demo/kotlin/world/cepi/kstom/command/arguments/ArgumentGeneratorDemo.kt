@@ -9,8 +9,8 @@ import world.cepi.kstom.command.arguments.annotations.MinAmount
 
 data class CoolItem(
     val name: String,
-    @MinAmount(5.0)
-    @MaxAmount(6.0)
+    @param:MinAmount(5.0)
+    @param:MaxAmount(6.0)
     val decimal: Double,
     val boolean: Boolean
 )
