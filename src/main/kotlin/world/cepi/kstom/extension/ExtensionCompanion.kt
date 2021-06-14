@@ -17,7 +17,6 @@ open class ExtensionCompanion<T: Extension>(val obj: Any) {
 
     val instance: T
         get() {
-            println(MinestomRootClassLoader.findExtensionObjectOwner(obj))
             return Manager.extension.getExtension(MinestomRootClassLoader.findExtensionObjectOwner(obj)!!)!! as T
         }
 
