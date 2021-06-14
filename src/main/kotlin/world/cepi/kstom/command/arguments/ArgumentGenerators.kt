@@ -23,6 +23,8 @@ import net.minestom.server.utils.math.IntRange
 import net.minestom.server.utils.time.UpdateOption
 import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
+import world.cepi.kstom.command.arguments.annotations.MaxAmount
+import world.cepi.kstom.command.arguments.annotations.MinAmount
 import world.cepi.kstom.serializer.SerializableEntityFinder
 import java.util.*
 import kotlin.reflect.KClass
@@ -95,7 +97,11 @@ public fun <T : Any> argumentsFromClass(clazz: KClass<T>): GeneratedArguments<T>
  */
 public fun argumentsFromFunction(constructor: KFunction<*>): List<Argument<*>?> =
     constructor.valueParameters.map {
-        argumentFromClass(it.name ?: it.type.jvmErasure.simpleName!!, it.type.classifier!! as KClass<*>)
+        argumentFromClass(
+            it.name ?: it.type.jvmErasure.simpleName!!,
+            it.type.classifier!! as KClass<*>,
+            it.annotations
+        )
     }
 
 /**
@@ -112,8 +118,14 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
 
     return when (clazz) {
         String::class -> ArgumentType.String(name)
-        Int::class -> ArgumentType.Integer(name)
-        Double::class -> ArgumentType.Double(name)
+        Int::class -> ArgumentType.Integer(name).also { argument ->
+            annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min.toInt()) }
+            annotations.filterIsInstance<MaxAmount>().firstOrNull()?.let { argument.max(it.max.toInt()) }
+        }
+        Double::class -> ArgumentType.Double(name).also { argument ->
+            annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min) }
+            annotations.filterIsInstance<MaxAmount>().firstOrNull()?.let { argument.max(it.max) }
+        }
         Color::class -> ArgumentType.Color(name)
         EntityType::class -> ArgumentType.EntityType(name)
         Material::class -> ArgumentType.ItemStack(name)
