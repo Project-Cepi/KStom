@@ -23,6 +23,7 @@ import net.minestom.server.utils.math.IntRange
 import net.minestom.server.utils.time.UpdateOption
 import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
+import world.cepi.kstom.command.arguments.annotations.DefaultNumber
 import world.cepi.kstom.command.arguments.annotations.MaxAmount
 import world.cepi.kstom.command.arguments.annotations.MinAmount
 import world.cepi.kstom.serializer.SerializableEntityFinder
@@ -121,16 +122,22 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
         Int::class -> ArgumentType.Integer(name).also { argument ->
             annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min.toInt()) }
             annotations.filterIsInstance<MaxAmount>().firstOrNull()?.let { argument.max(it.max.toInt()) }
+            annotations.filterIsInstance<DefaultNumber>().firstOrNull()?.let { argument.defaultValue(it.number.toInt()) }
         }
         Double::class -> ArgumentType.Double(name).also { argument ->
             annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min) }
             annotations.filterIsInstance<MaxAmount>().firstOrNull()?.let { argument.max(it.max) }
+            annotations.filterIsInstance<DefaultNumber>().firstOrNull()?.let { argument.defaultValue(it.number) }
         }
         Color::class -> ArgumentType.Color(name)
         EntityType::class -> ArgumentType.EntityType(name)
         Material::class -> ArgumentType.ItemStack(name)
         Boolean::class -> ArgumentType.Boolean(name)
-        Float::class -> ArgumentType.Float(name)
+        Float::class -> ArgumentType.Float(name).also { argument ->
+            annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min.toFloat()) }
+            annotations.filterIsInstance<MaxAmount>().firstOrNull()?.let { argument.max(it.max.toFloat()) }
+            annotations.filterIsInstance<DefaultNumber>().firstOrNull()?.let { argument.defaultValue(it.number.toFloat()) }
+        }
         ItemStack::class -> ArgumentType.ItemStack(name)
         Material::class -> ArgumentType.ItemStack(name)
         NBTCompound::class -> ArgumentType.NbtCompound(name)
