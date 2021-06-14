@@ -147,7 +147,6 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
         CommandResult::class -> ArgumentType.Command(name)
         PotionEffect::class -> ArgumentType.Potion(name)
         UUID::class -> ArgumentType.UUID(name)
-        Array<String>::class -> ArgumentType.StringArray(name)
         else -> {
             if (clazz.java.enumConstants == null) return null
 
