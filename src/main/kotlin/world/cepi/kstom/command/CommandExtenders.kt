@@ -1,5 +1,6 @@
 package world.cepi.kstom.command
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
@@ -8,39 +9,48 @@ import net.minestom.server.command.builder.CommandExecutor
 import net.minestom.server.command.builder.CommandSyntax
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.exception.ArgumentSyntaxException
+import world.cepi.kstom.Manager
 import world.cepi.kstom.util.IOScope
 
+fun launchTry(block: suspend CoroutineScope.() -> Unit) {
+    try {
+        IOScope.launch(block = block)
+    } catch (e: Exception) {
+        Manager.exception.handleException(e)
+    }
+}
+
 public inline fun Command.addSyntax(crossinline lambda: suspend () -> Unit) {
-    setDefaultExecutor { _, _ -> IOScope.launch { lambda() }}
+    setDefaultExecutor { _, _ -> launchTry { lambda() }}
 }
 
 public inline fun Command.addSyntax(crossinline lambda: suspend (sender: CommandSender) -> Unit) {
-    setDefaultExecutor { sender, _ -> IOScope.launch { lambda(sender) }}
+    setDefaultExecutor { sender, _ -> launchTry { lambda(sender) }}
 }
 
 public inline fun Command.addSyntax(crossinline lambda: suspend (sender: CommandSender, args: CommandContext) -> Unit) {
-    defaultExecutor = CommandExecutor { sender, args -> IOScope.launch { lambda(sender, args) } }
+    defaultExecutor = CommandExecutor { sender, args -> launchTry { lambda(sender, args) } }
 }
 
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
     crossinline lambda: suspend () -> Unit
 ): Collection<CommandSyntax> {
-    return addSyntax({ _, _ -> IOScope.launch { lambda() }}, *arguments)
+    return addSyntax({ _, _ -> launchTry { lambda() }}, *arguments)
 }
 
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
     crossinline lambda: suspend (sender: CommandSender) -> Unit
 ): Collection<CommandSyntax> {
-    return addSyntax({ sender, _ -> IOScope.launch { lambda(sender) }}, *arguments)
+    return addSyntax({ sender, _ -> launchTry { lambda(sender) }}, *arguments)
 }
 
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
     crossinline lambda: suspend (sender: CommandSender, args: CommandContext) -> Unit
 ): Collection<CommandSyntax> {
-    return addSyntax({ sender, args -> IOScope.launch { lambda(sender, args)} }, *arguments)
+    return addSyntax({ sender, args -> launchTry { lambda(sender, args)} }, *arguments)
 }
 
 public inline fun Command.addSyntax(
@@ -50,7 +60,7 @@ public inline fun Command.addSyntax(
 ): Collection<CommandSyntax> {
     return addConditionalSyntax(
         { _, _ -> condition() },
-        { _, _ -> IOScope.launch { lambda() } },
+        { _, _ -> launchTry { lambda() } },
         *arguments
     )
 }
@@ -62,7 +72,7 @@ public inline fun Command.addSyntax(
 ): Collection<CommandSyntax> {
     return addConditionalSyntax(
         { source, _ -> condition(source) },
-        { _, _ -> IOScope.launch { lambda() } },
+        { _, _ -> launchTry { lambda() } },
         *arguments
     )
 }
@@ -74,7 +84,7 @@ public inline fun Command.addSyntax(
 ): Collection<CommandSyntax> {
     return addConditionalSyntax(
         { source, string -> condition(source, string ?: "") },
-        { _, _ -> IOScope.launch { lambda() } },
+        { _, _ -> launchTry { lambda() } },
         *arguments
     )
 }
@@ -86,7 +96,7 @@ public inline fun Command.addSyntax(
 ): Collection<CommandSyntax> {
     return addConditionalSyntax(
         { _, _ -> condition() },
-        { sender, _ -> IOScope.launch { lambda(sender) } },
+        { sender, _ -> launchTry { lambda(sender) } },
         *arguments
     )
 }
@@ -98,7 +108,7 @@ public inline fun Command.addSyntax(
 ) {
     addConditionalSyntax(
         { source, _ -> condition(source) },
-        { sender, _ -> IOScope.launch { lambda(sender) } },
+        { sender, _ -> launchTry { lambda(sender) } },
         *arguments
     )
 }
@@ -110,7 +120,7 @@ public inline fun Command.addSyntax(
 ): Collection<CommandSyntax> {
     return addConditionalSyntax(
         { source, string -> condition(source, string ?: "") },
-        { sender, _ -> IOScope.launch { lambda(sender) } },
+        { sender, _ -> launchTry { lambda(sender) } },
         *arguments
     )
 }
@@ -122,7 +132,7 @@ public inline fun Command.addSyntax(
 ): Collection<CommandSyntax> {
     return addConditionalSyntax(
         { _, _ -> condition()},
-        { sender, args -> IOScope.launch { lambda(sender, args) } },
+        { sender, args -> launchTry { lambda(sender, args) } },
         *arguments
     )
 }
@@ -134,7 +144,7 @@ public inline fun Command.addSyntax(
 ) {
     addConditionalSyntax(
         { source, _ -> condition(source)},
-        { sender, args -> IOScope.launch { lambda(sender, args) } },
+        { sender, args -> launchTry { lambda(sender, args) } },
         *arguments
     )
 }
@@ -145,25 +155,25 @@ public inline fun Command.addSyntax(vararg arguments: Argument<*>, crossinline c
 ) -> Boolean, crossinline lambda: suspend (sender: CommandSender, args: CommandContext) -> Unit): Collection<CommandSyntax> {
     return addConditionalSyntax(
         { source, string -> condition(source, string ?: "")},
-        { sender, args -> IOScope.launch { lambda(sender, args) } },
+        { sender, args -> launchTry { lambda(sender, args) } },
         *arguments
     )
 }
 
 public inline fun Command.setArgumentCallback(arg: Argument<*>, crossinline lambda: suspend () -> Unit) {
-    setArgumentCallback({ _, _ -> IOScope.launch { lambda() } }, arg)
+    setArgumentCallback({ _, _ -> launchTry { lambda() } }, arg)
 }
 
 public inline fun Command.setArgumentCallback(arg: Argument<*>, crossinline lambda: suspend (source: CommandSender) -> Unit) {
-    setArgumentCallback({ source, _ -> IOScope.launch { lambda(source) } }, arg)
+    setArgumentCallback({ source, _ -> launchTry { lambda(source) } }, arg)
 }
 
 public inline fun Command.setArgumentCallback(arg: Argument<*>, crossinline lambda: suspend (source: CommandSender, value: ArgumentSyntaxException) -> Unit) {
-    setArgumentCallback({ source, value -> IOScope.launch { lambda(source, value) } }, arg)
+    setArgumentCallback({ source, value -> launchTry { lambda(source, value) } }, arg)
 }
 
 public inline fun Command.default(crossinline block: suspend (sender: CommandSender, args: CommandContext) -> Unit) {
-    defaultExecutor = CommandExecutor { sender, args -> IOScope.launch { block(sender, args) } }
+    defaultExecutor = CommandExecutor { sender, args -> launchTry { block(sender, args) } }
 }
 
 public fun Command.addSubcommands(vararg subcommands: Command) {
