@@ -2,6 +2,7 @@ package world.cepi.kstom.command
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
@@ -11,10 +12,9 @@ import net.minestom.server.command.builder.CommandSyntax
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.exception.ArgumentSyntaxException
 import world.cepi.kstom.Manager
-import world.cepi.kstom.util.IOScope
 
 fun launchTry(block: suspend CoroutineScope.() -> Unit) {
-    IOScope.launch(CoroutineExceptionHandler { _, exception ->
+    GlobalScope.launch(CoroutineExceptionHandler { _, exception ->
         Manager.exception.handleException(exception)
     }, block = block)
 }

@@ -17,12 +17,6 @@ import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-public val IOContext: ExecutorCoroutineDispatcher = Executors
-    .newFixedThreadPool(Runtime.getRuntime().availableProcessors())
-    .asCoroutineDispatcher()
-
-public val IOScope: CoroutineScope = CoroutineScope(IOContext)
-
 public suspend fun FakePlayer(uuid: UUID, username: String, option: FakePlayerOption = FakePlayerOption()): FakePlayer = suspendCoroutine { cont ->
     FakePlayer.initPlayer(uuid, username, option) {
         cont.resume(it)
