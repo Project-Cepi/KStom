@@ -13,53 +13,47 @@ import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.exception.ArgumentSyntaxException
 import world.cepi.kstom.Manager
 
-fun launchTry(block: suspend CoroutineScope.() -> Unit) {
-    GlobalScope.launch(CoroutineExceptionHandler { _, exception ->
-        Manager.exception.handleException(exception)
-    }, block = block)
+public inline fun Command.addSyntax(crossinline lambda: () -> Unit) {
+    setDefaultExecutor { _, _ ->  lambda() }
 }
 
-public inline fun Command.addSyntax(crossinline lambda: suspend () -> Unit) {
-    setDefaultExecutor { _, _ -> launchTry { lambda() }}
+public inline fun Command.addSyntax(crossinline lambda: (sender: CommandSender) -> Unit) {
+    setDefaultExecutor { sender, _ ->  lambda(sender) }
 }
 
-public inline fun Command.addSyntax(crossinline lambda: suspend (sender: CommandSender) -> Unit) {
-    setDefaultExecutor { sender, _ -> launchTry { lambda(sender) }}
-}
-
-public inline fun Command.addSyntax(crossinline lambda: suspend (sender: CommandSender, args: CommandContext) -> Unit) {
-    defaultExecutor = CommandExecutor { sender, args -> launchTry { lambda(sender, args) } }
+public inline fun Command.addSyntax(crossinline lambda: (sender: CommandSender, args: CommandContext) -> Unit) {
+    defaultExecutor = CommandExecutor { sender, args ->  lambda(sender, args) }
 }
 
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
-    crossinline lambda: suspend () -> Unit
+    crossinline lambda: () -> Unit
 ): Collection<CommandSyntax> {
-    return addSyntax({ _, _ -> launchTry { lambda() }}, *arguments)
+    return addSyntax({ _, _ ->  lambda() }, *arguments)
 }
 
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
-    crossinline lambda: suspend (sender: CommandSender) -> Unit
+    crossinline lambda: (sender: CommandSender) -> Unit
 ): Collection<CommandSyntax> {
-    return addSyntax({ sender, _ -> launchTry { lambda(sender) }}, *arguments)
+    return addSyntax({ sender, _ ->  lambda(sender) }, *arguments)
 }
 
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
-    crossinline lambda: suspend (sender: CommandSender, args: CommandContext) -> Unit
+    crossinline lambda: (sender: CommandSender, args: CommandContext) -> Unit
 ): Collection<CommandSyntax> {
-    return addSyntax({ sender, args -> launchTry { lambda(sender, args)} }, *arguments)
+    return addSyntax({ sender, args ->  lambda(sender, args) }, *arguments)
 }
 
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
     crossinline condition: () -> Boolean,
-    crossinline lambda: suspend () -> Unit
+    crossinline lambda: () -> Unit
 ): Collection<CommandSyntax> {
     return addConditionalSyntax(
         { _, _ -> condition() },
-        { _, _ -> launchTry { lambda() } },
+        { _, _ -> lambda() },
         *arguments
     )
 }
@@ -67,11 +61,11 @@ public inline fun Command.addSyntax(
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
     crossinline condition: (source: CommandSender) -> Boolean,
-    crossinline lambda: suspend () -> Unit
+    crossinline lambda: () -> Unit
 ): Collection<CommandSyntax> {
     return addConditionalSyntax(
         { source, _ -> condition(source) },
-        { _, _ -> launchTry { lambda() } },
+        { _, _ -> lambda() },
         *arguments
     )
 }
@@ -79,11 +73,11 @@ public inline fun Command.addSyntax(
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
     crossinline condition: (source: CommandSender, commandString: String) -> Boolean,
-    crossinline lambda: suspend () -> Unit
+    crossinline lambda: () -> Unit
 ): Collection<CommandSyntax> {
     return addConditionalSyntax(
         { source, string -> condition(source, string ?: "") },
-        { _, _ -> launchTry { lambda() } },
+        { _, _ -> lambda() },
         *arguments
     )
 }
@@ -91,11 +85,11 @@ public inline fun Command.addSyntax(
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
     crossinline condition: () -> Boolean,
-    crossinline lambda: suspend (sender: CommandSender) -> Unit
+    crossinline lambda: (sender: CommandSender) -> Unit
 ): Collection<CommandSyntax> {
     return addConditionalSyntax(
         { _, _ -> condition() },
-        { sender, _ -> launchTry { lambda(sender) } },
+        { sender, _ -> lambda(sender) },
         *arguments
     )
 }
@@ -103,11 +97,11 @@ public inline fun Command.addSyntax(
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
     crossinline condition: (source: CommandSender) -> Boolean,
-    crossinline lambda: suspend (sender: CommandSender) -> Unit
+    crossinline lambda: (sender: CommandSender) -> Unit
 ) {
     addConditionalSyntax(
         { source, _ -> condition(source) },
-        { sender, _ -> launchTry { lambda(sender) } },
+        { sender, _ -> lambda(sender) },
         *arguments
     )
 }
@@ -115,11 +109,11 @@ public inline fun Command.addSyntax(
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
     crossinline condition: (source: CommandSender, commandString: String) -> Boolean,
-    crossinline lambda: suspend (sender: CommandSender) -> Unit
+    crossinline lambda:  (sender: CommandSender) -> Unit
 ): Collection<CommandSyntax> {
     return addConditionalSyntax(
         { source, string -> condition(source, string ?: "") },
-        { sender, _ -> launchTry { lambda(sender) } },
+        { sender, _ -> lambda(sender) },
         *arguments
     )
 }
@@ -127,11 +121,11 @@ public inline fun Command.addSyntax(
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
     crossinline condition: () -> Boolean,
-    crossinline lambda: suspend (sender: CommandSender, args: CommandContext) -> Unit
+    crossinline lambda: (sender: CommandSender, args: CommandContext) -> Unit
 ): Collection<CommandSyntax> {
     return addConditionalSyntax(
         { _, _ -> condition()},
-        { sender, args -> launchTry { lambda(sender, args) } },
+        { sender, args ->  lambda(sender, args) },
         *arguments
     )
 }
@@ -139,11 +133,11 @@ public inline fun Command.addSyntax(
 public inline fun Command.addSyntax(
     vararg arguments: Argument<*>,
     crossinline condition: (source: CommandSender) -> Boolean,
-    crossinline lambda: suspend (sender: CommandSender, args: CommandContext) -> Unit
+    crossinline lambda: (sender: CommandSender, args: CommandContext) -> Unit
 ) {
     addConditionalSyntax(
         { source, _ -> condition(source)},
-        { sender, args -> launchTry { lambda(sender, args) } },
+        { sender, args ->  lambda(sender, args) },
         *arguments
     )
 }
@@ -151,28 +145,28 @@ public inline fun Command.addSyntax(
 public inline fun Command.addSyntax(vararg arguments: Argument<*>, crossinline condition: (
     source: CommandSender,
     commandString: String
-) -> Boolean, crossinline lambda: suspend (sender: CommandSender, args: CommandContext) -> Unit): Collection<CommandSyntax> {
+) -> Boolean, crossinline lambda: (sender: CommandSender, args: CommandContext) -> Unit): Collection<CommandSyntax> {
     return addConditionalSyntax(
         { source, string -> condition(source, string ?: "")},
-        { sender, args -> launchTry { lambda(sender, args) } },
+        { sender, args ->  lambda(sender, args) },
         *arguments
     )
 }
 
-public inline fun Command.setArgumentCallback(arg: Argument<*>, crossinline lambda: suspend () -> Unit) {
-    setArgumentCallback({ _, _ -> launchTry { lambda() } }, arg)
+public inline fun Command.setArgumentCallback(arg: Argument<*>, crossinline lambda: () -> Unit) {
+    setArgumentCallback({ _, _ ->  lambda() }, arg)
 }
 
-public inline fun Command.setArgumentCallback(arg: Argument<*>, crossinline lambda: suspend (source: CommandSender) -> Unit) {
-    setArgumentCallback({ source, _ -> launchTry { lambda(source) } }, arg)
+public inline fun Command.setArgumentCallback(arg: Argument<*>, crossinline lambda: (source: CommandSender) -> Unit) {
+    setArgumentCallback({ source, _ ->  lambda(source) }, arg)
 }
 
-public inline fun Command.setArgumentCallback(arg: Argument<*>, crossinline lambda: suspend (source: CommandSender, value: ArgumentSyntaxException) -> Unit) {
-    setArgumentCallback({ source, value -> launchTry { lambda(source, value) } }, arg)
+public inline fun Command.setArgumentCallback(arg: Argument<*>, crossinline lambda: (source: CommandSender, value: ArgumentSyntaxException) -> Unit) {
+    setArgumentCallback({ source, value ->  lambda(source, value) }, arg)
 }
 
-public inline fun Command.default(crossinline block: suspend (sender: CommandSender, args: CommandContext) -> Unit) {
-    defaultExecutor = CommandExecutor { sender, args -> launchTry { block(sender, args) } }
+public inline fun Command.default(crossinline block:  (sender: CommandSender, args: CommandContext) -> Unit) {
+    defaultExecutor = CommandExecutor { sender, args ->  block(sender, args) }
 }
 
 public fun Command.addSubcommands(vararg subcommands: Command) {
