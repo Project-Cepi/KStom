@@ -15,7 +15,6 @@ repositories {
 
     maven(url = "https://jitpack.io")
     maven(url = "https://repo.spongepowered.org/maven")
-    maven(url = "https://repo.minestom.com/repository/maven-public/")
     maven(url = "https://repo.velocitypowered.com/snapshots/")
 }
 
@@ -35,7 +34,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
 
     // Compile Minestom into project
-    implementation("com.github.Minestom", "Minestom", "78cc392007")
+    implementation("com.github.Minestom", "Minestom", "1e9046d792")
     implementation("com.github.jglrxavpok", "Hephaistos", "1.1.8")
 
     // import kotlinx serialization
