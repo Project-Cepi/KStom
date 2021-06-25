@@ -5,11 +5,13 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.serializer
 import net.minestom.server.item.ItemMeta
 import net.minestom.server.tag.Tag
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
 import world.cepi.kstom.nbt.NBTParser
 import world.cepi.kstom.nbt.NbtFormat
+import kotlin.reflect.KClass
 
 @Target(AnnotationTarget.CLASS, AnnotationTarget.PROPERTY, AnnotationTarget.FUNCTION, AnnotationTarget.TYPEALIAS)
 @RequiresOptIn("Literally doesn't garbage collect at all.", level = RequiresOptIn.Level.WARNING)
@@ -59,13 +61,18 @@ object ItemMetaServerData {
 
 public fun ItemMetaBuilder.clientData(receiver: ItemMetaClientData.() -> Unit) = ItemMetaClientData(this).receiver()
 
-public inline fun <reified T: @Serializable Any> ItemMeta.get(tag: String): T? = this.getTag(Tag.NBT(tag))?.let {
-    return@let NBTParser.deserialize<T>(it as? NBTCompound ?: return null)
+@OptIn(kotlinx.serialization.InternalSerializationApi::class)
+public fun <T: @Serializable Any> ItemMeta.get(tag: String, clazz: KClass<T>): T? = this.getTag(Tag.NBT(tag))?.let {
+    return@let NBTParser.deserialize(clazz.serializer(), it as? NBTCompound ?: return null)
 }
 
-public inline fun <reified T: @Serializable Any> ItemMeta.get(tag: String, module: SerializersModule): T? = this.getTag(Tag.NBT(tag))?.let {
-    return@let NbtFormat(module).deserialize<T>(it as? NBTCompound ?: return null)
+public inline fun <reified T: @Serializable Any> ItemMeta.get(tag: String): T? = this.get(tag, T::class)
+
+@OptIn(kotlinx.serialization.InternalSerializationApi::class)
+public fun <T: @Serializable Any> ItemMeta.get(tag: String, module: SerializersModule, clazz: KClass<T>): T? = this.getTag(Tag.NBT(tag))?.let {
+    return@let NbtFormat(module).deserialize(clazz.serializer(), it as? NBTCompound ?: return null)
 }
 
+public inline fun <reified T: @Serializable Any> ItemMeta.get(tag: String, module: SerializersModule): T? = this.get(tag, module, T::class)
 @ExperimentalServerStorageAPI
 public fun ItemMetaBuilder.serverData(receiver: ItemMetaServerDataProvider.() -> Unit) = ItemMetaServerDataProvider(this).receiver()
