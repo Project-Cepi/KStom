@@ -21,8 +21,8 @@ object ArgumentGeneratorDemo : Command("argumentGeneratorDemo") {
         val argumentGenerator = argumentsFromClass<CoolItem>()
         val alternativeargumentGenerator = argumentsFromClass(CoolItem::class)
 
-        addSyntax(*argumentGenerator.args) { sender, args ->
-            val obj = argumentGenerator.createInstance(args, sender)
+        addSyntax(*argumentGenerator.args) { ->
+            val obj = argumentGenerator.createInstance(context, sender)
 
             sender.sendMessage(obj.toString())
         }
