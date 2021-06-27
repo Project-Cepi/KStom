@@ -63,7 +63,7 @@ object RayCast {
             }
 
             // checks if there is an entity in this step -- if so, return that.
-            val target = Fuzzy.positionInEntity(instance, start.toPosition(), origin)
+            val target = Fuzzy.positionInEntity(instance, start.toPosition(), origin, margin)
             if (target != null) {
                 return Result(start, HitType.ENTITY, target)
             }

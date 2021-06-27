@@ -7,23 +7,8 @@ import net.minestom.server.utils.Position
 
 object Fuzzy {
 
-    fun minX(position: Position, margin: Double = 0.125) = position.x - margin
-
-    fun maxX(position: Position, margin: Double = 0.125) = position.x + margin
-
-    fun minY(position: Position, margin: Double = 0.125) = position.y - margin
-
-    fun maxY(position: Position, margin: Double = 0.125) = position.y + margin
-
-    fun minZ(position: Position, margin: Double = 0.125) = position.z - margin
-
-    fun maxZ(position: Position, margin: Double = 0.125) = position.z + margin
-
-    fun collides(boundingBox: BoundingBox, pos: Position, margin: Double = 0.125): Boolean {
-        return (minX(pos, margin) <= boundingBox.maxX && maxX(pos, margin) >= boundingBox.minX) &&
-                (minY(pos, margin) <= boundingBox.maxY && maxY(pos, margin) >= boundingBox.minY) &&
-                (minZ(pos, margin) <= boundingBox.maxZ && maxZ(pos, margin) >= boundingBox.minZ)
-    }
+    fun collides(boundingBox: BoundingBox, pos: Position, margin: Double = 0.125) =
+        boundingBox.expand(margin, margin, margin).intersect(pos)
 
     /**
      * Check if this position is inside a [LivingEntity]
@@ -45,7 +30,7 @@ object Fuzzy {
         // find the first entity that isn't this entity and that the position is in this entity.
         return chunkEntities
             .filterIsInstance<LivingEntity>()
-            .firstOrNull { it != origin && Fuzzy.collides(it.boundingBox, position, margin) }
+            .firstOrNull { it != origin && collides(it.boundingBox, position, margin) }
     }
 
 }
