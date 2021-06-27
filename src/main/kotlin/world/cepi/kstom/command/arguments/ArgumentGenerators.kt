@@ -139,8 +139,7 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
             annotations.filterIsInstance<MaxAmount>().firstOrNull()?.let { argument.max(it.max.toFloat()) }
             annotations.filterIsInstance<DefaultNumber>().firstOrNull()?.let { argument.defaultValue(it.number.toFloat()) }
         }
-        ItemStack::class -> ArgumentType.ItemStack(name)
-        Material::class -> ArgumentType.ItemStack(name).also { argument ->
+        ItemStack::class, Material::class -> ArgumentType.ItemStack(name).also { argument ->
             annotations.filterIsInstance<DefaultMaterial>().firstOrNull()?.let { argument.defaultValue(ItemStack.of(it.material)) }
         }
         NBTCompound::class -> ArgumentType.NbtCompound(name)
