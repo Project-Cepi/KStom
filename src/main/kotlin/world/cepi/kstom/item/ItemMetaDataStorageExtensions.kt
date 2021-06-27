@@ -1,5 +1,6 @@
 package world.cepi.kstom.item
 
+import kotlinx.serialization.KSerializer
 import net.minestom.server.item.ItemMetaBuilder
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -62,17 +63,24 @@ object ItemMetaServerData {
 public fun ItemMetaBuilder.clientData(receiver: ItemMetaClientData.() -> Unit) = ItemMetaClientData(this).receiver()
 
 @OptIn(kotlinx.serialization.InternalSerializationApi::class)
-public fun <T: @Serializable Any> ItemMeta.get(tag: String, clazz: KClass<T>): T? = this.getTag(Tag.NBT(tag))?.let {
-    return@let NBTParser.deserialize(clazz.serializer(), it as? NBTCompound ?: return null)
+public fun <T: @Serializable Any> ItemMeta.get(
+    tag: String,
+    clazz: KClass<T>,
+    module: SerializersModule? = null
+): T? = this.getTag(Tag.NBT(tag))?.let {
+    return@let (
+            if (module == null)
+                NBTParser
+            else
+                NbtFormat(module)
+            )
+        .deserialize(clazz.serializer(), it as? NBTCompound ?: return null)
 }
 
-public inline fun <reified T: @Serializable Any> ItemMeta.get(tag: String): T? = this.get(tag, T::class)
+public inline fun <reified T: @Serializable Any> ItemMeta.get(
+    tag: String,
+    module: SerializersModule? = null
+): T? = this.get(tag, T::class, module)
 
-@OptIn(kotlinx.serialization.InternalSerializationApi::class)
-public fun <T: @Serializable Any> ItemMeta.get(tag: String, module: SerializersModule, clazz: KClass<T>): T? = this.getTag(Tag.NBT(tag))?.let {
-    return@let NbtFormat(module).deserialize(clazz.serializer(), it as? NBTCompound ?: return null)
-}
-
-public inline fun <reified T: @Serializable Any> ItemMeta.get(tag: String, module: SerializersModule): T? = this.get(tag, module, T::class)
 @ExperimentalServerStorageAPI
 public fun ItemMetaBuilder.serverData(receiver: ItemMetaServerDataProvider.() -> Unit) = ItemMetaServerDataProvider(this).receiver()

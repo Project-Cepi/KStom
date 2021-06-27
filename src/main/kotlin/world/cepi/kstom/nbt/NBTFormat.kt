@@ -17,6 +17,7 @@ open class NbtFormat(context: SerializersModule = EmptySerializersModule) {
 
     val json = Json {
         serializersModule = context
+        ignoreUnknownKeys = true
     }
 
     /**
