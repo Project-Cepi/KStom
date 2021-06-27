@@ -23,6 +23,7 @@ import net.minestom.server.utils.math.IntRange
 import net.minestom.server.utils.time.UpdateOption
 import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
+import world.cepi.kstom.command.arguments.annotations.DefaultMaterial
 import world.cepi.kstom.command.arguments.annotations.DefaultNumber
 import world.cepi.kstom.command.arguments.annotations.MaxAmount
 import world.cepi.kstom.command.arguments.annotations.MinAmount
@@ -139,7 +140,9 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
             annotations.filterIsInstance<DefaultNumber>().firstOrNull()?.let { argument.defaultValue(it.number.toFloat()) }
         }
         ItemStack::class -> ArgumentType.ItemStack(name)
-        Material::class -> ArgumentType.ItemStack(name)
+        Material::class -> ArgumentType.ItemStack(name).also { argument ->
+            annotations.filterIsInstance<DefaultMaterial>().firstOrNull()?.let { argument.defaultValue(ItemStack.of(it.material)) }
+        }
         NBTCompound::class -> ArgumentType.NbtCompound(name)
         NBT::class -> ArgumentType.NBT(name)
         Component::class -> ArgumentType.Component(name)
