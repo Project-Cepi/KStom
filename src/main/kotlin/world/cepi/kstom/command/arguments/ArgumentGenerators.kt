@@ -157,7 +157,10 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
                 ?.let { argument.defaultValue(it.block) }
         }
         CommandResult::class -> ArgumentType.Command(name)
-        PotionEffect::class -> ArgumentType.Potion(name)
+        PotionEffect::class -> ArgumentType.Potion(name).also { argument ->
+            annotations.filterIsInstance<DefaultPotionEffect>().firstOrNull()
+                ?.let { argument.defaultValue(it.potionEffect) }
+        }
         UUID::class -> ArgumentType.UUID(name)
         else -> {
             if (clazz.java.enumConstants == null) return null
