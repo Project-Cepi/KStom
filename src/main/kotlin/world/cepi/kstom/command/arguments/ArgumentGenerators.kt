@@ -155,16 +155,20 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
         Enchantment::class -> ArgumentType.Enchantment(name)
         RelativeVec::class -> ArgumentType.RelativeVec3(name)
         Vector::class -> ArgumentType.RelativeVec3(name)
-        Byte::class -> ArgumentType.Integer(name).also {
-            it.min(
+        Byte::class -> ArgumentType.Integer(name).also { argument ->
+            argument.min(
                 annotations.filterIsInstance<MinAmount>().firstOrNull()?.min?.toInt()
                     ?.coerceAtLeast(Byte.MIN_VALUE.toInt()) ?: Byte.MIN_VALUE.toInt()
             )
 
-            it.max(
+            argument.max(
                 annotations.filterIsInstance<MaxAmount>().firstOrNull()?.max?.toInt()
                     ?.coerceAtLeast(Byte.MAX_VALUE.toInt()) ?: Byte.MAX_VALUE.toInt()
             )
+
+            annotations.filterIsInstance<DefaultNumber>().firstOrNull()
+                ?.let { argument.defaultValue(it.number.toInt().coerceIn(Byte.MIN_VALUE..Byte.MAX_VALUE)) }
+
         }
         RelativeBlockPosition::class -> ArgumentType.RelativeBlockPosition(name)
         Block::class -> ArgumentType.BlockState(name).also { argument ->
