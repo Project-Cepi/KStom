@@ -10,6 +10,7 @@ import net.minestom.server.command.builder.arguments.ArgumentEnum
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.EntityType
+import net.minestom.server.instance.block.Block
 import net.minestom.server.item.Enchantment
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
@@ -23,10 +24,7 @@ import net.minestom.server.utils.math.IntRange
 import net.minestom.server.utils.time.UpdateOption
 import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
-import world.cepi.kstom.command.arguments.annotations.DefaultMaterial
-import world.cepi.kstom.command.arguments.annotations.DefaultNumber
-import world.cepi.kstom.command.arguments.annotations.MaxAmount
-import world.cepi.kstom.command.arguments.annotations.MinAmount
+import world.cepi.kstom.command.arguments.annotations.*
 import world.cepi.kstom.serializer.SerializableEntityFinder
 import java.util.*
 import kotlin.reflect.KClass
@@ -140,7 +138,8 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
             annotations.filterIsInstance<DefaultNumber>().firstOrNull()?.let { argument.defaultValue(it.number.toFloat()) }
         }
         ItemStack::class, Material::class -> ArgumentType.ItemStack(name).also { argument ->
-            annotations.filterIsInstance<DefaultMaterial>().firstOrNull()?.let { argument.defaultValue(ItemStack.of(it.material)) }
+            annotations.filterIsInstance<DefaultMaterial>().firstOrNull()
+                ?.let { argument.defaultValue(ItemStack.of(it.material)) }
         }
         NBTCompound::class -> ArgumentType.NbtCompound(name)
         NBT::class -> ArgumentType.NBT(name)
@@ -153,6 +152,10 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
         RelativeVec::class -> ArgumentType.RelativeVec3(name)
         Vector::class -> ArgumentType.RelativeVec3(name)
         RelativeBlockPosition::class -> ArgumentType.RelativeBlockPosition(name)
+        Block::class -> ArgumentType.BlockState(name).also { argument ->
+            annotations.filterIsInstance<DefaultBlock>().firstOrNull()
+                ?.let { argument.defaultValue(it.block) }
+        }
         CommandResult::class -> ArgumentType.Command(name)
         PotionEffect::class -> ArgumentType.Potion(name)
         UUID::class -> ArgumentType.UUID(name)
