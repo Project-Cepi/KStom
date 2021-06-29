@@ -50,6 +50,7 @@ class GeneratedArguments<T : Any>(val clazz: KClass<T>, val args: Array<Argument
 
             when (correspondingClass) {
                 Material::class -> if (value is ItemStack) return@mapIndexed value.material
+                Byte::class -> if (value is Int) return@mapIndexed value.toByte()
                 Vector::class -> if (value is RelativeVec) return@mapIndexed value.from(sender as? Entity)
             }
 
@@ -131,7 +132,10 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
         Color::class -> ArgumentType.Color(name)
         EntityType::class -> ArgumentType.EntityType(name)
         Material::class -> ArgumentType.ItemStack(name)
-        Boolean::class -> ArgumentType.Boolean(name)
+        Boolean::class -> ArgumentType.Boolean(name).also { argument ->
+            annotations.filterIsInstance<DefaultBoolean>().firstOrNull()
+                ?.let { argument.defaultValue(it.boolean) }
+        }
         Float::class -> ArgumentType.Float(name).also { argument ->
             annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min.toFloat()) }
             annotations.filterIsInstance<MaxAmount>().firstOrNull()?.let { argument.max(it.max.toFloat()) }
@@ -151,6 +155,17 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
         Enchantment::class -> ArgumentType.Enchantment(name)
         RelativeVec::class -> ArgumentType.RelativeVec3(name)
         Vector::class -> ArgumentType.RelativeVec3(name)
+        Byte::class -> ArgumentType.Integer(name).also {
+            it.min(
+                annotations.filterIsInstance<MinAmount>().firstOrNull()?.min?.toInt()
+                    ?.coerceAtLeast(Byte.MIN_VALUE.toInt()) ?: Byte.MIN_VALUE.toInt()
+            )
+
+            it.max(
+                annotations.filterIsInstance<MaxAmount>().firstOrNull()?.max?.toInt()
+                    ?.coerceAtLeast(Byte.MAX_VALUE.toInt()) ?: Byte.MAX_VALUE.toInt()
+            )
+        }
         RelativeBlockPosition::class -> ArgumentType.RelativeBlockPosition(name)
         Block::class -> ArgumentType.BlockState(name).also { argument ->
             annotations.filterIsInstance<DefaultBlock>().firstOrNull()
