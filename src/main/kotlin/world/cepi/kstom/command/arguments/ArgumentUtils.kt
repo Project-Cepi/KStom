@@ -41,6 +41,11 @@ public fun String.literal(): ArgumentLiteral = ArgumentType.Literal(this)
 public fun <T> Argument<T>.defaultValue(value: T): Argument<T> =
     this.setDefaultValue { value }
 
+sealed class SuggestionIgnoreOption(val modifier: (String) -> String = { it }) {
+    object NONE: SuggestionIgnoreOption()
+    object IGNORE_CASE: SuggestionIgnoreOption({ it.lowercase() })
+}
+
 /**
  * Suggests a set of [SuggestionEntry]s.
  * Will automatically sort and filter entries to match with input
@@ -52,17 +57,22 @@ public fun <T> Argument<T>.defaultValue(value: T): Argument<T> =
 @Beta
 @Contract("_ -> this")
 public fun <T> Argument<T>.suggestComplex(
+    suggestionIgnoreOption: SuggestionIgnoreOption = SuggestionIgnoreOption.NONE,
     lambda: SyntaxContext.() -> List<SuggestionEntry>
 ): Argument<T>
     = this.setSuggestionCallback { sender, context, suggestion ->
 
         lambda(SyntaxContext(sender, context))
-            .filter { it.entry.startsWith(suggestion.input) }
+            .filter {
+                suggestionIgnoreOption.modifier(it.entry)
+                    .startsWith(suggestionIgnoreOption.modifier(suggestion.input))
+            }
             .sortedBy { it.entry }
             .forEach { suggestion.addEntry(it) }
 
     }
 
 fun <T> Argument<T>.suggest(
+    suggestionIgnoreOption: SuggestionIgnoreOption = SuggestionIgnoreOption.NONE,
     lambda: SyntaxContext.() -> List<String>
-): Argument<T> = this.suggestComplex { lambda(this).map { SuggestionEntry(it) } }
+): Argument<T> = this.suggestComplex(suggestionIgnoreOption) { lambda(this).map { SuggestionEntry(it) } }
