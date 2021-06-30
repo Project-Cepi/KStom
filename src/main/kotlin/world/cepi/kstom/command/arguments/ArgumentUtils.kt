@@ -41,7 +41,7 @@ public fun String.literal(): ArgumentLiteral = ArgumentType.Literal(this)
 public fun <T> Argument<T>.defaultValue(value: T): Argument<T> =
     this.setDefaultValue { value }
 
-sealed class SuggestionIgnoreOption(val modifier: (String) -> String = { it }) {
+open class SuggestionIgnoreOption(val modifier: (String) -> String = { it }) {
     object NONE: SuggestionIgnoreOption()
     object IGNORE_CASE: SuggestionIgnoreOption({ it.lowercase() })
 }
