@@ -7,6 +7,7 @@ import net.minestom.server.command.builder.CommandContext
 import net.minestom.server.command.builder.CommandResult
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentEnum
+import net.minestom.server.command.builder.arguments.ArgumentGroup
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.EntityType
@@ -33,7 +34,17 @@ import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
-class GeneratedArguments<T : Any>(val clazz: KClass<T>, val args: Array<Argument<*>>) {
+class GeneratedArguments<T : Any>(
+    val clazz: KClass<T>,
+    val args: Array<Argument<*>>
+) {
+
+    val group by lazy {
+        ArgumentGroup("arguments", *args)
+    }
+
+    fun namedGroup(name: String = "arguments") =
+        ArgumentGroup(name, *args)
 
     fun createInstance(context: CommandContext, sender: CommandSender): T {
 

@@ -24,6 +24,7 @@ import net.minestom.server.utils.time.UpdateOption
 import org.jetbrains.annotations.Contract
 import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
+import world.cepi.kstom.command.SyntaxContext
 import java.util.function.Supplier
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -50,14 +51,18 @@ public fun <T> Argument<T>.defaultValue(value: T): Argument<T> =
  */
 @Beta
 @Contract("_ -> this")
-public fun <T> Argument<T>.suggest(
-    lambda: (sender: CommandSender, context: CommandContext) -> MutableList<SuggestionEntry>
+public fun <T> Argument<T>.suggestComplex(
+    lambda: SyntaxContext.() -> List<SuggestionEntry>
 ): Argument<T>
     = this.setSuggestionCallback { sender, context, suggestion ->
 
-        lambda(sender, context)
+        lambda(SyntaxContext(sender, context))
             .filter { it.entry.startsWith(suggestion.input) }
             .sortedBy { it.entry }
             .forEach { suggestion.addEntry(it) }
 
     }
+
+fun <T> Argument<T>.suggest(
+    lambda: SyntaxContext.() -> List<String>
+): Argument<T> = this.suggestComplex { lambda(this).map { SuggestionEntry(it) } }
