@@ -1,6 +1,8 @@
 package world.cepi.kstom.serializer
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.descriptors.element
@@ -9,6 +11,8 @@ import net.minestom.server.utils.time.TimeUnit
 import net.minestom.server.utils.time.UpdateOption
 import java.lang.IllegalArgumentException
 
+@Serializer(forClass = UpdateOption::class)
+@OptIn(ExperimentalSerializationApi::class)
 object UpdateOptionSerializer : KSerializer<UpdateOption> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("UpdateOption") {
         element<Long>("length")
