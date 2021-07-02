@@ -1,6 +1,7 @@
 package world.cepi.kstom.raycast
 
 import net.minestom.server.collision.BoundingBox
+import net.minestom.server.entity.Entity
 import net.minestom.server.entity.LivingEntity
 import net.minestom.server.instance.Instance
 import net.minestom.server.utils.Position
@@ -38,6 +39,7 @@ object RayCast {
         stepLength: Double = .25,
         shouldContinue: (Vector) -> Boolean = { !instance.blockUtilsAt(it.toExactBlockPosition()).block.isSolid },
         onBlockStep: (Vector) -> Unit = { },
+        acceptEntity: (Vector, Entity) -> Boolean = { _, _ -> true },
         margin: Double = 0.125
     ): Result {
         require(maxDistance > 0) { "Max distance must be greater than 0!" }
@@ -64,7 +66,7 @@ object RayCast {
 
             // checks if there is an entity in this step -- if so, return that.
             val target = Fuzzy.positionInEntity(instance, start.toPosition(), origin, margin)
-            if (target != null) {
+            if (target != null && acceptEntity(start, target)) {
                 return Result(start, HitType.ENTITY, target)
             }
 
