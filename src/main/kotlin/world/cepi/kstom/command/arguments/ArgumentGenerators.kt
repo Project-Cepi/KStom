@@ -16,6 +16,7 @@ import net.minestom.server.item.Enchantment
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 import net.minestom.server.potion.PotionEffect
+import net.minestom.server.utils.BlockPosition
 import net.minestom.server.utils.Vector
 import net.minestom.server.utils.entity.EntityFinder
 import net.minestom.server.utils.location.RelativeBlockPosition
@@ -63,6 +64,7 @@ class GeneratedArguments<T : Any>(
                 Material::class -> if (value is ItemStack) return@mapIndexed value.material
                 Byte::class -> if (value is Int) return@mapIndexed value.toByte()
                 Vector::class -> if (value is RelativeVec) return@mapIndexed value.from(sender as? Entity)
+                BlockPosition::class -> if (value is RelativeBlockPosition) return@mapIndexed value.from(sender as? Entity)
             }
 
             // Entity finder serializable exception
@@ -108,11 +110,12 @@ public fun <T : Any> argumentsFromClass(clazz: KClass<T>): GeneratedArguments<T>
  * @return A organized hashmap of arguments and its classifier
  */
 public fun argumentsFromFunction(constructor: KFunction<*>): List<Argument<*>?> =
-    constructor.valueParameters.map {
+    constructor.valueParameters.mapIndexed { index, paramater ->
         argumentFromClass(
-            it.name ?: it.type.jvmErasure.simpleName!!,
-            it.type.classifier!! as KClass<*>,
-            it.annotations
+            paramater.name ?: paramater.type.jvmErasure.simpleName!!,
+            paramater.type.classifier!! as KClass<*>,
+            paramater.annotations,
+            constructor.valueParameters.size - 1 == index
         )
     }
 
@@ -124,12 +127,15 @@ public fun argumentsFromFunction(constructor: KFunction<*>): List<Argument<*>?> 
  * @return An argument that matches with the class.
  *
  */
-public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<Annotation> = emptyList()): Argument<*>? {
+public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<Annotation> = emptyList(), isLast: Boolean): Argument<*>? {
 
     if (clazz.simpleName == null) return null
 
     return when (clazz) {
-        String::class -> ArgumentType.String(name)
+        String::class -> if (isLast)
+            ArgumentType.StringArray(name).map { it.joinToString(" ") }
+        else
+            ArgumentType.String(name)
         Int::class -> ArgumentType.Integer(name).also { argument ->
             annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min.toInt()) }
             annotations.filterIsInstance<MaxAmount>().firstOrNull()?.let { argument.max(it.max.toInt()) }
@@ -185,6 +191,7 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
 
         }
         RelativeBlockPosition::class -> ArgumentType.RelativeBlockPosition(name)
+        BlockPosition::class -> ArgumentType.RelativeBlockPosition(name)
         Block::class -> ArgumentType.BlockState(name).also { argument ->
             annotations.filterIsInstance<DefaultBlock>().firstOrNull()
                 ?.let { argument.defaultValue(it.block) }
