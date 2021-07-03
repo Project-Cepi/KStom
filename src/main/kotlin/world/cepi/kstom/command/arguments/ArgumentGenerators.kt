@@ -159,7 +159,10 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
         NBTCompound::class -> ArgumentType.NbtCompound(name)
         NBT::class -> ArgumentType.NBT(name)
         Component::class -> ArgumentType.Component(name)
-        UpdateOption::class -> ArgumentType.Time(name)
+        UpdateOption::class -> ArgumentType.Time(name).also { argument ->
+            annotations.filterIsInstance<DefaultUpdateOption>().firstOrNull()
+                ?.let { argument.defaultValue(UpdateOption(it.amount, it.timeUnit)) }
+        }
         IntRange::class -> ArgumentType.IntRange(name)
         FloatRange::class -> ArgumentType.FloatRange(name)
         SerializableEntityFinder::class -> ArgumentType.Entity(name)
