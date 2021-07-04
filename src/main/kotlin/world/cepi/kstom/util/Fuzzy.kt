@@ -5,6 +5,7 @@ import net.minestom.server.entity.LivingEntity
 import net.minestom.server.instance.Instance
 import net.minestom.server.utils.Position
 import net.minestom.server.utils.Vector
+import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 
 object Fuzzy {
@@ -40,14 +41,13 @@ object Fuzzy {
 /**
  * Spreads a vector by another vector. Useful for accuracy changes.
  */
-fun Vector.spread(spread: Double): Vector {
+fun Vector.spread(spread: Double, random: ThreadLocalRandom = ThreadLocalRandom.current()): Vector {
     val vec = this.clone()
-    if (spread == 0.0) return vec;
-    val threadLocalRandom = ThreadLocalRandom.current()
+    if (spread == 0.0) return vec
 
-    vec.rotateAroundX(threadLocalRandom.nextDouble(-spread, spread))
-    vec.rotateAroundY(threadLocalRandom.nextDouble(-spread, spread))
-    vec.rotateAroundZ(threadLocalRandom.nextDouble(-spread, spread))
+    vec.rotateAroundX(random.nextDouble(-spread, spread))
+    vec.rotateAroundY(random.nextDouble(-spread, spread))
+    vec.rotateAroundZ(random.nextDouble(-spread, spread))
 
     return vec
 }
