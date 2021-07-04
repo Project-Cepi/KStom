@@ -23,11 +23,12 @@ import net.minestom.server.utils.location.RelativeBlockPosition
 import net.minestom.server.utils.location.RelativeVec
 import net.minestom.server.utils.math.FloatRange
 import net.minestom.server.utils.math.IntRange
-import net.minestom.server.utils.time.UpdateOption
+import net.minestom.server.utils.time.TimeUnit
 import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
 import world.cepi.kstom.command.arguments.annotations.*
 import world.cepi.kstom.serializer.SerializableEntityFinder
+import java.time.Duration
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -165,9 +166,12 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
         NBTCompound::class -> ArgumentType.NbtCompound(name)
         NBT::class -> ArgumentType.NBT(name)
         Component::class -> ArgumentType.Component(name)
-        UpdateOption::class -> ArgumentType.Time(name).also { argument ->
-            annotations.filterIsInstance<DefaultUpdateOption>().firstOrNull()
-                ?.let { argument.defaultValue(UpdateOption(it.amount, it.timeUnit)) }
+        Duration::class -> ArgumentType.Time(name).also { argument ->
+            annotations.filterIsInstance<DefaultChronoDuration>().firstOrNull()
+                ?.let { argument.defaultValue(Duration.of(it.amount, it.timeUnit)) }
+
+            annotations.filterIsInstance<DefaultTickDuration>().firstOrNull()
+                ?.let { argument.defaultValue(Duration.of(it.amount, if (it.isClient) TimeUnit.CLIENT_TICK else TimeUnit.SERVER_TICK)) }
         }
         IntRange::class -> ArgumentType.IntRange(name)
         FloatRange::class -> ArgumentType.FloatRange(name)

@@ -56,4 +56,4 @@ fun Vector.spread(spread: Vector, random: ThreadLocalRandom = ThreadLocalRandom.
  * Spreads a vector by another vector. Useful for accuracy changes.
  */
 fun Vector.spread(spread: Double, random: ThreadLocalRandom = ThreadLocalRandom.current()) =
-    this.spread(Vector(spread, spread, spread))
+    this.spread(Vector(spread, spread, spread), random)
