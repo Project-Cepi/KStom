@@ -41,13 +41,19 @@ object Fuzzy {
 /**
  * Spreads a vector by another vector. Useful for accuracy changes.
  */
-fun Vector.spread(spread: Double, random: ThreadLocalRandom = ThreadLocalRandom.current()): Vector {
+fun Vector.spread(spread: Vector, random: ThreadLocalRandom = ThreadLocalRandom.current()): Vector {
     val vec = this.clone()
-    if (spread == 0.0) return vec
+    if (spread.isZero) return vec
 
-    vec.rotateAroundX(random.nextDouble(-spread, spread))
-    vec.rotateAroundY(random.nextDouble(-spread, spread))
-    vec.rotateAroundZ(random.nextDouble(-spread, spread))
+    vec.rotateAroundX(random.nextDouble(-spread.x, spread.x))
+    vec.rotateAroundY(random.nextDouble(-spread.y, spread.y))
+    vec.rotateAroundZ(random.nextDouble(-spread.z, spread.z))
 
     return vec
 }
+
+/**
+ * Spreads a vector by another vector. Useful for accuracy changes.
+ */
+fun Vector.spread(spread: Double, random: ThreadLocalRandom = ThreadLocalRandom.current()) =
+    this.spread(Vector(spread, spread, spread))
