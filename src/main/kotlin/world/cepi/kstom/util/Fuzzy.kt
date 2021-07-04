@@ -4,6 +4,8 @@ import net.minestom.server.collision.BoundingBox
 import net.minestom.server.entity.LivingEntity
 import net.minestom.server.instance.Instance
 import net.minestom.server.utils.Position
+import net.minestom.server.utils.Vector
+import java.util.concurrent.ThreadLocalRandom
 
 object Fuzzy {
 
@@ -33,4 +35,19 @@ object Fuzzy {
             .firstOrNull { it != origin && collides(it.boundingBox, position, margin) }
     }
 
+}
+
+/**
+ * Spreads a vector by another vector. Useful for accuracy changes.
+ */
+fun Vector.spread(spread: Double): Vector {
+    val vec = this.clone()
+    if (spread == 0.0) return vec;
+    val threadLocalRandom = ThreadLocalRandom.current()
+
+    vec.rotateAroundX(threadLocalRandom.nextDouble(-spread, spread))
+    vec.rotateAroundY(threadLocalRandom.nextDouble(-spread, spread))
+    vec.rotateAroundZ(threadLocalRandom.nextDouble(-spread, spread))
+
+    return vec
 }
