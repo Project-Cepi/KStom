@@ -11,3 +11,11 @@ public fun Instance.forEachRange(position: Position, viewDistance: Int, consumer
     EntityUtils.forEachRange(this, position, viewDistance, consumer)
 
 public fun Entity.isVisibleTo(other: Entity): Boolean = EntityUtils.areVisible(this, other)
+
+/**
+ * Get's the entity's eye location as a [Position] object
+ */
+fun Entity.eyePosition(): Position {
+    if (this.isSneaking) return position.clone().add(0.0, 1.23, 0.0)
+    return position.clone().add(0.0, 1.53, 0.0)
+}
