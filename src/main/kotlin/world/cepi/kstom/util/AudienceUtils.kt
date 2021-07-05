@@ -12,5 +12,17 @@ fun Audience.playSound(sound: Sound, position: Position) =
 fun Audience.playSound(sound: Sound, vector: Vector) =
     playSound(sound, vector.x, vector.y, vector.z)
 
-fun Audience.playSound(sound: Sound, blockPosition: BlockPosition) =
-    playSound(sound, blockPosition.x.toDouble(), blockPosition.y.toDouble(), blockPosition.z.toDouble())
+/**
+ * Plays a sound to a specified [Audience]
+ *
+ * @param sound The sound to play
+ * @param blockPosition The block position to play at
+ * @param absolute If true, don't add 0.5 to the end result (0.5 centers the position to the middle of the block pos.
+ */
+fun Audience.playSound(sound: Sound, blockPosition: BlockPosition, absolute: Boolean = false) =
+    playSound(
+        sound,
+        blockPosition.x.toDouble() + if (absolute) 0.0 else 0.5,
+        blockPosition.y.toDouble() + if (absolute) 0.0 else 0.5,
+        blockPosition.z.toDouble() + if (absolute) 0.0 else 0.5
+    )
