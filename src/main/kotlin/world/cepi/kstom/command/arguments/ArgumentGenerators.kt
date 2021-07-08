@@ -28,6 +28,7 @@ import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
 import world.cepi.kstom.command.arguments.annotations.*
 import world.cepi.kstom.serializer.SerializableEntityFinder
+import world.cepi.kstom.tree.CombinationNode
 import java.time.Duration
 import java.util.*
 import kotlin.reflect.KClass
@@ -106,19 +107,52 @@ public fun <T : Any> argumentsFromClass(clazz: KClass<T>): GeneratedArguments<T>
 /**
  * Can generate a list of Arguments from a class constructor.
  *
+ * Example:
+ * Attack (sealed): (energy: Int) / (clickType: Enum)
+ * (damage: Int, attack: Attack)
+ *
+ * Should generate:
+ * (damage: Int, energy, energy: Int) / (damage: Int, clickType, clickType: Enum)
+ *
  * @param constructor The constructor to use to generate args from.
  *
- * @return A organized hashmap of arguments and its classifier
+ * @return A list of lists; the first list is possible argument combinations. The second list is a list of arguments.
  */
-public fun argumentsFromFunction(constructor: KFunction<*>): List<Argument<*>?> =
-    constructor.valueParameters.mapIndexed { index, paramater ->
+public fun argumentsFromFunction(constructor: KFunction<*>): List<List<Argument<*>?>> {
+
+    val syntaxes = mutableListOf<List<Argument<*>>>()
+
+    // (damage: Int) (energy (energy: Int) / clickType (clickType: Enum))
+    val args: List<List<Argument<*>>> = constructor.valueParameters.mapIndexed { index, paramater ->
+
+        val clazz = paramater.type.classifier!! as KClass<*>
+
+        if (clazz.isSealed) {
+            return@mapIndexed clazz.sealedSubclasses.mapIndexed { subIndex, subClass ->
+                ArgumentType.Group(
+                    "sealedClass$subIndex",
+                    subClass.simpleName!!.lowercase().literal(), // energy / clickType
+                    argumentsFromClass(subClass).group // (energy: Int) / (clickType: Enum)
+                )
+            } // energy (energy: Int) / clickType (clickType: Enum)
+        }
+
         argumentFromClass(
             paramater.name ?: paramater.type.jvmErasure.simpleName!!,
-            paramater.type.classifier!! as KClass<*>,
+            clazz,
             paramater.annotations,
             constructor.valueParameters.size - 1 == index
-        )
+        )!!.let { listOf(it) } // (damage: Int)
     }
+
+    val rootNode = CombinationNode<Argument<*>>(ArgumentType.Group("root")) // empty node
+
+    syntaxes.forEach {
+        rootNode.addNode(*it.toTypedArray())
+    }
+
+    return emptyList()
+}
 
 /**
  * Generates a Minestom argument based on the class
@@ -128,7 +162,12 @@ public fun argumentsFromFunction(constructor: KFunction<*>): List<Argument<*>?> 
  * @return An argument that matches with the class.
  *
  */
-public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<Annotation> = emptyList(), isLast: Boolean): Argument<*>? {
+public fun argumentFromClass(
+    name: String,
+    clazz: KClass<*>,
+    annotations: List<Annotation> = emptyList(),
+    isLast: Boolean
+): Argument<*>? {
 
     if (clazz.simpleName == null) return null
 
