@@ -7,15 +7,25 @@ class CombinationNode<T>(var value: T) {
     val isLast: Boolean
         get() = currentNodes.isEmpty()
 
-    fun addNode(vararg nodes: CombinationNode<T>) {
+    fun addNode(vararg nodes: CombinationNode<T>) =
+        nodes.let { currentNodes.addAll(nodes) }
 
-        nodes
-            .let { currentNodes.addAll(nodes) }
-    }
-
-    fun addNode(vararg items: T) {
+    fun addNode(vararg items: T) =
         addNode(*items.map { CombinationNode(it) }.toTypedArray())
+
+    fun addToLastNodes(vararg nodes: CombinationNode<T>) = findLastNodes().forEach {
+        it.addNode(*nodes)
     }
+
+    fun addToLastNodes(vararg items: T) = findLastNodes().forEach {
+        it.addNode(*items)
+    }
+
+    fun findLastNodes(): List<CombinationNode<T>> = currentNodes.map {
+        if (it.isLast) listOf(it)
+        else it.findLastNodes()
+    }.flatten()
+
 
     /**
      * Generates all possible combinations for this node.

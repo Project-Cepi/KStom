@@ -32,7 +32,7 @@ object RayCast {
      */
     public fun castRay(
         instance: Instance,
-        origin: LivingEntity?,
+        origin: LivingEntity? = null,
         start: Vector,
         direction: Vector,
         maxDistance: Double = 100.0,
