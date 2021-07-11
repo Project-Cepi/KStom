@@ -1,7 +1,6 @@
 package world.cepi.kstom.command.arguments
 
 import net.minestom.server.command.builder.Command
-import world.cepi.kstom.command.addSyntax
 import world.cepi.kstom.command.arguments.annotations.MaxAmount
 import world.cepi.kstom.command.arguments.annotations.MinAmount
 

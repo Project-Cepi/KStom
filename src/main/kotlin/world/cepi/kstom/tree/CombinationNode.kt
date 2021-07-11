@@ -4,11 +4,11 @@ class CombinationNode<T>(var value: T) {
 
     private val currentNodes: MutableList<CombinationNode<T>> = mutableListOf()
 
-    val isLast: Boolean
+    val isEmpty: Boolean
         get() = currentNodes.isEmpty()
 
     fun addNode(vararg nodes: CombinationNode<T>) =
-        nodes.let { currentNodes.addAll(nodes) }
+        currentNodes.addAll(nodes)
 
     fun addNode(vararg items: T) =
         addNode(*items.map { CombinationNode(it) }.toTypedArray())
@@ -22,7 +22,7 @@ class CombinationNode<T>(var value: T) {
     }
 
     fun findLastNodes(): List<CombinationNode<T>> = currentNodes.map {
-        if (it.isLast) listOf(it)
+        if (it.isEmpty) listOf(it)
         else it.findLastNodes()
     }.flatten()
 
@@ -45,21 +45,18 @@ class CombinationNode<T>(var value: T) {
      * test testB
      */
     fun traverseAndGenerate(): List<List<T>> {
-
-        if (isLast) return emptyList()
-
-        // currentNodes are test, with (testA / testB) and so forth
-        val nodes: MutableList<List<T>> = mutableListOf()
-        currentNodes.forEach {
+        return currentNodes.map {
             // test, traverse,
-            if (it.isLast) {
-                nodes.add(listOf(it.value))
+            if (it.isEmpty) {
+                listOf(it.value)
             }
 
-            nodes.addAll(it.traverseAndGenerate())
+            it.traverseAndGenerate()
+        }.flatten().let { generatedMap ->
+            mutableListOf(listOf(this.value)).also { it.addAll(generatedMap) }
         }
-
-        return nodes
     }
+
+    override fun toString(): String = "CombinationNode[$value - [${currentNodes.map { it.toString() }}]]"
 
 }
