@@ -13,9 +13,7 @@ class GeneratorTest {
 
     @Test
     fun `ensure sealed classes generate correctly`() {
-        argumentsFromClass<FetchType>().args.forEach {
-            it.forEach { println(it) }
-        }
+        println(argumentFromClass<FetchType>().args)
     }
 
 }

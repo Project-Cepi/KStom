@@ -101,8 +101,8 @@ class GeneratedArguments<T : Any>(
  *
  * @throws NullPointerException If the constructor or any arguments are invalid.
  */
-public inline fun <reified T : Any> argumentsFromClass(): GeneratedArguments<T> =
-    argumentsFromClass(T::class)
+public inline fun <reified T : Any> argumentFromClass(): GeneratedArguments<T> =
+    argumentFromClass(T::class)
 
 /**
  * Can generate a list of Arguments from a class.
@@ -113,7 +113,7 @@ public inline fun <reified T : Any> argumentsFromClass(): GeneratedArguments<T> 
  *
  * @throws NullPointerException If the constructor or any arguments are invalid.
  */
-public fun <T : Any> argumentsFromClass(clazz: KClass<T>): GeneratedArguments<T> {
+public fun <T : Any> argumentFromClass(clazz: KClass<T>): GeneratedArguments<T> {
     if (clazz.isSealed) {
         return GeneratedArguments(clazz, clazz.sealedSubclasses.map {
             argumentsFromFunction(it.primaryConstructor!!)
@@ -139,34 +139,47 @@ public fun <T : Any> argumentsFromClass(clazz: KClass<T>): GeneratedArguments<T>
  */
 public fun argumentsFromFunction(constructor: KFunction<*>): List<List<Argument<*>>> {
 
-    // (damage: Int) (energy (energy: Int) / clickType (clickType: Enum))
+    // list of all combinations ordered.
+    // EX, if you have (damage: Int, energy, energy: Int) / (damage: Int, clickType, clickType: Enum),
+    // the list would be: ((damage)), ((energy, energy: Int), (clickType, clickType: Int))
     val args: List<List<Argument<*>>> = constructor.valueParameters.mapIndexed { index, paramater ->
 
         val clazz = paramater.type.classifier!! as KClass<*>
 
         if (clazz.isSealed) {
-            return@mapIndexed clazz.sealedSubclasses.mapIndexed { subIndex, subClass ->
-                ArgumentType.Group(
-                    "sealedClass$subIndex",
-                    subClass.simpleName!!.lowercase().literal(), // energy / clickType
-                    *argumentsFromFunction(subClass.primaryConstructor!!)
-                        .flatten().toTypedArray() // TODO support nested sealed classes
+            // list(list(energy, energy: Int), list(clickType, clickType: Int))
+            return@mapIndexed clazz.sealedSubclasses.map { subClass ->
+                ArgumentPrintableGroup(
+                    mutableListOf(
+                        subClass.simpleName!!.replaceFirstChar { it.lowercase() }.literal(),
+                        *argumentsFromFunction(subClass.primaryConstructor!!)
+                            .flatten().toTypedArray()
+                    ).toTypedArray()
                 )
+
             } // energy (energy: Int) / clickType (clickType: Enum)
         }
 
-        argumentsFromClass(
-            paramater.name ?: paramater.type.jvmErasure.simpleName!!,
-            clazz,
-            paramater.annotations,
-            constructor.valueParameters.size - 1 == index
-        ).let { listOf(it) } // (damage: Int)
+        listOf(
+            argumentFromClass(
+                paramater.name ?: paramater.type.jvmErasure.simpleName!!,
+                clazz,
+                paramater.annotations,
+                constructor.valueParameters.size - 1 == index
+            )
+        )
+
     }
 
-    val rootNode = CombinationNode<Argument<*>>(ArgumentType.Group("root")) // empty node
+    println(args)
 
+    val rootNode = CombinationNode<Argument<*>>(ShellArgument) // empty node
+
+    // list of ((damage)), ((energy, energy: Int), (clickType, clickType: Enum))
+    // should turn into:
+    // ((damage)): ((energy, energy: Int), (clickType, clickType: Enum))
     args.forEach {
-        rootNode.addToLastNodes(*it.toTypedArray())
+        rootNode.addItemsToLastNodes(*it.toTypedArray())
     }
 
     return rootNode.traverseAndGenerate()
@@ -181,7 +194,7 @@ public fun argumentsFromFunction(constructor: KFunction<*>): List<List<Argument<
  * @return An argument that matches with the class.
  *
  */
-public fun argumentsFromClass(
+public fun argumentFromClass(
     name: String,
     clazz: KClass<*>,
     annotations: List<Annotation> = emptyList(),
@@ -196,7 +209,8 @@ public fun argumentsFromClass(
         Int::class -> ArgumentType.Integer(name).also { argument ->
             annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min.toInt()) }
             annotations.filterIsInstance<MaxAmount>().firstOrNull()?.let { argument.max(it.max.toInt()) }
-            annotations.filterIsInstance<DefaultNumber>().firstOrNull()?.let { argument.defaultValue(it.number.toInt()) }
+            annotations.filterIsInstance<DefaultNumber>().firstOrNull()
+                ?.let { argument.defaultValue(it.number.toInt()) }
         }
         Double::class -> ArgumentType.Double(name).also { argument ->
             annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min) }
@@ -213,7 +227,8 @@ public fun argumentsFromClass(
         Float::class -> ArgumentType.Float(name).also { argument ->
             annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min.toFloat()) }
             annotations.filterIsInstance<MaxAmount>().firstOrNull()?.let { argument.max(it.max.toFloat()) }
-            annotations.filterIsInstance<DefaultNumber>().firstOrNull()?.let { argument.defaultValue(it.number.toFloat()) }
+            annotations.filterIsInstance<DefaultNumber>().firstOrNull()
+                ?.let { argument.defaultValue(it.number.toFloat()) }
         }
         ItemStack::class, Material::class -> ArgumentType.ItemStack(name).also { argument ->
             annotations.filterIsInstance<DefaultMaterial>().firstOrNull()
@@ -227,7 +242,14 @@ public fun argumentsFromClass(
                 ?.let { argument.defaultValue(Duration.of(it.amount, it.timeUnit)) }
 
             annotations.filterIsInstance<DefaultTickDuration>().firstOrNull()
-                ?.let { argument.defaultValue(Duration.of(it.amount, if (it.isClient) TimeUnit.CLIENT_TICK else TimeUnit.SERVER_TICK)) }
+                ?.let {
+                    argument.defaultValue(
+                        Duration.of(
+                            it.amount,
+                            if (it.isClient) TimeUnit.CLIENT_TICK else TimeUnit.SERVER_TICK
+                        )
+                    )
+                }
         }
         IntRange::class -> ArgumentType.IntRange(name)
         FloatRange::class -> ArgumentType.FloatRange(name)

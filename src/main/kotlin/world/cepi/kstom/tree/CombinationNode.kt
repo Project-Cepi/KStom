@@ -1,30 +1,29 @@
 package world.cepi.kstom.tree
 
-class CombinationNode<T>(var value: T) {
+class CombinationNode<T>(val value: T, val parent: CombinationNode<T>? = null) {
 
     private val currentNodes: MutableList<CombinationNode<T>> = mutableListOf()
 
     val isEmpty: Boolean
         get() = currentNodes.isEmpty()
 
-    fun addNode(vararg nodes: CombinationNode<T>) =
-        currentNodes.addAll(nodes)
+    fun addItems(vararg items: T) =
+        currentNodes.addAll(items.map { CombinationNode(it, this) })
 
-    fun addNode(vararg items: T) =
-        addNode(*items.map { CombinationNode(it) }.toTypedArray())
-
-    fun addToLastNodes(vararg nodes: CombinationNode<T>) = findLastNodes().forEach {
-        it.addNode(*nodes)
+    fun addItemsToLastNodes(vararg items: T) = findLastNodes().forEach {
+        it.addItems(*items)
     }
 
-    fun addToLastNodes(vararg items: T) = findLastNodes().forEach {
-        it.addNode(*items)
-    }
 
-    fun findLastNodes(): List<CombinationNode<T>> = currentNodes.map {
-        if (it.isEmpty) listOf(it)
-        else it.findLastNodes()
-    }.flatten()
+    fun findLastNodes(): List<CombinationNode<T>> {
+
+        if (this.isEmpty) return listOf(this)
+
+        return currentNodes.map {
+            if (it.isEmpty) listOf(it)
+            else it.findLastNodes()
+        }.flatten()
+    }
 
 
     /**
@@ -32,31 +31,37 @@ class CombinationNode<T>(var value: T) {
      *
      * Example:
      *
-     * test
-     * - testA
-     * -- testC
-     * -- testD
-     * - testB
-     *
+     * ```
+     * $ testA
+     * $$ testC
+     * $$ testD
+     * $$$ testE
+     * $$$ testF
+     * $ testB
+     * ```
      * will generate:
-     *
-     * test testA testC
-     * test testA testD
-     * test testB
+     * ```
+     * testA testC
+     * testA testD testE
+     * testA testD testF
+     * testB
+     * ```
      */
-    fun traverseAndGenerate(): List<List<T>> {
-        return currentNodes.map {
-            // test, traverse,
-            if (it.isEmpty) {
-                listOf(it.value)
-            }
+    fun traverseAndGenerate(): List<List<T>> =
+        findLastNodes().map { it.branch(this) }
 
-            it.traverseAndGenerate()
-        }.flatten().let { generatedMap ->
-            mutableListOf(listOf(this.value)).also { it.addAll(generatedMap) }
-        }
+
+    fun branch(lastNode: CombinationNode<T>): List<T> {
+
+        if (lastNode == parent!!) return emptyList()
+
+        return parent.branch(lastNode).toMutableList().also { it.add(parent.value) }
     }
 
-    override fun toString(): String = "CombinationNode[$value - [${currentNodes.map { it.toString() }}]]"
+    override fun toString(): String = "CombinationNode[$value${
+        if (currentNodes.isNotEmpty())
+            " ${currentNodes.map { it.toString() }} "
+        else ""
+    }]"
 
 }
