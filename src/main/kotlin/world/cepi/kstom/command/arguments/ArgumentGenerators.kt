@@ -43,16 +43,12 @@ import kotlin.reflect.jvm.jvmErasure
 
 class GeneratedArguments<T : Any>(
     val clazz: KClass<T>,
-    val args: List<List<Argument<*>>>
+    val args: List<ArgumentPrintableGroup>
 ) {
-
-    val groupArguments by lazy {
-        args.mapIndexed { index, value -> ArgumentGroup("group$index", *value.toTypedArray()) }
-    }
 
     fun applySyntax(command: Command, lambda: SyntaxContext.(T) -> Unit) {
         args.forEach {
-            command.addSyntax(*it.toTypedArray()) {
+            command.addSyntax(it) {
                 val instance = createInstance(it, context, sender)
 
                 lambda(this, instance)
@@ -61,13 +57,13 @@ class GeneratedArguments<T : Any>(
     }
 
 
-    fun createInstance(currentArgs: List<Argument<*>>, context: CommandContext, sender: CommandSender): T {
+    fun createInstance(currentArgs: ArgumentPrintableGroup, context: CommandContext, sender: CommandSender): T {
 
         val classes = clazz.primaryConstructor!!.valueParameters.map {
             it.type.classifier as KClass<*>
         }
 
-        return clazz.primaryConstructor!!.call(*currentArgs.mapIndexed { index, argument ->
+        return clazz.primaryConstructor!!.call(*currentArgs.group.mapIndexed { index, argument ->
 
             val correspondingClass = classes[index]
             val value = context.get(argument)
@@ -137,7 +133,7 @@ public fun <T : Any> argumentFromClass(clazz: KClass<T>): GeneratedArguments<T> 
  *
  * @return A list of lists; the first list is possible argument combinations. The second list is a list of arguments.
  */
-public fun argumentsFromFunction(constructor: KFunction<*>): List<List<Argument<*>>> {
+public fun argumentsFromFunction(constructor: KFunction<*>): List<ArgumentPrintableGroup> {
 
     // list of all combinations ordered.
     // EX, if you have (damage: Int, energy, energy: Int) / (damage: Int, clickType, clickType: Enum),
@@ -153,7 +149,7 @@ public fun argumentsFromFunction(constructor: KFunction<*>): List<List<Argument<
                     mutableListOf(
                         subClass.simpleName!!.replaceFirstChar { it.lowercase() }.literal(),
                         *argumentsFromFunction(subClass.primaryConstructor!!)
-                            .flatten().toTypedArray()
+                            .toTypedArray()
                     ).toTypedArray()
                 )
 
@@ -171,8 +167,6 @@ public fun argumentsFromFunction(constructor: KFunction<*>): List<List<Argument<
 
     }
 
-    println(args)
-
     val rootNode = CombinationNode<Argument<*>>(ShellArgument) // empty node
 
     // list of ((damage)), ((energy, energy: Int), (clickType, clickType: Enum))
@@ -182,7 +176,7 @@ public fun argumentsFromFunction(constructor: KFunction<*>): List<List<Argument<
         rootNode.addItemsToLastNodes(*it.toTypedArray())
     }
 
-    return rootNode.traverseAndGenerate()
+    return rootNode.traverseAndGenerate().map { ArgumentPrintableGroup(it.toTypedArray()) }
 }
 
 /**
