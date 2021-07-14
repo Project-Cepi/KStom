@@ -17,8 +17,8 @@ data class CoolItem(
 object ArgumentGeneratorDemo : Command("argumentGeneratorDemo") {
 
     init {
-        val argumentGenerator = argumentFromClass<CoolItem>()
-        val alternativeargumentGenerator = argumentFromClass(CoolItem::class)
+        val argumentGenerator = generateSyntaxes<CoolItem>()
+        val alternativeargumentGenerator = generateSyntaxes(CoolItem::class)
 
         addSyntax(*argumentGenerator.args) { ->
             val obj = argumentGenerator.createInstance(context, sender)

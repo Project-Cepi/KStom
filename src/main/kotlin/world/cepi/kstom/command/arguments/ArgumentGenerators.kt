@@ -8,7 +8,6 @@ import net.minestom.server.command.builder.CommandContext
 import net.minestom.server.command.builder.CommandResult
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentEnum
-import net.minestom.server.command.builder.arguments.ArgumentGroup
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.EntityType
@@ -97,8 +96,8 @@ class GeneratedArguments<T : Any>(
  *
  * @throws NullPointerException If the constructor or any arguments are invalid.
  */
-public inline fun <reified T : Any> argumentFromClass(): GeneratedArguments<T> =
-    argumentFromClass(T::class)
+public inline fun <reified T : Any> generateSyntaxes(): GeneratedArguments<T> =
+    generateSyntaxes(T::class)
 
 /**
  * Can generate a list of Arguments from a class.
@@ -109,8 +108,8 @@ public inline fun <reified T : Any> argumentFromClass(): GeneratedArguments<T> =
  *
  * @throws NullPointerException If the constructor or any arguments are invalid.
  */
-public fun <T : Any> argumentFromClass(clazz: KClass<T>): GeneratedArguments<T> {
-    if (clazz.isSealed) {
+public fun <T : Any> generateSyntaxes(clazz: KClass<T>): GeneratedArguments<T> {
+    if (clazz.isSealed && clazz.sealedSubclasses.isNotEmpty()) {
         return GeneratedArguments(clazz, clazz.sealedSubclasses.map {
             argumentsFromFunction(it.primaryConstructor!!)
         }.flatten())
@@ -120,7 +119,7 @@ public fun <T : Any> argumentFromClass(clazz: KClass<T>): GeneratedArguments<T> 
 }
 
 /**
- * Can generate a list of Arguments from a class constructor.
+ * Can generate a list of Arguments from a function.
  *
  * Example:
  * Attack (sealed): (energy: Int) / (clickType: Enum)
@@ -129,18 +128,17 @@ public fun <T : Any> argumentFromClass(clazz: KClass<T>): GeneratedArguments<T> 
  * Should generate:
  * (damage: Int, energy, energy: Int) / (damage: Int, clickType, clickType: Enum)
  *
- * @param constructor The constructor to use to generate args from.
+ * @param function The function to generate args from.
  *
  * @return A list of lists; the first list is possible argument combinations. The second list is a list of arguments.
  */
-public fun argumentsFromFunction(constructor: KFunction<*>): List<ArgumentPrintableGroup> {
-
+public fun argumentsFromFunction(function: KFunction<*>): List<ArgumentPrintableGroup> {
     // list of all combinations ordered.
-    // EX, if you have (damage: Int, energy, energy: Int) / (damage: Int, clickType, clickType: Enum),
-    // the list would be: ((damage)), ((energy, energy: Int), (clickType, clickType: Int))
-    val args: List<List<Argument<*>>> = constructor.valueParameters.mapIndexed { index, paramater ->
+    // EX, if you have [damage: Int, energy, energy: Int] / [damage: Int, clickType, clickType: Enum],
+    // the list would be: [[damage]], [[energy, energy: Int], [clickType, clickType: Int]]
+    val args: List<List<Argument<*>>> = function.valueParameters.mapIndexed { index, parameter ->
 
-        val clazz = paramater.type.classifier!! as KClass<*>
+        val clazz = parameter.type.classifier!! as KClass<*>
 
         if (clazz.isSealed) {
             // list(list(energy, energy: Int), list(clickType, clickType: Int))
@@ -158,10 +156,10 @@ public fun argumentsFromFunction(constructor: KFunction<*>): List<ArgumentPrinta
 
         listOf(
             argumentFromClass(
-                paramater.name ?: paramater.type.jvmErasure.simpleName!!,
+                parameter.name ?: parameter.type.jvmErasure.simpleName!!,
                 clazz,
-                paramater.annotations,
-                constructor.valueParameters.size - 1 == index
+                parameter.annotations,
+                function.valueParameters.size - 1 == index
             )
         )
 

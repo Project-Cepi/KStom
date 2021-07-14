@@ -14,7 +14,6 @@ class CombinationNode<T>(val value: T, val parent: CombinationNode<T>? = null) {
         it.addItems(*items)
     }
 
-
     fun findLastNodes(): List<CombinationNode<T>> {
 
         if (this.isEmpty) return listOf(this)
@@ -48,14 +47,12 @@ class CombinationNode<T>(val value: T, val parent: CombinationNode<T>? = null) {
      * ```
      */
     fun traverseAndGenerate(): List<List<T>> =
-        findLastNodes().map { it.branch(this) }
+        findLastNodes().map { it.branch() }
 
 
-    fun branch(lastNode: CombinationNode<T>): List<T> {
+    fun branch(): List<T> {
 
-        if (lastNode == parent!!) return emptyList()
-
-        return parent.branch(lastNode).toMutableList().also { it.add(parent.value) }
+        return parent?.branch()?.toMutableList().also { it?.add(this.value) } ?: emptyList()
     }
 
     override fun toString(): String = "CombinationNode[$value${
