@@ -1,10 +1,8 @@
 package world.cepi.kstom.raycast
 
-import net.minestom.server.collision.BoundingBox
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.LivingEntity
 import net.minestom.server.instance.Instance
-import net.minestom.server.utils.Position
 import net.minestom.server.utils.Vector
 import world.cepi.kstom.util.Fuzzy
 import world.cepi.kstom.util.blockUtilsAt
@@ -12,6 +10,8 @@ import world.cepi.kstom.util.toExactBlockPosition
 
 /**
  * Ray cast utilities for Minestom.
+ *
+ * @author AtomIsHere
  */
 object RayCast {
 
@@ -30,9 +30,9 @@ object RayCast {
      *
      * @return a [Result] (containing the final position, what it found, and the entity it found if any.)
      */
-    public fun castRay(
+    fun castRay(
         instance: Instance,
-        origin: LivingEntity?,
+        origin: LivingEntity? = null,
         start: Vector,
         direction: Vector,
         maxDistance: Double = 100.0,

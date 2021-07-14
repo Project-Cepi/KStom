@@ -1,0 +1,53 @@
+package world.cepi.kstom.command.arguments
+
+import net.minestom.server.command.builder.arguments.Argument
+import net.minestom.server.command.builder.arguments.ArgumentBoolean
+import net.minestom.server.command.builder.arguments.ArgumentLiteral
+import net.minestom.server.command.builder.arguments.number.ArgumentInteger
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+
+class GeneratorTest {
+
+    sealed class Animal {
+        class Cat(val whiskerCount: Int, val longNails: Boolean) : Animal()
+        class Dog(val tailLength: Double) : Animal()
+    }
+
+    class FetchType(val toFetch: Boolean, val animal: Animal)
+
+    @Test
+    fun `basic class should generate correctly`() {
+        val catSyntaxes = generateSyntaxes<Animal.Cat>().args
+
+        assertEquals(1, catSyntaxes.size) // One combination
+        assertEquals(2, catSyntaxes[0].group.size) // Two elements
+
+
+        // Ensure Integer<whiskerCount>
+        assertEquals(ArgumentInteger::class, catSyntaxes[0].group[0]::class)
+        assertEquals("whiskerCount", catSyntaxes[0].group[0].id)
+
+        // Ensure Boolean<longNails>
+        assertEquals(ArgumentBoolean::class, catSyntaxes[0].group[1]::class)
+        assertEquals("longNails", catSyntaxes[0].group[1].id)
+    }
+
+    @Test
+    fun `semicomplex sealed structure should generate`() {
+        val fullSyntaxes = generateSyntaxes<FetchType>().args
+
+        assertEquals(2, fullSyntaxes.size)
+
+        fullSyntaxes.forEach { // Ensure toFetch is present in each
+            assertEquals(ArgumentBoolean::class, it.group[0]::class)
+            assertEquals("toFetch", it.group[0].id)
+            assertEquals(2, it.group.size)
+
+            val firstGroup = it.group[1] as ArgumentPrintableGroup
+
+            assertEquals(ArgumentLiteral::class, firstGroup.group[0]::class)
+        }
+    }
+
+}

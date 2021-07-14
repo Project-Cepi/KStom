@@ -3,11 +3,11 @@ package world.cepi.kstom.command.arguments
 import net.kyori.adventure.text.Component
 import net.minestom.server.color.Color
 import net.minestom.server.command.CommandSender
+import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.CommandContext
 import net.minestom.server.command.builder.CommandResult
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentEnum
-import net.minestom.server.command.builder.arguments.ArgumentGroup
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.EntityType
@@ -26,8 +26,12 @@ import net.minestom.server.utils.math.IntRange
 import net.minestom.server.utils.time.TimeUnit
 import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
+import world.cepi.kstom.command.SyntaxContext
+import world.cepi.kstom.command.addSyntax
 import world.cepi.kstom.command.arguments.annotations.*
 import world.cepi.kstom.serializer.SerializableEntityFinder
+import world.cepi.kstom.tree.CombinationNode
+import java.lang.IllegalStateException
 import java.time.Duration
 import java.util.*
 import kotlin.reflect.KClass
@@ -38,23 +42,27 @@ import kotlin.reflect.jvm.jvmErasure
 
 class GeneratedArguments<T : Any>(
     val clazz: KClass<T>,
-    val args: Array<Argument<*>>
+    val args: List<ArgumentPrintableGroup>
 ) {
 
-    val group by lazy {
-        ArgumentGroup("arguments", *args)
+    fun applySyntax(command: Command, lambda: SyntaxContext.(T) -> Unit) {
+        args.forEach {
+            command.addSyntax(it) {
+                val instance = createInstance(it, context, sender)
+
+                lambda(this, instance)
+            }
+        }
     }
 
-    fun namedGroup(name: String = "arguments") =
-        ArgumentGroup(name, *args)
 
-    fun createInstance(context: CommandContext, sender: CommandSender): T {
+    fun createInstance(currentArgs: ArgumentPrintableGroup, context: CommandContext, sender: CommandSender): T {
 
         val classes = clazz.primaryConstructor!!.valueParameters.map {
             it.type.classifier as KClass<*>
         }
 
-        return clazz.primaryConstructor!!.call(*args.mapIndexed { index, argument ->
+        return clazz.primaryConstructor!!.call(*currentArgs.group.mapIndexed { index, argument ->
 
             val correspondingClass = classes[index]
             val value = context.get(argument)
@@ -88,8 +96,8 @@ class GeneratedArguments<T : Any>(
  *
  * @throws NullPointerException If the constructor or any arguments are invalid.
  */
-public inline fun <reified T : Any> argumentsFromClass(): GeneratedArguments<T> =
-    argumentsFromClass(T::class)
+public inline fun <reified T : Any> generateSyntaxes(): GeneratedArguments<T> =
+    generateSyntaxes(T::class)
 
 /**
  * Can generate a list of Arguments from a class.
@@ -100,37 +108,90 @@ public inline fun <reified T : Any> argumentsFromClass(): GeneratedArguments<T> 
  *
  * @throws NullPointerException If the constructor or any arguments are invalid.
  */
-public fun <T : Any> argumentsFromClass(clazz: KClass<T>): GeneratedArguments<T> =
-    GeneratedArguments(clazz, argumentsFromFunction(clazz.primaryConstructor!!).map { it!! }.toTypedArray())
+public fun <T : Any> generateSyntaxes(clazz: KClass<T>): GeneratedArguments<T> {
+    if (clazz.isSealed && clazz.sealedSubclasses.isNotEmpty()) {
+        return GeneratedArguments(clazz, clazz.sealedSubclasses.map {
+            argumentsFromFunction(it.primaryConstructor!!)
+        }.flatten())
+    }
+
+    return GeneratedArguments(clazz, argumentsFromFunction(clazz.primaryConstructor!!))
+}
 
 /**
- * Can generate a list of Arguments from a class constructor.
+ * Can generate a list of Arguments from a function.
  *
- * @param constructor The constructor to use to generate args from.
+ * Example:
+ * Attack (sealed): (energy: Int) / (clickType: Enum)
+ * (damage: Int, attack: Attack)
  *
- * @return A organized hashmap of arguments and its classifier
+ * Should generate:
+ * (damage: Int, energy, energy: Int) / (damage: Int, clickType, clickType: Enum)
+ *
+ * @param function The function to generate args from.
+ *
+ * @return A list of lists; the first list is possible argument combinations. The second list is a list of arguments.
  */
-public fun argumentsFromFunction(constructor: KFunction<*>): List<Argument<*>?> =
-    constructor.valueParameters.mapIndexed { index, paramater ->
-        argumentFromClass(
-            paramater.name ?: paramater.type.jvmErasure.simpleName!!,
-            paramater.type.classifier!! as KClass<*>,
-            paramater.annotations,
-            constructor.valueParameters.size - 1 == index
+public fun argumentsFromFunction(function: KFunction<*>): List<ArgumentPrintableGroup> {
+    // list of all combinations ordered.
+    // EX, if you have [damage: Int, energy, energy: Int] / [damage: Int, clickType, clickType: Enum],
+    // the list would be: [[damage]], [[energy, energy: Int], [clickType, clickType: Int]]
+    val args: List<List<Argument<*>>> = function.valueParameters.mapIndexed { index, parameter ->
+
+        val clazz = parameter.type.classifier!! as KClass<*>
+
+        if (clazz.isSealed) {
+            // list(list(energy, energy: Int), list(clickType, clickType: Int))
+            return@mapIndexed clazz.sealedSubclasses.map { subClass ->
+                ArgumentPrintableGroup(
+                    mutableListOf(
+                        subClass.simpleName!!.replaceFirstChar { it.lowercase() }.literal(),
+                        *argumentsFromFunction(subClass.primaryConstructor!!)
+                            .toTypedArray()
+                    ).toTypedArray()
+                )
+
+            } // energy (energy: Int) / clickType (clickType: Enum)
+        }
+
+        listOf(
+            argumentFromClass(
+                parameter.name ?: parameter.type.jvmErasure.simpleName!!,
+                clazz,
+                parameter.annotations,
+                function.valueParameters.size - 1 == index
+            )
         )
+
     }
+
+    val rootNode = CombinationNode<Argument<*>>(ShellArgument) // empty node
+
+    // list of ((damage)), ((energy, energy: Int), (clickType, clickType: Enum))
+    // should turn into:
+    // ((damage)): ((energy, energy: Int), (clickType, clickType: Enum))
+    args.forEach {
+        rootNode.addItemsToLastNodes(*it.toTypedArray())
+    }
+
+    return rootNode.traverseAndGenerate().map { ArgumentPrintableGroup(it.toTypedArray()) }
+}
 
 /**
  * Generates a Minestom argument based on the class
  *
+ * @param name The name of the argument
  * @param clazz The class to base the argument off of
  *
  * @return An argument that matches with the class.
  *
  */
-public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<Annotation> = emptyList(), isLast: Boolean): Argument<*>? {
-
-    if (clazz.simpleName == null) return null
+public fun argumentFromClass(
+    name: String,
+    clazz: KClass<*>,
+    annotations: List<Annotation> = emptyList(),
+    isLast: Boolean
+): Argument<*> {
 
     return when (clazz) {
         String::class -> if (isLast)
@@ -140,7 +201,8 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
         Int::class -> ArgumentType.Integer(name).also { argument ->
             annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min.toInt()) }
             annotations.filterIsInstance<MaxAmount>().firstOrNull()?.let { argument.max(it.max.toInt()) }
-            annotations.filterIsInstance<DefaultNumber>().firstOrNull()?.let { argument.defaultValue(it.number.toInt()) }
+            annotations.filterIsInstance<DefaultNumber>().firstOrNull()
+                ?.let { argument.defaultValue(it.number.toInt()) }
         }
         Double::class -> ArgumentType.Double(name).also { argument ->
             annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min) }
@@ -157,7 +219,8 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
         Float::class -> ArgumentType.Float(name).also { argument ->
             annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min.toFloat()) }
             annotations.filterIsInstance<MaxAmount>().firstOrNull()?.let { argument.max(it.max.toFloat()) }
-            annotations.filterIsInstance<DefaultNumber>().firstOrNull()?.let { argument.defaultValue(it.number.toFloat()) }
+            annotations.filterIsInstance<DefaultNumber>().firstOrNull()
+                ?.let { argument.defaultValue(it.number.toFloat()) }
         }
         ItemStack::class, Material::class -> ArgumentType.ItemStack(name).also { argument ->
             annotations.filterIsInstance<DefaultMaterial>().firstOrNull()
@@ -171,7 +234,14 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
                 ?.let { argument.defaultValue(Duration.of(it.amount, it.timeUnit)) }
 
             annotations.filterIsInstance<DefaultTickDuration>().firstOrNull()
-                ?.let { argument.defaultValue(Duration.of(it.amount, if (it.isClient) TimeUnit.CLIENT_TICK else TimeUnit.SERVER_TICK)) }
+                ?.let {
+                    argument.defaultValue(
+                        Duration.of(
+                            it.amount,
+                            if (it.isClient) TimeUnit.CLIENT_TICK else TimeUnit.SERVER_TICK
+                        )
+                    )
+                }
         }
         IntRange::class -> ArgumentType.IntRange(name)
         FloatRange::class -> ArgumentType.FloatRange(name)
@@ -207,10 +277,10 @@ public fun argumentFromClass(name: String, clazz: KClass<*>, annotations: List<A
         }
         UUID::class -> ArgumentType.UUID(name)
         else -> {
-            if (clazz.java.enumConstants == null) return null
+            if (clazz.java.enumConstants == null) throw IllegalStateException("Must be a valid argument!")
 
             @Suppress("UNCHECKED_CAST") // We already check if the class is an enum or not.
-            (ArgumentEnum(name, clazz.java as Class<Enum<*>>))
+            return (ArgumentEnum(name, clazz.java as Class<Enum<*>>))
         }
     }
 }
