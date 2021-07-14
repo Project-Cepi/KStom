@@ -7,26 +7,26 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.descriptors.element
 import kotlinx.serialization.encoding.*
-import net.minestom.server.utils.Vector
+import net.minestom.server.coordinate.Vec
 
-@Serializer(forClass = Vector::class)
+@Serializer(forClass = Vec::class)
 @OptIn(ExperimentalSerializationApi::class)
-object VectorSerializer : KSerializer<Vector> {
+object VecSerializer : KSerializer<Vec> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("Vector") {
         element<Double>("x")
         element<Double>("y")
         element<Double>("z")
     }
 
-    override fun serialize(encoder: Encoder, value: Vector) {
+    override fun serialize(encoder: Encoder, value: Vec) {
         encoder.encodeStructure(descriptor) {
-            encodeDoubleElement(descriptor, 0, value.x)
-            encodeDoubleElement(descriptor, 1, value.y)
-            encodeDoubleElement(descriptor, 2, value.z)
+            encodeDoubleElement(descriptor, 0, value.x())
+            encodeDoubleElement(descriptor, 1, value.y())
+            encodeDoubleElement(descriptor, 2, value.z())
         }
     }
 
-    override fun deserialize(decoder: Decoder): Vector {
+    override fun deserialize(decoder: Decoder): Vec {
         return decoder.decodeStructure(descriptor) {
             var x = 0.0
             var y = 0.0
@@ -40,7 +40,7 @@ object VectorSerializer : KSerializer<Vector> {
                     else -> error("Unexpected index: $index")
                 }
             }
-            Vector(x, y, z)
+            Vec(x, y, z)
         }
     }
 }

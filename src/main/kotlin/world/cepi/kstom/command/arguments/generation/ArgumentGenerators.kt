@@ -9,6 +9,7 @@ import net.minestom.server.command.builder.CommandResult
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentEnum
 import net.minestom.server.command.builder.arguments.ArgumentType
+import net.minestom.server.coordinate.Point
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.EntityType
 import net.minestom.server.instance.block.Block
@@ -16,10 +17,7 @@ import net.minestom.server.item.Enchantment
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 import net.minestom.server.potion.PotionEffect
-import net.minestom.server.utils.BlockPosition
-import net.minestom.server.utils.Vector
 import net.minestom.server.utils.entity.EntityFinder
-import net.minestom.server.utils.location.RelativeBlockPosition
 import net.minestom.server.utils.location.RelativeVec
 import net.minestom.server.utils.math.FloatRange
 import net.minestom.server.utils.math.IntRange
@@ -35,7 +33,6 @@ import world.cepi.kstom.command.arguments.generation.annotations.*
 import world.cepi.kstom.command.arguments.literal
 import world.cepi.kstom.serializer.SerializableEntityFinder
 import world.cepi.kstom.tree.CombinationNode
-import java.lang.IllegalStateException
 import java.time.Duration
 import java.util.*
 import kotlin.reflect.KClass
@@ -76,8 +73,7 @@ class GeneratedArguments<T : Any>(
             when (correspondingClass) {
                 Material::class -> if (value is ItemStack) return@mapIndexed value.material
                 Byte::class -> if (value is Int) return@mapIndexed value.toByte()
-                Vector::class -> if (value is RelativeVec) return@mapIndexed value.from(sender as? Entity)
-                BlockPosition::class -> if (value is RelativeBlockPosition) return@mapIndexed value.from(sender as? Entity)
+                Point::class -> if (value is RelativeVec) return@mapIndexed value.from(sender as? Entity)
             }
 
             // Entity finder serializable exception
@@ -100,7 +96,7 @@ class GeneratedArguments<T : Any>(
  *
  * @throws NullPointerException If the constructor or any arguments are invalid.
  */
-public inline fun <reified T : Any> generateSyntaxes(): GeneratedArguments<T> =
+inline fun <reified T : Any> generateSyntaxes(): GeneratedArguments<T> =
     generateSyntaxes(T::class)
 
 /**
@@ -112,7 +108,7 @@ public inline fun <reified T : Any> generateSyntaxes(): GeneratedArguments<T> =
  *
  * @throws NullPointerException If the constructor or any arguments are invalid.
  */
-public fun <T : Any> generateSyntaxes(clazz: KClass<T>): GeneratedArguments<T> {
+fun <T : Any> generateSyntaxes(clazz: KClass<T>): GeneratedArguments<T> {
     if (clazz.isSealed && clazz.sealedSubclasses.isNotEmpty()) {
         return GeneratedArguments(clazz, clazz.sealedSubclasses.map {
             argumentsFromFunction(it.primaryConstructor!!)
@@ -136,7 +132,7 @@ public fun <T : Any> generateSyntaxes(clazz: KClass<T>): GeneratedArguments<T> {
  *
  * @return A list of lists; the first list is possible argument combinations. The second list is a list of arguments.
  */
-public fun argumentsFromFunction(function: KFunction<*>): List<ArgumentPrintableGroup> {
+fun argumentsFromFunction(function: KFunction<*>): List<ArgumentPrintableGroup> {
     // list of all combinations ordered.
     // EX, if you have [damage: Int, energy, energy: Int] / [damage: Int, clickType, clickType: Enum],
     // the list would be: [[damage]], [[energy, energy: Int], [clickType, clickType: Int]]
@@ -190,7 +186,7 @@ public fun argumentsFromFunction(function: KFunction<*>): List<ArgumentPrintable
  * @return An argument that matches with the class.
  *
  */
-public fun argumentFromClass(
+fun argumentFromClass(
     name: String,
     clazz: KClass<*>,
     annotations: List<Annotation> = emptyList(),
@@ -252,7 +248,7 @@ public fun argumentFromClass(
         SerializableEntityFinder::class -> ArgumentType.Entity(name)
         Enchantment::class -> ArgumentType.Enchantment(name)
         RelativeVec::class -> ArgumentType.RelativeVec3(name)
-        Vector::class -> ArgumentType.RelativeVec3(name)
+        Point::class -> ArgumentType.RelativeVec3(name)
         Byte::class -> ArgumentType.Integer(name).also { argument ->
             argument.min(
                 annotations.filterIsInstance<MinAmount>().firstOrNull()?.min?.toInt()
@@ -268,11 +264,9 @@ public fun argumentFromClass(
                 ?.let { argument.defaultValue(it.number.toInt().coerceIn(Byte.MIN_VALUE..Byte.MAX_VALUE)) }
 
         }
-        RelativeBlockPosition::class -> ArgumentType.RelativeBlockPosition(name)
-        BlockPosition::class -> ArgumentType.RelativeBlockPosition(name)
         Block::class -> ArgumentType.BlockState(name).also { argument ->
             annotations.filterIsInstance<DefaultBlock>().firstOrNull()
-                ?.let { argument.defaultValue(it.block) }
+                ?.let { argument.defaultValue(Block.fromNamespaceId(it.block)) }
         }
         CommandResult::class -> ArgumentType.Command(name)
         PotionEffect::class -> ArgumentType.Potion(name).also { argument ->

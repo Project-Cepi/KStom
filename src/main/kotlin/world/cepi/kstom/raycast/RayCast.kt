@@ -1,12 +1,11 @@
 package world.cepi.kstom.raycast
 
+import net.minestom.server.coordinate.Point
+import net.minestom.server.coordinate.Vec
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.LivingEntity
 import net.minestom.server.instance.Instance
-import net.minestom.server.utils.Vector
 import world.cepi.kstom.util.Fuzzy
-import world.cepi.kstom.util.blockUtilsAt
-import world.cepi.kstom.util.toExactBlockPosition
 
 /**
  * Ray cast utilities for Minestom.
@@ -33,13 +32,13 @@ object RayCast {
     fun castRay(
         instance: Instance,
         origin: LivingEntity? = null,
-        start: Vector,
-        direction: Vector,
+        start: Point,
+        direction: Vec,
         maxDistance: Double = 100.0,
-        stepLength: Double = .25,
-        shouldContinue: (Vector) -> Boolean = { !instance.blockUtilsAt(it.toExactBlockPosition()).block.isSolid },
-        onBlockStep: (Vector) -> Unit = { },
-        acceptEntity: (Vector, Entity) -> Boolean = { _, _ -> true },
+        stepLength: Double = 0.25,
+        shouldContinue: (Point) -> Boolean = { !instance.getBlock(it).isSolid },
+        onBlockStep: (Point) -> Unit = { },
+        acceptEntity: (Point, Entity) -> Boolean = { _, _ -> true },
         margin: Double = 0.125
     ): Result {
         require(maxDistance > 0) { "Max distance must be greater than 0!" }
@@ -49,9 +48,10 @@ object RayCast {
          Normalize the direction, making it less/equal to (1, 1, 1)
           then multiply by step to properly add to the step length.
          */
-        direction.normalize().multiply(stepLength)
+        direction.normalize().mul(stepLength)
 
-        var lastVector = start.clone()
+        var lastPos = start
+        var currentPos = start
 
         // current step, always starts at the origin.
         var step = 0.0
@@ -65,18 +65,18 @@ object RayCast {
             }
 
             // checks if there is an entity in this step -- if so, return that.
-            val target = Fuzzy.positionInEntity(instance, start.toPosition(), origin, margin)
+            val target = Fuzzy.positionInEntity(instance, start, origin, margin)
             if (target != null && acceptEntity(start, target)) {
                 return Result(start, HitType.ENTITY, target)
             }
 
-            if (lastVector != start) {
+            if (lastPos != start) {
                 onBlockStep.invoke(start)
             }
 
             // add the precalculated direction to the block position, and refresh the lastBlockCache
-            lastVector = start.clone()
-            start.add(direction)
+            lastPos = currentPos
+            currentPos = currentPos.add(direction)
 
             step += stepLength
         }

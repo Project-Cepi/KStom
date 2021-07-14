@@ -9,7 +9,6 @@ import kotlinx.serialization.descriptors.element
 import kotlinx.serialization.encoding.*
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
-import net.minestom.server.utils.BlockPosition
 import java.lang.Exception
 
 @Serializer(forClass = Sound::class)

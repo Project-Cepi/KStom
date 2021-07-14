@@ -6,3 +6,5 @@ Kotlin standard libraries for Minestom
 [Mworlzala's canvas library](https://github.com/mworzala/canvas)
 
 [Minestom Particles](https://github.com/Bloepiloepi/MinestomParticles)
+
+[emortal](https://github.com/emortal)

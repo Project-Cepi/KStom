@@ -7,12 +7,11 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.descriptors.element
 import kotlinx.serialization.encoding.*
-import net.minestom.server.utils.Position
-import net.minestom.server.utils.Vector
+import net.minestom.server.coordinate.Pos
 
-@Serializer(forClass = Position::class)
+@Serializer(forClass = Pos::class)
 @OptIn(ExperimentalSerializationApi::class)
-object PositionSerializer : KSerializer<Position> {
+object PosSerializer : KSerializer<Pos> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("Position") {
         element<Double>("x")
         element<Double>("y")
@@ -21,17 +20,17 @@ object PositionSerializer : KSerializer<Position> {
         element<Float>("pitch")
     }
 
-    override fun serialize(encoder: Encoder, value: Position) {
+    override fun serialize(encoder: Encoder, value: Pos) {
         encoder.encodeStructure(descriptor) {
-            encodeDoubleElement(descriptor, 0, value.x)
-            encodeDoubleElement(descriptor, 1, value.y)
-            encodeDoubleElement(descriptor, 2, value.z)
-            encodeFloatElement(descriptor, 3, value.yaw)
-            encodeFloatElement(descriptor, 4, value.pitch)
+            encodeDoubleElement(descriptor, 0, value.x())
+            encodeDoubleElement(descriptor, 1, value.y())
+            encodeDoubleElement(descriptor, 2, value.z())
+            encodeFloatElement(descriptor, 3, value.yaw())
+            encodeFloatElement(descriptor, 4, value.pitch())
         }
     }
 
-    override fun deserialize(decoder: Decoder): Position {
+    override fun deserialize(decoder: Decoder): Pos {
         return decoder.decodeStructure(descriptor) {
             var x = 0.0
             var y = 0.0
@@ -49,7 +48,7 @@ object PositionSerializer : KSerializer<Position> {
                     else -> error("Unexpected index: $index")
                 }
             }
-            Position(x, y, z, yaw, pitch)
+            Pos(x, y, z, yaw, pitch)
         }
     }
 }

@@ -25,66 +25,66 @@ import net.minestom.server.world.biomes.BiomeManager
 /**
  * Shorthand utilities for MinecraftServer
  */
-public object Manager {
+object Manager {
 
-    public val command: CommandManager
+    val command: CommandManager
         get() = MinecraftServer.getCommandManager()
 
-    public val block: BlockManager
+    val block: BlockManager
         get() = MinecraftServer.getBlockManager()
 
-    public val instance: InstanceManager
+    val instance: InstanceManager
         get() = MinecraftServer.getInstanceManager()
 
-    public val advancement: AdvancementManager
+    val advancement: AdvancementManager
         get() = MinecraftServer.getAdvancementManager()
 
-    public val packetListener: PacketListenerManager
+    val packetListener: PacketListenerManager
         get() = MinecraftServer.getPacketListenerManager()
 
-    public val recipe: RecipeManager
+    val recipe: RecipeManager
         get() = MinecraftServer.getRecipeManager()
 
-    public val benchmark: BenchmarkManager
+    val benchmark: BenchmarkManager
         get() = MinecraftServer.getBenchmarkManager()
 
-    public val biome: BiomeManager
+    val biome: BiomeManager
         get() = MinecraftServer.getBiomeManager()
 
-    public val bossBar: BossBarManager
+    val bossBar: BossBarManager
         get() = MinecraftServer.getBossBarManager()
 
-    public val connection: ConnectionManager
+    val connection: ConnectionManager
         get() = MinecraftServer.getConnectionManager()
 
-    public val data: DataManager
+    val data: DataManager
         get() = MinecraftServer.getDataManager()
 
-    public val storage: StorageManager
+    val storage: StorageManager
         get() = MinecraftServer.getStorageManager()
 
-    public val tag: TagManager
+    val tag: TagManager
         get() = MinecraftServer.getTagManager()
 
-    public val team: TeamManager
+    val team: TeamManager
         get() = MinecraftServer.getTeamManager()
 
-    public val update: UpdateManager
+    val update: UpdateManager
         get() = MinecraftServer.getUpdateManager()
 
-    public val exception: ExceptionManager
+    val exception: ExceptionManager
         get() = MinecraftServer.getExceptionManager()
 
-    public val lootTable: LootTableManager
+    val lootTable: LootTableManager
         get() = MinecraftServer.getLootTableManager()
 
-    public val extension: ExtensionManager
+    val extension: ExtensionManager
         get() = MinecraftServer.getExtensionManager()
 
-    public val scheduler: SchedulerManager
+    val scheduler: SchedulerManager
         get() = MinecraftServer.getSchedulerManager()
 
-    public val globalEvent: GlobalEventHandler
+    val globalEvent: GlobalEventHandler
         get() = MinecraftServer.getGlobalEventHandler()
 
 }

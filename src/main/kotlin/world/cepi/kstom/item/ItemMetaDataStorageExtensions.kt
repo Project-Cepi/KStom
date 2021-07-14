@@ -1,22 +1,21 @@
 package world.cepi.kstom.item
 
-import kotlinx.serialization.KSerializer
-import net.minestom.server.item.ItemMetaBuilder
-import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
 import net.minestom.server.item.ItemMeta
+import net.minestom.server.item.ItemMetaBuilder
 import net.minestom.server.tag.Tag
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
 import world.cepi.kstom.nbt.NBTParser
 import world.cepi.kstom.nbt.NbtFormat
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 
 @Target(AnnotationTarget.CLASS, AnnotationTarget.PROPERTY, AnnotationTarget.FUNCTION, AnnotationTarget.TYPEALIAS)
 @RequiresOptIn("Literally doesn't garbage collect at all.", level = RequiresOptIn.Level.WARNING)
-public annotation class ExperimentalServerStorageAPI
+annotation class ExperimentalServerStorageAPI
 
 class ItemMetaClientData(val metaBuilder: ItemMetaBuilder) {
 
@@ -60,10 +59,10 @@ object ItemMetaServerData {
     }
 }
 
-public fun ItemMetaBuilder.clientData(receiver: ItemMetaClientData.() -> Unit) = ItemMetaClientData(this).receiver()
+fun ItemMetaBuilder.clientData(receiver: ItemMetaClientData.() -> Unit) = ItemMetaClientData(this).receiver()
 
 @OptIn(kotlinx.serialization.InternalSerializationApi::class)
-public fun <T: @Serializable Any> ItemMeta.get(
+fun <T: @Serializable Any> ItemMeta.get(
     tag: String,
     clazz: KClass<T>,
     module: SerializersModule? = null
@@ -77,10 +76,10 @@ public fun <T: @Serializable Any> ItemMeta.get(
         .deserialize(clazz.serializer(), it as? NBTCompound ?: return null)
 }
 
-public inline fun <reified T: @Serializable Any> ItemMeta.get(
+inline fun <reified T: @Serializable Any> ItemMeta.get(
     tag: String,
     module: SerializersModule? = null
 ): T? = this.get(tag, T::class, module)
 
 @ExperimentalServerStorageAPI
-public fun ItemMetaBuilder.serverData(receiver: ItemMetaServerDataProvider.() -> Unit) = ItemMetaServerDataProvider(this).receiver()
+fun ItemMetaBuilder.serverData(receiver: ItemMetaServerDataProvider.() -> Unit) = ItemMetaServerDataProvider(this).receiver()

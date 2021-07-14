@@ -1,11 +1,12 @@
 package world.cepi.kstom.item
 
-import net.minestom.server.item.*
+import net.minestom.server.item.ItemMetaBuilder
+import net.minestom.server.item.ItemStackBuilder
 
 /**
  * DSL for Meta.
  */
-public fun ItemStackBuilder.withMeta(init: ItemMetaBuilder.() -> Unit) =
+fun ItemStackBuilder.withMeta(init: ItemMetaBuilder.() -> Unit) =
     this.meta {
         it.init()
         return@meta it

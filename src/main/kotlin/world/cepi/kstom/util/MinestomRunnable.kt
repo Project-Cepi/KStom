@@ -1,7 +1,7 @@
 package world.cepi.kstom.util
 
-import net.minestom.server.MinecraftServer
 import net.minestom.server.timer.Task
+import world.cepi.kstom.Manager
 import java.time.Duration
 
 /**
@@ -25,8 +25,11 @@ abstract class MinestomRunnable : Runnable {
     }
 
     fun schedule(): Task {
-        val t = MinecraftServer.getSchedulerManager().buildTask(this).delay(delayDuration)
-            .repeat(repeatDuration).schedule()
+        val t = Manager.scheduler.buildTask(this)
+            .delay(delayDuration)
+            .repeat(repeatDuration)
+            .schedule()
+
         this.t = t
         return t
     }
