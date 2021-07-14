@@ -49,7 +49,7 @@ class GeneratedArguments<T : Any>(
     val args: List<ArgumentPrintableGroup>
 ) {
 
-    fun applySyntax(command: Command, arguments: Array<Argument<*>> = arrayOf(), lambda: SyntaxContext.(T) -> Unit) {
+    fun applySyntax(command: Command, vararg arguments: Argument<*>, lambda: SyntaxContext.(T) -> Unit) {
         args.forEach {
             command.addSyntax(it, *arguments) {
                 val instance = createInstance(it, context, sender)
