@@ -7,4 +7,4 @@ Kotlin standard libraries for Minestom
 
 [Minestom Particles](https://github.com/Bloepiloepi/MinestomParticles)
 
-[emortal](https://github.com/emortal)
+[emortal](https://github.com/emortaldev)
