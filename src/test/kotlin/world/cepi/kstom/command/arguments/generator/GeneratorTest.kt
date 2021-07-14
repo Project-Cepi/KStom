@@ -1,11 +1,12 @@
-package world.cepi.kstom.command.arguments
+package world.cepi.kstom.command.arguments.generator
 
-import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentBoolean
 import net.minestom.server.command.builder.arguments.ArgumentLiteral
 import net.minestom.server.command.builder.arguments.number.ArgumentInteger
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import world.cepi.kstom.command.arguments.ArgumentPrintableGroup
+import world.cepi.kstom.command.arguments.generation.generateSyntaxes
 
 class GeneratorTest {
 

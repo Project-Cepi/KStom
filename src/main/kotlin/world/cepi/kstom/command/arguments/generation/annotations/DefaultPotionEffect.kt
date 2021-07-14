@@ -1,4 +1,4 @@
-package world.cepi.kstom.command.arguments.annotations
+package world.cepi.kstom.command.arguments.generation.annotations
 
 import net.minestom.server.potion.PotionEffect
 

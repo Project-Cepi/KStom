@@ -1,7 +1,6 @@
-package world.cepi.kstom.command.arguments.annotations
+package world.cepi.kstom.command.arguments.generation.annotations
 
 import java.time.temporal.ChronoUnit
-import net.minestom.server.utils.time.Tick
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.VALUE_PARAMETER)

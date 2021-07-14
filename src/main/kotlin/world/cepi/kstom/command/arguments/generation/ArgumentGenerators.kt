@@ -1,4 +1,4 @@
-package world.cepi.kstom.command.arguments
+package world.cepi.kstom.command.arguments.generation
 
 import net.kyori.adventure.text.Component
 import net.minestom.server.color.Color
@@ -28,7 +28,11 @@ import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
 import world.cepi.kstom.command.SyntaxContext
 import world.cepi.kstom.command.addSyntax
-import world.cepi.kstom.command.arguments.annotations.*
+import world.cepi.kstom.command.arguments.ArgumentPrintableGroup
+import world.cepi.kstom.command.arguments.ShellArgument
+import world.cepi.kstom.command.arguments.defaultValue
+import world.cepi.kstom.command.arguments.generation.annotations.*
+import world.cepi.kstom.command.arguments.literal
 import world.cepi.kstom.serializer.SerializableEntityFinder
 import world.cepi.kstom.tree.CombinationNode
 import java.lang.IllegalStateException
