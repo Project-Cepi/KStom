@@ -26,11 +26,9 @@ import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
 import world.cepi.kstom.command.SyntaxContext
 import world.cepi.kstom.command.addSyntax
-import world.cepi.kstom.command.arguments.ArgumentPrintableGroup
-import world.cepi.kstom.command.arguments.ShellArgument
-import world.cepi.kstom.command.arguments.defaultValue
+import world.cepi.kstom.command.arguments.*
 import world.cepi.kstom.command.arguments.generation.annotations.*
-import world.cepi.kstom.command.arguments.literal
+import world.cepi.kstom.command.arguments.generation.context.ContextParser
 import world.cepi.kstom.serializer.SerializableEntityFinder
 import world.cepi.kstom.tree.CombinationNode
 import java.time.Duration
@@ -79,6 +77,10 @@ class GeneratedArguments<T : Any>(
             // Entity finder serializable exception
             if (value is EntityFinder) {
                 return@mapIndexed SerializableEntityFinder(context.getRaw(argument.id))
+            }
+
+            if (value is ArgumentContextValue<*>) {
+                return@mapIndexed value.from(sender)
             }
 
             return@mapIndexed value
@@ -275,6 +277,15 @@ fun argumentFromClass(
         }
         UUID::class -> ArgumentType.UUID(name)
         else -> {
+
+            if (annotations.any { it is ParameterContext }) {
+                val annotation = annotations.filterIsInstance<ParameterContext>().first()
+
+                val instance = annotation.parser.objectInstance!! as ContextParser<*>
+
+                return ArgumentContext(instance::parse)
+            }
+
             if (clazz.java.enumConstants == null) throw IllegalStateException("Must be a valid argument!")
 
             @Suppress("UNCHECKED_CAST") // We already check if the class is an enum or not.

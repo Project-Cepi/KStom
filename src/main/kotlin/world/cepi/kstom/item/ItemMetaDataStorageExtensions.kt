@@ -14,8 +14,8 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 
 @Target(AnnotationTarget.CLASS, AnnotationTarget.PROPERTY, AnnotationTarget.FUNCTION, AnnotationTarget.TYPEALIAS)
-@RequiresOptIn("Literally doesn't garbage collect at all.", level = RequiresOptIn.Level.WARNING)
-annotation class ExperimentalServerStorageAPI
+@RequiresOptIn("Values do not garbage collect.", level = RequiresOptIn.Level.WARNING)
+public annotation class ExperimentalServerStorageAPI
 
 class ItemMetaClientData(val metaBuilder: ItemMetaBuilder) {
 
