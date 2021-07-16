@@ -8,7 +8,10 @@ import net.minestom.server.command.builder.CommandSyntax
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.exception.ArgumentSyntaxException
 
-data class SyntaxContext(val sender: CommandSender, val context: CommandContext)
+data class SyntaxContext(val sender: CommandSender, val context: CommandContext) {
+    operator fun <T> get(argument: Argument<T>): T = context.get(argument)
+}
+
 data class ConditionContext(val sender: CommandSender, val input: String)
 data class ArgumentCallbackContext(val sender: CommandSender, val exception: ArgumentSyntaxException)
 

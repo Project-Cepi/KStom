@@ -9,6 +9,7 @@ import net.minestom.server.command.builder.CommandResult
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentEnum
 import net.minestom.server.command.builder.arguments.ArgumentType
+import net.minestom.server.command.builder.arguments.minecraft.ArgumentEntity
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.EntityType
 import net.minestom.server.instance.block.Block
@@ -33,6 +34,7 @@ import world.cepi.kstom.command.arguments.generation.annotations.*
 import world.cepi.kstom.command.arguments.generation.context.ContextParser
 import world.cepi.kstom.serializer.SerializableEntityFinder
 import world.cepi.kstom.tree.CombinationNode
+import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 import java.time.Duration
 import java.util.*
@@ -47,30 +49,56 @@ class GeneratedArguments<T : Any>(
     val args: List<ArgumentPrintableGroup>
 ) {
 
-    fun applySyntax(command: Command, vararg arguments: Argument<*>, lambda: SyntaxContext.(T) -> Unit) {
-        args.forEach {
-            command.addSyntax(it, *arguments) {
-                val instance = createInstance(it, context, sender)
+    companion object {
+        inline fun <reified T: Any> Command.generateSyntaxes(
+            vararg arguments: Argument<*>,
+            noinline lambda: SyntaxContext.(T) -> Unit
+        ) = generateSyntaxes<T>().applySyntax(this, arguments, lambda)
+    }
 
-                lambda(this, instance)
-            }
+    fun applySyntax(
+        command: Command,
+        vararg arguments: Argument<*>,
+        lambda: SyntaxContext.(T) -> Unit
+    ) = applySyntax(command, arguments, lambda)
+
+    @JvmName("arrayApplySyntax")
+    fun applySyntax(
+        command: Command,
+        argumentsBefore: Array<out Argument<*>>,
+        lambda: SyntaxContext.(T) -> Unit
+    ) = args.forEach {
+        command.addSyntax(*argumentsBefore, *it.group) {
+            val instance = createInstance(it.group, context, sender)
+
+            lambda(this, instance)
         }
     }
 
-
-    fun createInstance(currentArgs: ArgumentPrintableGroup, context: CommandContext, sender: CommandSender): T {
+    fun createInstance(currentArgs: Array<Argument<*>>, context: CommandContext, sender: CommandSender): T {
 
         val classes = clazz.primaryConstructor!!.valueParameters.map {
             it.type.classifier as KClass<*>
         }
 
-        return clazz.primaryConstructor!!.call(*currentArgs.group.mapIndexed { index, argument ->
+        val generatedArguments = currentArgs.mapIndexed { index, argument ->
+
+            // Entity finder serializable exception
+            if (argument is ArgumentEntity) {
+                return@mapIndexed SerializableEntityFinder(context.getRaw(argument.id))
+            }
+
+            val value = context[argument]
+
+            if (value is ArgumentContextValue<*>) {
+                return@mapIndexed value.from(sender)
+            }
 
             val correspondingClass = classes[index]
-            val value = context.get(argument)
 
-            // Special Material type class
+            println("${argument::class} / $correspondingClass / $value")
 
+            // Handle special context / sub edge cases
             when (correspondingClass) {
                 Material::class -> if (value is ItemStack) return@mapIndexed value.material
                 Byte::class -> if (value is Int) return@mapIndexed value.toByte()
@@ -78,17 +106,15 @@ class GeneratedArguments<T : Any>(
                 BlockPosition::class -> if (value is RelativeBlockPosition) return@mapIndexed value.from(sender as? Entity)
             }
 
-            // Entity finder serializable exception
-            if (value is EntityFinder) {
-                return@mapIndexed SerializableEntityFinder(context.getRaw(argument.id))
-            }
-
-            if (value is ArgumentContextValue<*>) {
-                return@mapIndexed value.from(sender)
-            }
-
             return@mapIndexed value
-        }.toTypedArray())
+        }
+
+        try {
+            return clazz.primaryConstructor!!.call(*generatedArguments.toTypedArray())
+        } catch (exception: Exception) {
+            // Print a more useful debug exception
+            throw IllegalArgumentException("Expected types were $classes but received $generatedArguments")
+        }
     }
 
 }
