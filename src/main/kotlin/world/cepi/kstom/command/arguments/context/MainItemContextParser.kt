@@ -1,4 +1,4 @@
-package world.cepi.kstom.command.arguments.generation.context
+package world.cepi.kstom.command.arguments.context
 
 import net.minestom.server.command.CommandSender
 import net.minestom.server.entity.Player

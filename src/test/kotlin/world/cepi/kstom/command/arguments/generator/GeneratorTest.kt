@@ -22,16 +22,16 @@ class GeneratorTest {
         val catSyntaxes = generateSyntaxes<Animal.Cat>().args
 
         assertEquals(1, catSyntaxes.size) // One combination
-        assertEquals(2, catSyntaxes[0].group.size) // Two elements
+        assertEquals(2, catSyntaxes[0].size) // Two elements
 
 
         // Ensure Integer<whiskerCount>
-        assertEquals(ArgumentInteger::class, catSyntaxes[0].group[0]::class)
-        assertEquals("whiskerCount", catSyntaxes[0].group[0].id)
+        assertEquals(ArgumentInteger::class, catSyntaxes[0][0]::class)
+        assertEquals("whiskerCount", catSyntaxes[0][0].id)
 
         // Ensure Boolean<longNails>
-        assertEquals(ArgumentBoolean::class, catSyntaxes[0].group[1]::class)
-        assertEquals("longNails", catSyntaxes[0].group[1].id)
+        assertEquals(ArgumentBoolean::class, catSyntaxes[0][1]::class)
+        assertEquals("longNails", catSyntaxes[0][1].id)
     }
 
     @Test
@@ -41,11 +41,11 @@ class GeneratorTest {
         assertEquals(2, fullSyntaxes.size)
 
         fullSyntaxes.forEach { // Ensure toFetch is present in each
-            assertEquals(ArgumentBoolean::class, it.group[0]::class)
-            assertEquals("toFetch", it.group[0].id)
-            assertEquals(2, it.group.size)
+            assertEquals(ArgumentBoolean::class, it[0]::class)
+            assertEquals("toFetch", it[0].id)
+            assertEquals(2, it.size)
 
-            val firstGroup = it.group[1] as ArgumentPrintableGroup
+            val firstGroup = it[1] as ArgumentPrintableGroup
 
             assertEquals(ArgumentLiteral::class, firstGroup.group[0]::class)
         }

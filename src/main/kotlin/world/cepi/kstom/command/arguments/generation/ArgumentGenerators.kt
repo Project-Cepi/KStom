@@ -9,7 +9,6 @@ import net.minestom.server.command.builder.CommandResult
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentEnum
 import net.minestom.server.command.builder.arguments.ArgumentType
-import net.minestom.server.command.builder.arguments.minecraft.ArgumentEntity
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.EntityType
 import net.minestom.server.instance.block.Block
@@ -31,7 +30,7 @@ import world.cepi.kstom.command.SyntaxContext
 import world.cepi.kstom.command.addSyntax
 import world.cepi.kstom.command.arguments.*
 import world.cepi.kstom.command.arguments.generation.annotations.*
-import world.cepi.kstom.command.arguments.generation.context.ContextParser
+import world.cepi.kstom.command.arguments.context.ContextParser
 import world.cepi.kstom.serializer.SerializableEntityFinder
 import world.cepi.kstom.tree.CombinationNode
 import java.lang.IllegalArgumentException
@@ -46,15 +45,8 @@ import kotlin.reflect.jvm.jvmErasure
 
 class GeneratedArguments<T : Any>(
     val clazz: KClass<T>,
-    val args: List<ArgumentPrintableGroup>
+    val args: List<List<Argument<*>>>
 ) {
-
-    companion object {
-        inline fun <reified T: Any> Command.generateSyntaxes(
-            vararg arguments: Argument<*>,
-            noinline lambda: SyntaxContext.(T) -> Unit
-        ) = generateSyntaxes<T>().applySyntax(this, arguments, lambda)
-    }
 
     fun applySyntax(
         command: Command,
@@ -68,53 +60,71 @@ class GeneratedArguments<T : Any>(
         argumentsBefore: Array<out Argument<*>>,
         lambda: SyntaxContext.(T) -> Unit
     ) = args.forEach {
-        command.addSyntax(*argumentsBefore, *it.group) {
-            val instance = createInstance(it.group, context, sender)
+        command.addSyntax(*argumentsBefore, *it.toTypedArray()) {
+            val instance = createInstance(clazz, it.map { arg -> arg.id }, context, sender)
 
             lambda(this, instance)
         }
     }
 
-    fun createInstance(currentArgs: Array<Argument<*>>, context: CommandContext, sender: CommandSender): T {
+    companion object {
+        fun <T : Any> createInstance(
+            clazzToGenerate: KClass<T>,
+            currentArgs: List<String>,
+            context: CommandContext,
+            sender: CommandSender
+        ): T {
 
-        val classes = clazz.primaryConstructor!!.valueParameters.map {
-            it.type.classifier as KClass<*>
-        }
+            val constructor = clazzToGenerate.primaryConstructor
+                ?: throw NullPointerException("Constructor is null, make sure the class has a constructor!")
 
-        val generatedArguments = currentArgs.mapIndexed { index, argument ->
-
-            // Entity finder serializable exception
-            if (argument is ArgumentEntity) {
-                return@mapIndexed SerializableEntityFinder(context.getRaw(argument.id))
+            val classes = constructor.valueParameters.map {
+                it.type.classifier as KClass<*>
             }
 
-            val value = context[argument]
+            val generatedArguments = currentArgs.map { argumentName ->
 
-            if (value is ArgumentContextValue<*>) {
-                return@mapIndexed value.from(sender)
+                val value = context.get<Any>(argumentName)
+
+                // Entity finder serializable exception
+                if (value is EntityFinder) {
+                    return@map SerializableEntityFinder(context.getRaw(argumentName))
+                }
+
+                if (value is ArgumentContextValue<*>) {
+                    return@map value.from(sender)
+                }
+
+                if (value is Pair<*, *>) {
+
+                    value as Pair<String, CommandContext>
+
+                    println(value.first)
+                    return@map createInstance(Class.forName(value.first).kotlin, value.second.map.keys.toList(), value.second, sender)
+                }
+
+                // Handle special context / sub edge cases
+                when (value) {
+                    is RelativeVec -> return@map value.from(sender as? Entity)
+                    is RelativeBlockPosition -> return@map value.from(sender as? Entity)
+                }
+
+                return@map value
             }
 
-            val correspondingClass = classes[index]
+            try {
+                return constructor.call(*generatedArguments.toTypedArray())
+            } catch (exception: IllegalArgumentException) {
+                // Print a more useful debug exception
 
-            println("${argument::class} / $correspondingClass / $value")
-
-            // Handle special context / sub edge cases
-            when (correspondingClass) {
-                Material::class -> if (value is ItemStack) return@mapIndexed value.material
-                Byte::class -> if (value is Int) return@mapIndexed value.toByte()
-                Vector::class -> if (value is RelativeVec) return@mapIndexed value.from(sender as? Entity)
-                BlockPosition::class -> if (value is RelativeBlockPosition) return@mapIndexed value.from(sender as? Entity)
+                throw IllegalArgumentException("Expected types were $classes but received $generatedArguments")
             }
-
-            return@mapIndexed value
         }
 
-        try {
-            return clazz.primaryConstructor!!.call(*generatedArguments.toTypedArray())
-        } catch (exception: Exception) {
-            // Print a more useful debug exception
-            throw IllegalArgumentException("Expected types were $classes but received $generatedArguments")
-        }
+        inline fun <reified T: Any> Command.createSyntaxesFrom(
+            vararg arguments: Argument<*>,
+            noinline lambda: SyntaxContext.(T) -> Unit
+        ) = generateSyntaxes<T>().applySyntax(this, arguments, lambda)
     }
 
 }
@@ -164,11 +174,11 @@ public fun <T : Any> generateSyntaxes(clazz: KClass<T>): GeneratedArguments<T> {
  *
  * @return A list of lists; the first list is possible argument combinations. The second list is a list of arguments.
  */
-public fun argumentsFromFunction(function: KFunction<*>): List<ArgumentPrintableGroup> {
+public fun argumentsFromFunction(function: KFunction<*>): List<List<Argument<*>>> {
     // list of all combinations ordered.
     // EX, if you have [damage: Int, energy, energy: Int] / [damage: Int, clickType, clickType: Enum],
     // the list would be: [[damage]], [[energy, energy: Int], [clickType, clickType: Int]]
-    val args: List<List<Argument<*>>> = function.valueParameters.mapIndexed { index, parameter ->
+    val args: List<Array<Argument<*>>> = function.valueParameters.mapIndexed { index, parameter ->
 
         val clazz = parameter.type.classifier!! as KClass<*>
 
@@ -176,17 +186,18 @@ public fun argumentsFromFunction(function: KFunction<*>): List<ArgumentPrintable
             // list(list(energy, energy: Int), list(clickType, clickType: Int))
             return@mapIndexed clazz.sealedSubclasses.map { subClass ->
                 ArgumentPrintableGroup(
-                    mutableListOf(
+                    subClass,
+                    arrayOf(
                         subClass.simpleName!!.replaceFirstChar { it.lowercase() }.literal(),
                         *argumentsFromFunction(subClass.primaryConstructor!!)
-                            .toTypedArray()
-                    ).toTypedArray()
+                            .flatten().toTypedArray()
+                    )
                 )
 
-            } // energy (energy: Int) / clickType (clickType: Enum)
+            }.toTypedArray() // energy (energy: Int) / clickType (clickType: Enum)
         }
 
-        listOf(
+        arrayOf(
             argumentFromClass(
                 parameter.name ?: parameter.type.jvmErasure.simpleName!!,
                 clazz,
@@ -203,10 +214,10 @@ public fun argumentsFromFunction(function: KFunction<*>): List<ArgumentPrintable
     // should turn into:
     // ((damage)): ((energy, energy: Int), (clickType, clickType: Enum))
     args.forEach {
-        rootNode.addItemsToLastNodes(*it.toTypedArray())
+        rootNode.addItemsToLastNodes(*it)
     }
 
-    return rootNode.traverseAndGenerate().map { ArgumentPrintableGroup(it.toTypedArray()) }
+    return rootNode.traverseAndGenerate()
 }
 
 /**
@@ -243,7 +254,7 @@ public fun argumentFromClass(
         }
         Color::class -> ArgumentType.Color(name)
         EntityType::class -> ArgumentType.EntityType(name)
-        Material::class -> ArgumentType.ItemStack(name)
+        Material::class -> ArgumentMaterial(name)
         Boolean::class -> ArgumentType.Boolean(name).also { argument ->
             annotations.filterIsInstance<DefaultBoolean>().firstOrNull()
                 ?.let { argument.defaultValue(it.boolean) }
@@ -281,19 +292,19 @@ public fun argumentFromClass(
         Enchantment::class -> ArgumentType.Enchantment(name)
         RelativeVec::class -> ArgumentType.RelativeVec3(name)
         Vector::class -> ArgumentType.RelativeVec3(name)
-        Byte::class -> ArgumentType.Integer(name).also { argument ->
+        Byte::class -> ArgumentByte(name).also { argument ->
             argument.min(
-                annotations.filterIsInstance<MinAmount>().firstOrNull()?.min?.toInt()
-                    ?.coerceAtLeast(Byte.MIN_VALUE.toInt()) ?: Byte.MIN_VALUE.toInt()
+                annotations.filterIsInstance<MinAmount>().firstOrNull()?.min?.toInt()?.toByte()
+                    ?.coerceAtLeast(Byte.MIN_VALUE) ?: Byte.MIN_VALUE
             )
 
             argument.max(
-                annotations.filterIsInstance<MaxAmount>().firstOrNull()?.max?.toInt()
-                    ?.coerceAtLeast(Byte.MAX_VALUE.toInt()) ?: Byte.MAX_VALUE.toInt()
+                annotations.filterIsInstance<MaxAmount>().firstOrNull()?.max?.toInt()?.toByte()
+                    ?.coerceAtLeast(Byte.MAX_VALUE) ?: Byte.MAX_VALUE
             )
 
             annotations.filterIsInstance<DefaultNumber>().firstOrNull()
-                ?.let { argument.defaultValue(it.number.toInt().coerceIn(Byte.MIN_VALUE..Byte.MAX_VALUE)) }
+                ?.let { argument.defaultValue(it.number.toInt().toByte().coerceAtLeast(Byte.MIN_VALUE).coerceAtMost(Byte.MAX_VALUE)) }
 
         }
         RelativeBlockPosition::class -> ArgumentType.RelativeBlockPosition(name)

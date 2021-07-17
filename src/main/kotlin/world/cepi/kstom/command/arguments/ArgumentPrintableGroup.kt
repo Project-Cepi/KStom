@@ -8,12 +8,13 @@ import net.minestom.server.command.builder.parser.CommandParser
 import net.minestom.server.command.builder.parser.ValidSyntaxHolder
 import net.minestom.server.utils.StringUtils
 import java.util.*
+import kotlin.reflect.KClass
 
-class ArgumentPrintableGroup(val group: Array<Argument<*>>) :
-    Argument<CommandContext>("printableGroup", true, false) {
+class ArgumentPrintableGroup(clazz: KClass<*>, val group: Array<out Argument<*>>) :
+    Argument<Pair<String, CommandContext>>(clazz.qualifiedName!!, true, false) {
 
     @Throws(ArgumentSyntaxException::class)
-    override fun parse(input: String): CommandContext {
+    override fun parse(input: String): Pair<String, CommandContext> {
         val validSyntaxes: List<ValidSyntaxHolder> = ArrayList()
         CommandParser.parse(
             null,
@@ -28,7 +29,7 @@ class ArgumentPrintableGroup(val group: Array<Argument<*>>) :
         if (validSyntaxes.isEmpty()) {
             throw ArgumentSyntaxException("Invalid arguments", input, INVALID_ARGUMENTS_ERROR)
         }
-        return context
+        return id to context
     }
 
     override fun processNodes(nodeMaker: NodeMaker, executable: Boolean) {
@@ -39,11 +40,11 @@ class ArgumentPrintableGroup(val group: Array<Argument<*>>) :
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        if (!super.equals(other)) return false
+        if (other == null) return false
 
-        other as ArgumentPrintableGroup
+        if (this === other) return true
+
+        if (other !is ArgumentPrintableGroup) return false
 
         if (!group.contentEquals(other.group)) return false
 

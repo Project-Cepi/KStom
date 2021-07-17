@@ -17,4 +17,6 @@ class ArgumentContext<T>(
 
     override fun processNodes(nodeMaker: NodeMaker, executable: Boolean) {}
 
+    override fun toString() = "Context<$id>"
+
 }

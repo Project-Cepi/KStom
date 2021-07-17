@@ -1,8 +1,10 @@
 package world.cepi.kstom.command.arguments
 
 import net.minestom.server.command.builder.Command
+import world.cepi.kstom.command.arguments.generation.GeneratedArguments.Companion.createSyntaxesFrom
 import world.cepi.kstom.command.arguments.generation.annotations.MaxAmount
 import world.cepi.kstom.command.arguments.generation.annotations.MinAmount
+import world.cepi.kstom.command.arguments.generation.generateSyntaxes
 
 // The "old" version of this is manually doing it
 
@@ -17,13 +19,14 @@ data class CoolItem(
 object ArgumentGeneratorDemo : Command("argumentGeneratorDemo") {
 
     init {
-        val argumentGenerator = generateSyntaxes<CoolItem>()
-        val alternativeargumentGenerator = generateSyntaxes(CoolItem::class)
+        createSyntaxesFrom<CoolItem> { instance ->
+            sender.sendMessage(instance.toString())
+        }
 
-        addSyntax(*argumentGenerator.args) { ->
-            val obj = argumentGenerator.createInstance(context, sender)
+        val alternativeArgumentGenerator = generateSyntaxes(CoolItem::class)
 
-            sender.sendMessage(obj.toString())
+        alternativeArgumentGenerator.applySyntax(this) { instance ->
+            sender.sendMessage(instance.toString())
         }
     }
 
