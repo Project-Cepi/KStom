@@ -50,6 +50,11 @@ class GeneratedArguments<T : Any>(
     val args: List<List<Argument<*>>>
 ) {
 
+    /**
+     * The callback for all the arguments in this [GeneratedArguments].
+     *
+     * Setting this will set all the callbacks for every argument.
+     */
     var callback: ArgumentCallbackContext.() -> Unit = {  }
         set(value) {
             args.forEach { subArgs -> subArgs.forEach { it.failCallback { value(this) } } }
@@ -132,13 +137,13 @@ class GeneratedArguments<T : Any>(
         inline fun <reified T: Any> Command.createSyntaxesFrom(
             vararg arguments: Argument<*>,
             noinline lambda: SyntaxContext.(T) -> Unit
-        ) = generateSyntaxes<T>().applySyntax(this, arguments, lambda)
+        ): GeneratedArguments<T> = generateSyntaxes<T>().also { it.applySyntax(this, arguments, lambda) }
 
         fun <T : Any> Command.createSyntaxesFrom(
             clazz: KClass<T>,
             vararg arguments: Argument<*>,
             lambda: SyntaxContext.(T) -> Unit
-        ) = generateSyntaxes(clazz).applySyntax(this, arguments, lambda)
+        ): GeneratedArguments<T> = generateSyntaxes(clazz).also { it.applySyntax(this, arguments, lambda) }
     }
 
 }
