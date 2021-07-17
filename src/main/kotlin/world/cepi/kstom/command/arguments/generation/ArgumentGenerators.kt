@@ -95,34 +95,38 @@ class GeneratedArguments<T : Any>(
                 it.type.classifier as KClass<*>
             }
 
-            val generatedArguments = currentArgs.map { argumentName ->
+            val generatedArguments = currentArgs.mapIndexed { index, argumentName ->
 
                 val value = context.get<Any>(argumentName)
+                val clazz = classes[index]
 
                 // Entity finder serializable exception
                 if (value is EntityFinder) {
-                    return@map SerializableEntityFinder(context.getRaw(argumentName))
+                    return@mapIndexed SerializableEntityFinder(context.getRaw(argumentName))
                 }
 
                 if (value is ArgumentContextValue<*>) {
-                    return@map value.from(sender)
+                    return@mapIndexed value.from(sender)
                 }
 
                 if (value is Pair<*, *>) {
 
                     value as Pair<String, CommandContext>
 
-                    println(value.first)
-                    return@map createInstance(Class.forName(value.first).kotlin, value.second.map.keys.toList(), value.second, sender)
+                    return@mapIndexed createInstance(
+                        clazz.sealedSubclasses.first { it.simpleName == value.first },
+                        value.second.map.keys.toMutableList().also { it.removeAt(it.size - 1) }.reversed(), value.second,
+                        sender
+                    )
                 }
 
                 // Handle special context / sub edge cases
                 when (value) {
-                    is RelativeVec -> return@map value.from(sender as? Entity)
-                    is RelativeBlockPosition -> return@map value.from(sender as? Entity)
+                    is RelativeVec -> return@mapIndexed value.from(sender as? Entity)
+                    is RelativeBlockPosition -> return@mapIndexed value.from(sender as? Entity)
                 }
 
-                return@map value
+                return@mapIndexed value
             }
 
             try {
@@ -157,7 +161,7 @@ class GeneratedArguments<T : Any>(
  *
  * @throws NullPointerException If the constructor or any arguments are invalid.
  */
-public inline fun <reified T : Any> generateSyntaxes(): GeneratedArguments<T> =
+inline fun <reified T : Any> generateSyntaxes(): GeneratedArguments<T> =
     generateSyntaxes(T::class)
 
 /**
@@ -169,7 +173,7 @@ public inline fun <reified T : Any> generateSyntaxes(): GeneratedArguments<T> =
  *
  * @throws NullPointerException If the constructor or any arguments are invalid.
  */
-public fun <T : Any> generateSyntaxes(clazz: KClass<T>): GeneratedArguments<T> {
+fun <T : Any> generateSyntaxes(clazz: KClass<T>): GeneratedArguments<T> {
     if (clazz.isSealed && clazz.sealedSubclasses.isNotEmpty()) {
         return GeneratedArguments(clazz, clazz.sealedSubclasses.map {
             argumentsFromFunction(it.primaryConstructor!!)
@@ -193,7 +197,7 @@ public fun <T : Any> generateSyntaxes(clazz: KClass<T>): GeneratedArguments<T> {
  *
  * @return A list of lists; the first list is possible argument combinations. The second list is a list of arguments.
  */
-public fun argumentsFromFunction(function: KFunction<*>): List<List<Argument<*>>> {
+fun argumentsFromFunction(function: KFunction<*>): List<List<Argument<*>>> {
     // list of all combinations ordered.
     // EX, if you have [damage: Int, energy, energy: Int] / [damage: Int, clickType, clickType: Enum],
     // the list would be: [[damage]], [[energy, energy: Int], [clickType, clickType: Int]]
@@ -205,7 +209,7 @@ public fun argumentsFromFunction(function: KFunction<*>): List<List<Argument<*>>
             // list(list(energy, energy: Int), list(clickType, clickType: Int))
             return@mapIndexed clazz.sealedSubclasses.map { subClass ->
                 ArgumentPrintableGroup(
-                    subClass.qualifiedName!!,
+                    subClass.simpleName!!,
                     arrayOf(
                         subClass.simpleName!!.replaceFirstChar { it.lowercase() }.literal(),
                         *argumentsFromFunction(subClass.primaryConstructor!!)
@@ -248,7 +252,7 @@ public fun argumentsFromFunction(function: KFunction<*>): List<List<Argument<*>>
  * @return An argument that matches with the class.
  *
  */
-public fun argumentFromClass(
+fun argumentFromClass(
     name: String,
     clazz: KClass<*>,
     annotations: List<Annotation> = emptyList(),
