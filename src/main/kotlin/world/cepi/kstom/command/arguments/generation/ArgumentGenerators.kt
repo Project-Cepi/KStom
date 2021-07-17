@@ -133,6 +133,12 @@ class GeneratedArguments<T : Any>(
             vararg arguments: Argument<*>,
             noinline lambda: SyntaxContext.(T) -> Unit
         ) = generateSyntaxes<T>().applySyntax(this, arguments, lambda)
+
+        fun <T : Any> Command.createSyntaxesFrom(
+            clazz: KClass<T>,
+            vararg arguments: Argument<*>,
+            lambda: SyntaxContext.(T) -> Unit
+        ) = generateSyntaxes(clazz).applySyntax(this, arguments, lambda)
     }
 
 }
