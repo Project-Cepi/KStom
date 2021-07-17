@@ -10,15 +10,20 @@ import net.minestom.server.utils.StringUtils
 import java.util.*
 import kotlin.reflect.KClass
 
-class ArgumentPrintableGroup(clazz: KClass<*>, val group: Array<out Argument<*>>) :
-    Argument<Pair<String, CommandContext>>(clazz.qualifiedName!!, true, false) {
+class ArgumentPrintableGroup(id: String, private val group: List<Argument<*>>) :
+    Argument<Pair<String, CommandContext>>(id, true, false), List<Argument<*>> {
+
+    constructor(id: String, group: Array<out Argument<*>>) : this(id, group.toList())
+
+    override val size: Int
+        get() = group.size
 
     @Throws(ArgumentSyntaxException::class)
     override fun parse(input: String): Pair<String, CommandContext> {
         val validSyntaxes: List<ValidSyntaxHolder> = ArrayList()
         CommandParser.parse(
             null,
-            group,
+            group.toTypedArray(),
             input.split(StringUtils.SPACE.toRegex()).toTypedArray(),
             input,
             validSyntaxes,
@@ -46,20 +51,31 @@ class ArgumentPrintableGroup(clazz: KClass<*>, val group: Array<out Argument<*>>
 
         if (other !is ArgumentPrintableGroup) return false
 
-        if (!group.contentEquals(other.group)) return false
+        if (!group.toTypedArray().contentEquals(other.group.toTypedArray())) return false
 
         return true
     }
 
     override fun hashCode(): Int {
         var result = super.hashCode()
-        result = 31 * result + group.contentHashCode()
+        result = 31 * result + group.toTypedArray().contentHashCode()
         return result
     }
 
-    override fun toString() = group.contentDeepToString()
+    override fun toString() = group.toTypedArray().contentDeepToString()
 
     companion object {
         const val INVALID_ARGUMENTS_ERROR = 1
     }
+
+    override fun contains(element: Argument<*>) = group.contains(element)
+    override fun containsAll(elements: Collection<Argument<*>>) = group.containsAll(elements)
+    override fun isEmpty() = group.isEmpty()
+    override fun iterator() = group.iterator()
+    override fun get(index: Int) = group.get(index)
+    override fun indexOf(element: Argument<*>) = group.indexOf(element)
+    override fun lastIndexOf(element: Argument<*>) = group.lastIndexOf(element)
+    override fun listIterator(): ListIterator<Argument<*>> = group.listIterator()
+    override fun listIterator(index: Int): ListIterator<Argument<*>> = group.listIterator(index)
+    override fun subList(fromIndex: Int, toIndex: Int): List<Argument<*>> = group.subList(fromIndex, toIndex)
 }

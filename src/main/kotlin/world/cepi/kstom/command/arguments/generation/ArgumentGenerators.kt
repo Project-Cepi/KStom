@@ -26,11 +26,13 @@ import net.minestom.server.utils.math.IntRange
 import net.minestom.server.utils.time.TimeUnit
 import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
+import world.cepi.kstom.command.ArgumentCallbackContext
 import world.cepi.kstom.command.SyntaxContext
 import world.cepi.kstom.command.addSyntax
 import world.cepi.kstom.command.arguments.*
 import world.cepi.kstom.command.arguments.generation.annotations.*
 import world.cepi.kstom.command.arguments.context.ContextParser
+import world.cepi.kstom.command.failCallback
 import world.cepi.kstom.serializer.SerializableEntityFinder
 import world.cepi.kstom.tree.CombinationNode
 import java.lang.IllegalArgumentException
@@ -47,6 +49,12 @@ class GeneratedArguments<T : Any>(
     val clazz: KClass<T>,
     val args: List<List<Argument<*>>>
 ) {
+
+    var callback: ArgumentCallbackContext.() -> Unit = {  }
+        set(value) {
+            args.forEach { subArgs -> subArgs.forEach { it.failCallback { value(this) } } }
+            field = value
+        }
 
     fun applySyntax(
         command: Command,
@@ -186,7 +194,7 @@ public fun argumentsFromFunction(function: KFunction<*>): List<List<Argument<*>>
             // list(list(energy, energy: Int), list(clickType, clickType: Int))
             return@mapIndexed clazz.sealedSubclasses.map { subClass ->
                 ArgumentPrintableGroup(
-                    subClass,
+                    subClass.qualifiedName!!,
                     arrayOf(
                         subClass.simpleName!!.replaceFirstChar { it.lowercase() }.literal(),
                         *argumentsFromFunction(subClass.primaryConstructor!!)

@@ -45,6 +45,10 @@ public inline fun Command.setArgumentCallback(
     setArgumentCallback({ source, value ->  lambda(ArgumentCallbackContext(source, value)) }, arg)
 }
 
+public inline fun <T> Argument<T>.failCallback(crossinline lambda: ArgumentCallbackContext.() -> Unit) {
+    setCallback { sender, exception -> lambda(ArgumentCallbackContext(sender, exception)) }
+}
+
 public inline fun Command.default(crossinline block:  (sender: CommandSender, args: CommandContext) -> Unit) {
     defaultExecutor = CommandExecutor { sender, args ->  block(sender, args) }
 }

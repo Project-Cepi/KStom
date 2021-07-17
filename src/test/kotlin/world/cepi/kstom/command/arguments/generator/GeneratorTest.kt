@@ -47,7 +47,7 @@ class GeneratorTest {
 
             val firstGroup = it[1] as ArgumentPrintableGroup
 
-            assertEquals(ArgumentLiteral::class, firstGroup.group[0]::class)
+            assertEquals(ArgumentLiteral::class, firstGroup[0]::class)
         }
     }
 
