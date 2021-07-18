@@ -29,5 +29,5 @@ object NBTSerializer : KSerializer<NBT> {
     // Inline class because stdlib is weirdly outdated
     @Serializable
     @JvmInline
-    private value class SerializableNBT(val nbt: String)
+    internal value class SerializableNBT(val nbt: String)
 }
