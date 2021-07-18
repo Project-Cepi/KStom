@@ -259,6 +259,14 @@ fun argumentFromClass(
     isLast: Boolean
 ): Argument<*> {
 
+    if (annotations.any { it is ParameterContext }) {
+        val annotation = annotations.filterIsInstance<ParameterContext>().first()
+
+        val instance = annotation.parser.objectInstance!! as ContextParser<*>
+
+        return ArgumentContext(instance::parse)
+    }
+
     return when (clazz) {
         String::class -> if (isLast)
             ArgumentType.StringArray(name).map { it.joinToString(" ") }
@@ -343,14 +351,6 @@ fun argumentFromClass(
         }
         UUID::class -> ArgumentType.UUID(name)
         else -> {
-
-            if (annotations.any { it is ParameterContext }) {
-                val annotation = annotations.filterIsInstance<ParameterContext>().first()
-
-                val instance = annotation.parser.objectInstance!! as ContextParser<*>
-
-                return ArgumentContext(instance::parse)
-            }
 
             if (clazz.java.enumConstants == null) throw IllegalStateException("Must be a valid argument!")
 
