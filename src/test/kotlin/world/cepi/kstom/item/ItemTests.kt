@@ -23,10 +23,6 @@ object ItemTests {
                 this["complexData"] = ComplexClass(5, 4, 2, true, InterestingClass("hey", 'h'))
                 this["complexListData"] = CollectionClass(5, 9, 3, listOf(4, 3))
             }
-
-            serverData {
-                this["someOtherData"] = UUID(5L, 5L)
-            }
         }
 
     }.and {

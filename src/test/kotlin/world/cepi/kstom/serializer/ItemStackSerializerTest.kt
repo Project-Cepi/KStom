@@ -1,18 +1,19 @@
 package world.cepi.kstom.serializer
 
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.contextual
 import net.kyori.adventure.text.Component
 import net.minestom.server.instance.block.Block
 import net.minestom.server.item.Material
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertEquals
-import world.cepi.kstom.item.item
-import world.cepi.kstom.item.withMeta
+import world.cepi.kstom.item.*
 
 class ItemStackSerializerTest {
 
     @Test
-    fun `make sure item serialization goes back and forth`() {
+    fun `ensure items can be serialized in items`() {
         val item = item(Material.PAPER) {
 
             displayName(Component.text("A Paper"))
@@ -27,7 +28,17 @@ class ItemStackSerializerTest {
 
         val backItem = Json.decodeFromString(ItemStackSerializer, json)
 
-        assertEquals(item.meta, backItem.meta)
+        assertEquals(item, backItem)
+
+        val itemWithItem = item.and {
+            withMeta {
+                clientData {
+                    this["item"] = item
+                }
+            }
+        }
+
+        assertEquals(item, itemWithItem.meta.get("item"))
 
     }
 
