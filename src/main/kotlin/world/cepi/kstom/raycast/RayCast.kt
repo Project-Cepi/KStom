@@ -48,7 +48,7 @@ object RayCast {
          Normalize the direction, making it less/equal to (1, 1, 1)
           then multiply by step to properly add to the step length.
          */
-        direction.normalize().mul(stepLength)
+        val stepDirection = direction.normalize().mul(stepLength)
 
         var lastPos = start
         var currentPos = start
@@ -76,7 +76,7 @@ object RayCast {
 
             // add the precalculated direction to the block position, and refresh the lastBlockCache
             lastPos = currentPos
-            currentPos = currentPos.add(direction)
+            currentPos = currentPos.add(stepDirection)
 
             step += stepLength
         }
