@@ -22,7 +22,6 @@ open class NBTFormat(module: SerializersModule = EmptySerializersModule) {
     val json = Json {
         serializersModule = module
         ignoreUnknownKeys = true
-        repeat()
     }
 
     /**
