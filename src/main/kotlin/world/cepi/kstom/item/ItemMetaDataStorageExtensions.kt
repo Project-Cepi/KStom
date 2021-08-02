@@ -1,10 +1,9 @@
 package world.cepi.kstom.item
 
+import kotlinx.serialization.*
 import net.minestom.server.item.ItemMetaBuilder
 import java.util.*
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.serializer
 import net.minestom.server.item.ItemMeta
 import net.minestom.server.tag.Tag
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
@@ -21,6 +20,10 @@ class ItemMetaClientData(val metaBuilder: ItemMetaBuilder) {
     inline operator fun <reified T: @Serializable Any> set(tag: String, module: SerializersModule, item: @Serializable T) {
         metaBuilder.set(Tag.NBT(tag), NBTFormat(module).serialize(item))
     }
+
+    inline operator fun <reified T: @Serializable Any> set(tag: String, module: KSerializer<T>, item: @Serializable T) {
+        metaBuilder.set(Tag.NBT(tag), NBTParser.serialize(module, item))
+    }
 }
 
 fun ItemMetaBuilder.clientData(receiver: ItemMetaClientData.() -> Unit) = ItemMetaClientData(this).receiver()
@@ -29,7 +32,8 @@ fun ItemMetaBuilder.clientData(receiver: ItemMetaClientData.() -> Unit) = ItemMe
 fun <T: @Serializable Any> ItemMeta.get(
     tag: String,
     clazz: KClass<T>,
-    module: SerializersModule? = null
+    module: SerializersModule? = null,
+    serializer: KSerializer<T> = clazz.serializer()
 ): T? = this.getTag(Tag.NBT(tag))?.let {
     return@let (
             if (module == null)
@@ -37,10 +41,12 @@ fun <T: @Serializable Any> ItemMeta.get(
             else
                 NBTFormat(module)
             )
-        .deserialize(clazz.serializer(), it as? NBTCompound ?: return null)
+        .deserialize(serializer, it as? NBTCompound ?: return null)
 }
 
+@OptIn(kotlinx.serialization.InternalSerializationApi::class)
 public inline fun <reified T: @Serializable Any> ItemMeta.get(
     tag: String,
-    module: SerializersModule? = null
-): T? = this.get(tag, T::class, module)
+    module: SerializersModule? = null,
+    serializer: KSerializer<T> = T::class.serializer()
+): T? = this.get(tag, T::class, module, serializer)

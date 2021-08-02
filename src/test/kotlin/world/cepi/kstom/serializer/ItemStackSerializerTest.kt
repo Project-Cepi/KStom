@@ -33,12 +33,12 @@ class ItemStackSerializerTest {
         val itemWithItem = item.and {
             withMeta {
                 clientData {
-                    this["item"] = item
+                    this["item", ItemStackSerializer] = item
                 }
             }
         }
 
-        assertEquals(item, itemWithItem.meta.get("item"))
+        assertEquals(item, itemWithItem.meta.get("item", serializer = ItemStackSerializer))
 
     }
 

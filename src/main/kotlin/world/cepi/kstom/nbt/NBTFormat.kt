@@ -1,4 +1,7 @@
+@file:UseContextualSerialization(ItemStack::class)
 package world.cepi.kstom.nbt
+
+import net.minestom.server.item.ItemStack
 
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
