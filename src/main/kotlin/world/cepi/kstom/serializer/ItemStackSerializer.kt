@@ -17,7 +17,7 @@ object ItemStackSerializer : KSerializer<ItemStack> {
     override val descriptor = buildClassSerialDescriptor("ItemStack") {
         element<String>("material")
         element<Int>("amount")
-        element<String>("nbt")
+        element<NBT>("nbt")
     }
 
     override fun serialize(encoder: Encoder, value: ItemStack) {
