@@ -22,7 +22,7 @@ fun old() {
             .expireCount(50)
             .expireWhen { event -> event.entity.isCustomNameVisible }
             .filter { event -> event.entity.isGlowing }
-            .handler { event -> event.entity.setGravity(5.0, .5, .1) }
+            .handler { event -> event.entity.setGravity(5.0, .5) }
             .build()
     )
 }
@@ -41,7 +41,7 @@ fun new() {
         removeWhen { entity.isCustomNameVisible }
         filters += { entity.isGlowing }
         handler {
-            entity.setGravity(5.0, .5, .1)
+            entity.setGravity(5.0, .5)
         }
     }
 }

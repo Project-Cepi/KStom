@@ -1,11 +1,17 @@
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.5.21"
-    kotlin("plugin.serialization") version "1.5.0"
+    id("org.jetbrains.kotlin.jvm") version "1.5.20"
+    // Kotlinx serialization for any data format
+    kotlin("plugin.serialization") version "1.4.21"
+    // Shade the plugin
+    id("com.github.johnrengelman.shadow") version "7.0.0"
+    // Allow publishing
     `maven-publish`
 
     // Apply the application plugin to add support for building a jar
     java
+    // Dokka documentation w/ kotlin
+    id("org.jetbrains.dokka") version "1.5.0"
 }
 
 
@@ -22,30 +28,26 @@ repositories {
 dependencies {
 
     // Use the Kotlin JDK 8 standard library.
-    implementation(kotlin("stdlib", "1.5.0"))
+    compileOnly(kotlin("stdlib", "1.5.0"))
 
     // Use the Kotlin reflect library.
-    implementation(kotlin("reflect", "1.5.0"))
+    compileOnly(kotlin("reflect", "1.5.0"))
 
     // Use the JUpiter test library.
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.2")
 
     // Add support for kotlinx courotines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
 
     // Compile Minestom into project
-    implementation("com.github.Minestom", "Minestom", "8f6f63b2c8")
-    implementation("com.github.jglrxavpok", "Hephaistos", "1.1.8")
+    compileOnly("com.github.Minestom", "Minestom", "8f6f63b2c8")
+    compileOnly("com.github.jglrxavpok", "Hephaistos", "1.1.8")
 
     // import kotlinx serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
 
     // Add MiniMessage
     implementation("net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT")
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
@@ -56,6 +58,20 @@ configurations {
     testImplementation {
         extendsFrom(configurations.compileOnly.get())
     }
+}
+
+tasks {
+    named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+        archiveBaseName.set("kstom")
+        mergeServiceFiles()
+        minimize()
+
+    }
+
+    test { useJUnitPlatform() }
+
+    build { dependsOn(shadowJar) }
+
 }
 
 java {
