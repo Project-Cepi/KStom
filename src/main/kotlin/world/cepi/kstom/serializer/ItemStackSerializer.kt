@@ -22,7 +22,7 @@ object ItemStackSerializer : KSerializer<ItemStack> {
 
     override fun serialize(encoder: Encoder, value: ItemStack) {
         encoder.encodeStructure(descriptor) {
-            encodeStringElement(descriptor, 0, value.material.name)
+            encodeStringElement(descriptor, 0, value.material.name())
             encodeIntElement(descriptor, 1, value.amount)
             encodeSerializableElement(descriptor, 2, NBTSerializer, value.meta.toNBT())
         }
@@ -34,7 +34,7 @@ object ItemStackSerializer : KSerializer<ItemStack> {
         var amount: Int? = null
         while (true) {
             when (val index = decodeElementIndex(descriptor)) {
-                0 -> material = Material.valueOf(decodeStringElement(descriptor, 0))
+                0 -> material = Material.fromNamespaceId(decodeStringElement(descriptor, 0))
                 1 -> amount = decodeIntElement(descriptor, 1)
                 2 -> meta = decodeSerializableElement(descriptor, 2, NBTSerializer)
                 CompositeDecoder.DECODE_DONE -> break

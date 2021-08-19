@@ -9,7 +9,6 @@ import net.minestom.server.data.DataManager
 import net.minestom.server.event.GlobalEventHandler
 import net.minestom.server.exception.ExceptionManager
 import net.minestom.server.extensions.ExtensionManager
-import net.minestom.server.gamedata.loottables.LootTableManager
 import net.minestom.server.gamedata.tags.TagManager
 import net.minestom.server.instance.InstanceManager
 import net.minestom.server.instance.block.BlockManager
@@ -74,9 +73,6 @@ public object Manager {
 
     public val exception: ExceptionManager
         get() = MinecraftServer.getExceptionManager()
-
-    public val lootTable: LootTableManager
-        get() = MinecraftServer.getLootTableManager()
 
     public val extension: ExtensionManager
         get() = MinecraftServer.getExtensionManager()

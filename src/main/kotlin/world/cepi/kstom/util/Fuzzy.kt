@@ -1,16 +1,15 @@
 package world.cepi.kstom.util
 
 import net.minestom.server.collision.BoundingBox
+import net.minestom.server.coordinate.Pos
+import net.minestom.server.coordinate.Vec
 import net.minestom.server.entity.LivingEntity
 import net.minestom.server.instance.Instance
-import net.minestom.server.utils.Position
-import net.minestom.server.utils.Vector
-import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 
 object Fuzzy {
 
-    fun collides(boundingBox: BoundingBox, pos: Position, margin: Double = 0.125) =
+    fun collides(boundingBox: BoundingBox, pos: Pos, margin: Double = 0.125) =
         boundingBox.expand(margin, margin, margin).intersect(pos)
 
     /**
@@ -23,7 +22,7 @@ object Fuzzy {
      */
     fun positionInEntity(
         instance: Instance,
-        position: Position,
+        position: Pos,
         origin: LivingEntity?,
         margin: Double = 0.125
     ): LivingEntity? {
@@ -43,15 +42,12 @@ object Fuzzy {
  *
  * @author emortal
  */
-fun Vector.spread(spread: Vector, random: ThreadLocalRandom = ThreadLocalRandom.current()): Vector {
-    val vec = this.clone()
-    if (spread.isZero) return vec
+fun Vec.spread(spread: Vec, random: ThreadLocalRandom = ThreadLocalRandom.current()): Vec {
+    if (spread.isZero) return spread
 
-    vec.rotateAroundX(random.nextDouble(-spread.x, spread.x))
-    vec.rotateAroundY(random.nextDouble(-spread.y, spread.y))
-    vec.rotateAroundZ(random.nextDouble(-spread.z, spread.z))
-
-    return vec
+    return spread.rotateAroundX(random.nextDouble(-spread.x(), spread.x()))
+        .rotateAroundY(random.nextDouble(-spread.y(), spread.y()))
+        .rotateAroundZ(random.nextDouble(-spread.z(), spread.z()))
 }
 
 /**
@@ -59,5 +55,5 @@ fun Vector.spread(spread: Vector, random: ThreadLocalRandom = ThreadLocalRandom.
  *
  * @author emortal
  */
-fun Vector.spread(spread: Double, random: ThreadLocalRandom = ThreadLocalRandom.current()) =
-    this.spread(Vector(spread, spread, spread), random)
+fun Vec.spread(spread: Double, random: ThreadLocalRandom = ThreadLocalRandom.current()): Vec =
+    this.spread(Vec(spread, spread, spread), random)

@@ -16,10 +16,7 @@ import net.minestom.server.item.Enchantment
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 import net.minestom.server.potion.PotionEffect
-import net.minestom.server.utils.BlockPosition
-import net.minestom.server.utils.Vector
 import net.minestom.server.utils.entity.EntityFinder
-import net.minestom.server.utils.location.RelativeBlockPosition
 import net.minestom.server.utils.location.RelativeVec
 import net.minestom.server.utils.math.FloatRange
 import net.minestom.server.utils.math.IntRange
@@ -123,7 +120,6 @@ class GeneratedArguments<T : Any>(
                 // Handle special context / sub edge cases
                 when (value) {
                     is RelativeVec -> return@mapIndexed value.from(sender as? Entity)
-                    is RelativeBlockPosition -> return@mapIndexed value.from(sender as? Entity)
                 }
 
                 return@mapIndexed value
@@ -298,7 +294,7 @@ fun argumentFromClass(
         }
         ItemStack::class, Material::class -> ArgumentType.ItemStack(name).also { argument ->
             annotations.filterIsInstance<DefaultMaterial>().firstOrNull()
-                ?.let { argument.defaultValue(ItemStack.of(it.material)) }
+                ?.let { argument.defaultValue(ItemStack.of(Material.fromNamespaceId(it.material) ?: error("Invalid Material ${it.material}!"))) }
         }
         NBTCompound::class -> ArgumentType.NbtCompound(name)
         NBT::class -> ArgumentType.NBT(name)
@@ -324,30 +320,18 @@ fun argumentFromClass(
         RelativeVec::class -> ArgumentType.RelativeVec3(name)
         Vector::class -> ArgumentType.RelativeVec3(name)
         Byte::class -> ArgumentByte(name).also { argument ->
-            argument.min(
-                annotations.filterIsInstance<MinAmount>().firstOrNull()?.min?.toInt()?.toByte()
-                    ?.coerceAtLeast(Byte.MIN_VALUE) ?: Byte.MIN_VALUE
-            )
-
-            argument.max(
-                annotations.filterIsInstance<MaxAmount>().firstOrNull()?.max?.toInt()?.toByte()
-                    ?.coerceAtLeast(Byte.MAX_VALUE) ?: Byte.MAX_VALUE
-            )
-
             annotations.filterIsInstance<DefaultNumber>().firstOrNull()
                 ?.let { argument.defaultValue(it.number.toInt().toByte().coerceAtLeast(Byte.MIN_VALUE).coerceAtMost(Byte.MAX_VALUE)) }
 
         }
-        RelativeBlockPosition::class -> ArgumentType.RelativeBlockPosition(name)
-        BlockPosition::class -> ArgumentType.RelativeBlockPosition(name)
         Block::class -> ArgumentType.BlockState(name).also { argument ->
             annotations.filterIsInstance<DefaultBlock>().firstOrNull()
-                ?.let { argument.defaultValue(it.block) }
+                ?.let { argument.defaultValue(Block.fromNamespaceId(it.block)) }
         }
         CommandResult::class -> ArgumentType.Command(name)
         PotionEffect::class -> ArgumentType.Potion(name).also { argument ->
             annotations.filterIsInstance<DefaultPotionEffect>().firstOrNull()
-                ?.let { argument.defaultValue(it.potionEffect) }
+                ?.let { argument.defaultValue(PotionEffect.fromNamespaceId(it.potionEffect)) }
         }
         UUID::class -> ArgumentType.UUID(name)
         else -> {
