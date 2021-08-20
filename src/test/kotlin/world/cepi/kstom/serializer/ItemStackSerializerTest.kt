@@ -33,9 +33,7 @@ class ItemStackSerializerTest {
 
         val itemWithItem = item.and {
             withMeta {
-                clientData {
-                    this["item", ItemStackSerializer] = item
-                }
+                this["item", ItemStackSerializer] = item
             }
         }
 
