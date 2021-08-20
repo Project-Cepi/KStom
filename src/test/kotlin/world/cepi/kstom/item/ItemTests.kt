@@ -19,10 +19,9 @@ object ItemTests {
             damage = 5
             unbreakable = true
 
-            clientData {
-                this["complexData"] = ComplexClass(5, 4, 2, true, InterestingClass("hey", 'h'))
-                this["complexListData"] = CollectionClass(5, 9, 3, listOf(4, 3))
-            }
+            this["complexData"] = ComplexClass(5, 4, 2, true, InterestingClass("hey", 'h'))
+            this["complexListData"] = CollectionClass(5, 9, 3, listOf(4, 3))
+
         }
 
     }.and {
