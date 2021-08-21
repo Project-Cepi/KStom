@@ -38,22 +38,24 @@ object Fuzzy {
 }
 
 /**
- * Spreads a vector by another vector. Useful for accuracy changes.
+ * Spreads each axis of a vector individually. Useful for accuracy changes.
  *
  * @author emortal
  */
-fun Vec.spread(spread: Vec, random: ThreadLocalRandom = ThreadLocalRandom.current()): Vec {
-    if (spread.isZero) return spread
+fun Vec.spread(spreadX: Double, spreadY: Double, spreadZ: Double, random: ThreadLocalRandom = ThreadLocalRandom.current()): Vec {
+    if (spreadX == 0.0 && spreadY == 0.0 && spreadZ == 0.0) return this
 
-    return spread.rotateAroundX(random.nextDouble(-spread.x(), spread.x()))
-        .rotateAroundY(random.nextDouble(-spread.y(), spread.y()))
-        .rotateAroundZ(random.nextDouble(-spread.z(), spread.z()))
+    return rotate(
+        random.nextDouble(-spreadX, spreadX),
+        random.nextDouble(-spreadY, spreadY),
+        random.nextDouble(-spreadZ, spreadZ)
+    )
 }
 
 /**
- * Spreads a vector by another vector. Useful for accuracy changes.
+ * Spreads a vector by all 3 axis. Useful for accuracy changes.
  *
  * @author emortal
  */
 fun Vec.spread(spread: Double, random: ThreadLocalRandom = ThreadLocalRandom.current()): Vec =
-    this.spread(Vec(spread, spread, spread), random)
+    this.spread(spread, spread, spread, random)
