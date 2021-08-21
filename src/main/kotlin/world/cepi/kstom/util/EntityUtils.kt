@@ -7,10 +7,17 @@ import net.minestom.server.instance.Instance
 import net.minestom.server.utils.entity.EntityUtils
 import java.util.function.Consumer
 
-public fun Instance.forEachRange(position: Pos, viewDistance: Int, consumer: Consumer<Entity>): Unit =
+fun Instance.forEachRange(position: Pos, viewDistance: Int, consumer: Consumer<Entity>): Unit =
     EntityUtils.forEachRange(this, position, viewDistance, consumer)
 
-public fun Entity.isVisibleTo(other: Entity): Boolean {
+fun Instance.entitiesInRoughRange(position: Point, distance: Int): List<Entity> =
+        instance.chunksInRange(Pos(position), distance)
+            .map { instance.getChunk(it.first, it.second) }
+            .filter { it != null && it.isLoaded }
+            .map { instance.getChunkEntities(it) }
+            .flatten()
+    
+fun Entity.isVisibleTo(other: Entity): Boolean {
     return viewers.contains(other as? Player ?: return true)
 }
 
