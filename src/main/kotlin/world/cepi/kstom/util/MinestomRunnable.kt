@@ -22,7 +22,7 @@ abstract class MinestomRunnable : Runnable {
     fun schedule(): Task {
         val t = Manager.scheduler.buildTask(this)
             .let { if (delayDuration != Duration.ZERO) it.delay(delayDuration) else it }
-            .let { if (repeatDuration != Duration.ZERO) it.repeat(delayDuration) else it }
+            .let { if (repeatDuration != Duration.ZERO) it.repeat(repeatDuration) else it }
             .schedule()
         this.task = t
         return t
