@@ -1,5 +1,6 @@
 package world.cepi.kstom.util
 
+import net.minestom.server.coordinate.Point
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.Player
@@ -11,10 +12,10 @@ fun Instance.forEachRange(position: Pos, viewDistance: Int, consumer: Consumer<E
     EntityUtils.forEachRange(this, position, viewDistance, consumer)
 
 fun Instance.entitiesInRoughRange(position: Point, distance: Int): List<Entity> =
-        instance.chunksInRange(Pos(position), distance)
-            .map { instance.getChunk(it.first, it.second) }
+        this.chunksInRange(Pos(position), distance)
+            .map { this.getChunk(it.first, it.second) }
             .filter { it != null && it.isLoaded }
-            .map { instance.getChunkEntities(it) }
+            .map { this.getChunkEntities(it) }
             .flatten()
     
 fun Entity.isVisibleTo(other: Entity): Boolean {
