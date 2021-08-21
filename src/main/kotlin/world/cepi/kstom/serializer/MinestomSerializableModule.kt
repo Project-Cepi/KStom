@@ -13,6 +13,7 @@ fun MinestomSerializableModule(lambda: SerializersModuleBuilder.() -> Unit = {})
     contextual(VectorSerializer)
     contextual(UUIDSerializer)
     contextual(DurationSerializer)
+    contextual(ComponentSerializer)
     contextual(BossBarSerializer)
     lambda(this)
 }

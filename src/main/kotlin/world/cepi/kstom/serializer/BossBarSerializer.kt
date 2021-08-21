@@ -15,10 +15,10 @@ import net.minestom.server.coordinate.Vec
 @OptIn(ExperimentalSerializationApi::class)
 object BossBarSerializer : KSerializer<BossBar> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("BossBar") {
-        element<Double>("x")
+        element<Component>("name")
         element<Float>("progress")
-        element<BossBar.Color>("color")
-        element<BossBar.Overlay>("color")
+        element<Int>("color")
+        element<Int>("overlay")
     }
 
     override fun serialize(encoder: Encoder, value: BossBar) {
