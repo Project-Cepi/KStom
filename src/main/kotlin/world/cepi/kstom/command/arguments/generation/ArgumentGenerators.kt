@@ -9,6 +9,7 @@ import net.minestom.server.command.builder.CommandResult
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentEnum
 import net.minestom.server.command.builder.arguments.ArgumentType
+import net.minestom.server.coordinate.Vec
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.EntityType
 import net.minestom.server.instance.block.Block
@@ -318,7 +319,7 @@ fun argumentFromClass(
         SerializableEntityFinder::class -> ArgumentType.Entity(name)
         Enchantment::class -> ArgumentType.Enchantment(name)
         RelativeVec::class -> ArgumentType.RelativeVec3(name)
-        Vector::class -> ArgumentType.RelativeVec3(name)
+        Vec::class -> ArgumentType.RelativeVec3(name)
         Byte::class -> ArgumentByte(name).also { argument ->
             annotations.filterIsInstance<DefaultNumber>().firstOrNull()
                 ?.let { argument.defaultValue(it.number.toInt().toByte().coerceAtLeast(Byte.MIN_VALUE).coerceAtMost(Byte.MAX_VALUE)) }
@@ -336,7 +337,7 @@ fun argumentFromClass(
         UUID::class -> ArgumentType.UUID(name)
         else -> {
 
-            if (clazz.java.enumConstants == null) throw IllegalStateException("Must be a valid argument!")
+            if (clazz.java.enumConstants == null) throw IllegalStateException("Class ${clazz.qualifiedName} Must be a valid argument!")
 
             @Suppress("UNCHECKED_CAST") // We already check if the class is an enum or not.
             return (ArgumentEnum(name, clazz.java as Class<Enum<*>>))
