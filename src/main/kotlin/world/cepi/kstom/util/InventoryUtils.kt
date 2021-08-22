@@ -16,6 +16,12 @@ fun Inventory.setItemStacks(itemStacksToAdd: Map<Int, ItemStack>) {
     this.copyContents(contents)
 }
 
+fun Inventory.setItemStacks(vararg itemStacksToAdd: Pair<Int, ItemStack>) {
+    val contents = this.itemStacks
+    itemStacksToAdd.forEach { contents[it.first] = it.second }
+    this.copyContents(contents)
+}
+
 // Allows use of x and y for inventories, only useful for hopper or rowed chest inventories
 
 fun Inventory.getSlotNumber(x: Int, y: Int): Int {
