@@ -58,4 +58,4 @@ open class NBTFormat(module: SerializersModule = EmptySerializersModule) {
 
 }
 
-object NBTParser : NBTFormat(MinestomSerializableModule())
+object NBTParser : NBTFormat(MinestomSerializableModule)

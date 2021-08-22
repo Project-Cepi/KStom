@@ -1,10 +1,8 @@
 package world.cepi.kstom.item
 
 import kotlinx.serialization.*
-import net.minestom.server.item.ItemMetaBuilder
 import java.util.*
 import kotlinx.serialization.modules.SerializersModule
-import net.minestom.server.item.ItemMeta
 import net.minestom.server.tag.Tag
 import net.minestom.server.tag.TagReadable
 import net.minestom.server.tag.TagWritable
@@ -21,11 +19,11 @@ inline operator fun <reified T: @Serializable Any> TagWritable.set(tag: String, 
     setTag(Tag.NBT(tag), NBTFormat(module).serialize(item))
 }
 
-inline operator fun <reified T: @Serializable Any> TagWritable.set(tag: String, module: KSerializer<T>, item: @Serializable T) {
-    setTag(Tag.NBT(tag), NBTParser.serialize(module, item))
+inline operator fun <reified T: @Serializable Any> TagWritable.set(tag: String, serializer: KSerializer<T>, item: @Serializable T) {
+    setTag(Tag.NBT(tag), NBTParser.serialize(serializer, item))
 }
 
-@OptIn(kotlinx.serialization.InternalSerializationApi::class)
+@OptIn(InternalSerializationApi::class)
 fun <T: @Serializable Any> TagReadable.get(
     tag: String,
     clazz: KClass<T>,
@@ -41,7 +39,7 @@ fun <T: @Serializable Any> TagReadable.get(
         .deserialize(serializer, it as? NBTCompound ?: return null)
 }
 
-@OptIn(kotlinx.serialization.InternalSerializationApi::class)
+@OptIn(InternalSerializationApi::class)
 public inline fun <reified T: @Serializable Any> TagReadable.get(
     tag: String,
     module: SerializersModule? = null,

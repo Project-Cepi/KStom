@@ -1,11 +1,14 @@
 package world.cepi.kstom.serializer
 
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.SerializersModuleBuilder
 import kotlinx.serialization.modules.contextual
+import kotlinx.serialization.modules.polymorphic
+import net.minestom.server.entity.EntityType
+import kotlin.reflect.KClass
 
-fun MinestomSerializableModule(lambda: SerializersModuleBuilder.() -> Unit = {}) = SerializersModule {
-    contextual(DurationSerializer)
+val MinestomSerializableModule = SerializersModule {
     contextual(ItemStackSerializer)
     contextual(NBTSerializer)
     contextual(PositionSerializer)
@@ -13,7 +16,13 @@ fun MinestomSerializableModule(lambda: SerializersModuleBuilder.() -> Unit = {})
     contextual(VectorSerializer)
     contextual(UUIDSerializer)
     contextual(DurationSerializer)
+    contextual(NamespaceIDSerializer)
     contextual(ComponentSerializer)
     contextual(BossBarSerializer)
-    lambda(this)
+}
+
+val MinestomJSON = Json {
+    serializersModule = MinestomSerializableModule
+    isLenient = true
+    ignoreUnknownKeys = true
 }
