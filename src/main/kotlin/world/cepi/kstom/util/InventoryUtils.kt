@@ -29,11 +29,14 @@ fun Inventory.getSlotNumber(x: Int, y: Int): Int {
     return slotNumber
 }
 
+operator fun Inventory.get(slot: Int) = this.getItemStack(slot)
+operator fun Inventory.set(slot: Int, itemStack: ItemStack) = this.setItemStack(slot, itemStack)
+
 /**
  * Sets an ItemStack using X and Y. Won't work properly for inventories other than hopper or rowed chests
  */
-fun Inventory.setItemStack(x: Int, y: Int, item: ItemStack) = this.setItemStack(getSlotNumber(x, y), item)
+fun Inventory.setItemStack(x: Int, y: Int, item: ItemStack) = run { this[getSlotNumber(x, y)] = item }
 /**
  * Gets an ItemStack using X and Y. Won't work properly for inventories other than hopper or rowed chests
  */
-fun Inventory.getItemStack(x: Int, y: Int): ItemStack = this.getItemStack(getSlotNumber(x, y))
+fun Inventory.getItemStack(x: Int, y: Int): ItemStack = this[getSlotNumber(x, y)]
