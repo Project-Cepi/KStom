@@ -37,6 +37,7 @@ import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 import java.time.Duration
 import java.util.*
+import java.util.function.Supplier
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.primaryConstructor
@@ -131,7 +132,7 @@ class GeneratedArguments<T : Any>(
             } catch (exception: IllegalArgumentException) {
                 // Print a more useful debug exception
 
-                throw IllegalArgumentException("Expected types were $classes but received $generatedArguments")
+                throw IllegalArgumentException("Expected types were $classes but received $generatedArguments; input: ${context.input}")
             }
         }
 
