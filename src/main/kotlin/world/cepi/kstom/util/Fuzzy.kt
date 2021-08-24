@@ -53,6 +53,15 @@ fun Vec.spread(spreadX: Double, spreadY: Double, spreadZ: Double, random: Thread
 }
 
 /**
+ * Spreads a vector by a vector. Useful for accuracy changes.
+ *
+ * @author emortal
+ */
+fun Vec.spread(spread: Vec, random: ThreadLocalRandom = ThreadLocalRandom.current()): Vec =
+    this.spread(spread.x(), spread.y(), spread.z(), random)
+
+
+/**
  * Spreads a vector by all 3 axis. Useful for accuracy changes.
  *
  * @author emortal
