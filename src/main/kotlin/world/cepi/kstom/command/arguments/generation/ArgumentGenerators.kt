@@ -37,6 +37,7 @@ import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 import java.time.Duration
 import java.util.*
+import java.util.function.Supplier
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.primaryConstructor
@@ -113,7 +114,7 @@ class GeneratedArguments<T : Any>(
 
                     return@mapIndexed createInstance(
                         clazz.sealedSubclasses.first { it.simpleName == value.first },
-                        value.second.map.keys.toMutableList().also { it.removeAt(it.size - 1) }.reversed(), value.second,
+                        value.second.map.keys.toMutableList().also { it.removeAt(0) }.reversed(), value.second,
                         sender
                     )
                 }
@@ -131,7 +132,7 @@ class GeneratedArguments<T : Any>(
             } catch (exception: IllegalArgumentException) {
                 // Print a more useful debug exception
 
-                throw IllegalArgumentException("Expected types were $classes but received $generatedArguments")
+                throw IllegalArgumentException("Expected types were $classes but received $generatedArguments; input: ${context.input}")
             }
         }
 
