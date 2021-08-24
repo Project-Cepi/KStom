@@ -111,10 +111,10 @@ class GeneratedArguments<T : Any>(
                 if (value is Pair<*, *>) {
 
                     value as Pair<String, CommandContext>
-
+                    
                     return@mapIndexed createInstance(
                         clazz.sealedSubclasses.first { it.simpleName == value.first },
-                        value.second.map.keys.toMutableList().also { it.removeAt(it.size - 1) }.reversed(), value.second,
+                        value.second.map.keys.toMutableList().also { it.removeAt(0) }.reversed(), value.second,
                         sender
                     )
                 }
