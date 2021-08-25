@@ -34,6 +34,7 @@ class ArgumentPrintableGroup(id: String, private val group: List<Argument<*>>) :
         if (validSyntaxes.isEmpty()) {
             throw ArgumentSyntaxException("Invalid arguments", input, INVALID_ARGUMENTS_ERROR)
         }
+
         return id to context
     }
 
