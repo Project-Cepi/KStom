@@ -17,6 +17,7 @@ import net.minestom.server.item.Enchantment
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 import net.minestom.server.potion.PotionEffect
+import net.minestom.server.sound.SoundEvent
 import net.minestom.server.utils.entity.EntityFinder
 import net.minestom.server.utils.location.RelativeVec
 import net.minestom.server.utils.math.FloatRange
@@ -321,6 +322,7 @@ fun argumentFromClass(
         Enchantment::class -> ArgumentType.Enchantment(name)
         RelativeVec::class -> ArgumentType.RelativeVec3(name)
         Vec::class -> ArgumentType.RelativeVec3(name)
+        SoundEvent::class -> ArgumentSound(name)
         Byte::class -> ArgumentByte(name).also { argument ->
             annotations.filterIsInstance<DefaultNumber>().firstOrNull()
                 ?.let { argument.defaultValue(it.number.toInt().toByte().coerceAtLeast(Byte.MIN_VALUE).coerceAtMost(Byte.MAX_VALUE)) }
