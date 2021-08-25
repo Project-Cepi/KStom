@@ -11,7 +11,7 @@ addSyntax({ sender, args ->
 With KStom:
 
 ```kotlin
-addSyntax(argument) { sender, args ->
+addSyntax(argument) {
     
 }
 ```
