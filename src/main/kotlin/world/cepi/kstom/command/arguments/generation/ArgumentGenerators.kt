@@ -9,6 +9,7 @@ import net.minestom.server.command.builder.CommandResult
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentEnum
 import net.minestom.server.command.builder.arguments.ArgumentType
+import net.minestom.server.coordinate.Point
 import net.minestom.server.coordinate.Vec
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.EntityType
@@ -332,6 +333,7 @@ fun argumentFromClass(
             annotations.filterIsInstance<DefaultBlock>().firstOrNull()
                 ?.let { argument.defaultValue(Block.fromNamespaceId(it.block)) }
         }
+        Point::class -> ArgumentType.RelativeVec3(name)
         CommandResult::class -> ArgumentType.Command(name)
         PotionEffect::class -> ArgumentType.Potion(name).also { argument ->
             annotations.filterIsInstance<DefaultPotionEffect>().firstOrNull()
