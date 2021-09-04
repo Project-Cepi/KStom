@@ -1,6 +1,7 @@
 package world.cepi.kstom.util
 
 import net.minestom.server.collision.BoundingBox
+import net.minestom.server.coordinate.Point
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.coordinate.Vec
 import net.minestom.server.entity.LivingEntity
@@ -9,7 +10,7 @@ import java.util.concurrent.ThreadLocalRandom
 
 object Fuzzy {
 
-    fun collides(boundingBox: BoundingBox, pos: Pos, margin: Double = 0.125) =
+    fun collides(boundingBox: BoundingBox, pos: Point, margin: Double = 0.125) =
         boundingBox.expand(margin, margin, margin).intersect(pos)
 
     /**
@@ -22,7 +23,7 @@ object Fuzzy {
      */
     fun positionInEntity(
         instance: Instance,
-        position: Pos,
+        position: Point,
         origin: LivingEntity?,
         margin: Double = 0.125
     ): LivingEntity? {

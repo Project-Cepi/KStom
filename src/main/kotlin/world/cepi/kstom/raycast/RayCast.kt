@@ -1,5 +1,6 @@
 package world.cepi.kstom.raycast
 
+import net.minestom.server.coordinate.Point
 import net.minestom.server.coordinate.Vec
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.LivingEntity
@@ -33,13 +34,13 @@ object RayCast {
     fun castRay(
         instance: Instance,
         origin: LivingEntity? = null,
-        start: Vec,
+        start: Point,
         direction: Vec,
         maxDistance: Double = 100.0,
         stepLength: Double = .25,
-        shouldContinue: (Vec) -> Boolean = { !instance.blockUtilsAt(it.toExactBlockPosition()).block.isSolid },
-        onBlockStep: (Vec) -> Unit = { },
-        acceptEntity: (Vec, Entity) -> Boolean = { _, _ -> true },
+        shouldContinue: (Point) -> Boolean = { !instance.getBlock(it).isSolid },
+        onBlockStep: (Point) -> Unit = { },
+        acceptEntity: (Point, Entity) -> Boolean = { _, _ -> true },
         margin: Double = 0.125
     ): Result {
         require(maxDistance > 0) { "Max distance must be greater than 0!" }
@@ -51,7 +52,8 @@ object RayCast {
          */
         direction.normalize().mul(stepLength)
 
-        var lastVector = start
+        var lastPos = start
+        var currentPos = start
 
         // current step, always starts at the origin.
         var step = 0.0
@@ -65,18 +67,18 @@ object RayCast {
             }
 
             // checks if there is an entity in this step -- if so, return that.
-            val target = Fuzzy.positionInEntity(instance, start.asPosition(), origin, margin)
+            val target = Fuzzy.positionInEntity(instance, start, origin, margin)
             if (target != null && acceptEntity(start, target)) {
                 return Result(start, HitType.ENTITY, target)
             }
 
-            if (lastVector != start) {
+            if (lastPos != start) {
                 onBlockStep.invoke(start)
             }
 
             // add the precalculated direction to the block position, and refresh the lastBlockCache
-            lastVector = start
-            start.add(direction)
+            lastPos = currentPos
+            currentPos = currentPos.add(direction)
 
             step += stepLength
         }
