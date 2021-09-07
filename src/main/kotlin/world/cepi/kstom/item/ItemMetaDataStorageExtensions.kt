@@ -3,22 +3,34 @@ package world.cepi.kstom.item
 import kotlinx.serialization.*
 import java.util.*
 import kotlinx.serialization.modules.SerializersModule
+import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.Component
+import net.minestom.server.coordinate.Pos
+import net.minestom.server.entity.EntityType
 import net.minestom.server.instance.block.Block
+import net.minestom.server.item.ItemStack
+import net.minestom.server.item.Material
+import net.minestom.server.potion.PotionEffect
+import net.minestom.server.sound.SoundEvent
 import net.minestom.server.tag.Tag
 import net.minestom.server.tag.TagReadable
 import net.minestom.server.tag.TagWritable
+import net.minestom.server.utils.NamespaceID
+import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
 import world.cepi.kstom.nbt.NBTParser
 import world.cepi.kstom.nbt.NBTFormat
+import world.cepi.kstom.serializer.*
+import java.time.Duration
 import kotlin.reflect.KClass
 
 @OptIn(InternalSerializationApi::class)
 operator fun <T: @Serializable Any> TagWritable.set(
     tag: String,
-    clazz: KClass<T>,
+    serializer: KSerializer<T>,
     module: SerializersModule? = null,
-    serializer: KSerializer<T> = clazz.serializer(),
-    item: @Serializable T
+    item: @Serializable T,
 ) {
     if (module == null)
         setTag(Tag.NBT(tag), NBTParser.serialize(serializer, item))
@@ -30,9 +42,26 @@ operator fun <T: @Serializable Any> TagWritable.set(
 inline operator fun <reified T: @Serializable Any> TagWritable.set(
     tag: String,
     module: SerializersModule? = null,
-    serializer: KSerializer<T> = T::class.serializer(),
+    serializer: KSerializer<T> = when(T::class) {
+        Block::class -> BlockSerializer as KSerializer<T>
+        BossBar::class -> BossBarSerializer as KSerializer<T>
+        Component::class -> ComponentSerializer as KSerializer<T>
+        Duration::class -> DurationSerializer as KSerializer<T>
+        EntityType::class -> EntityTypeSerializer as KSerializer<T>
+        ItemStack::class -> ItemStackSerializer as KSerializer<T>
+        Material::class -> MaterialSerializer as KSerializer<T>
+        NamespaceID::class -> NamespaceIDSerializer as KSerializer<T>
+        NBT::class -> NBTSerializer as KSerializer<T>
+        Pos::class -> PositionSerializer as KSerializer<T>
+        PotionEffect::class -> PotionEffectSerializer as KSerializer<T>
+        SoundEvent::class -> SoundEventSerializer as KSerializer<T>
+        Sound::class -> SoundSerializer as KSerializer<T>
+        UUID::class -> UUIDSerializer as KSerializer<T>
+        Vector::class -> VectorSerializer as KSerializer<T>
+        else -> T::class.serializer()
+                                                },
     item: @Serializable T
-) = set(tag, T::class, module, serializer, item)
+) = set(tag, serializer, module, item)
 
 // TODO convert to TagWithable or something when its an interface
 

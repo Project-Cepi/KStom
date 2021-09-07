@@ -11,8 +11,9 @@ class ArgumentContextValue<T>(val lambda: CommandSender.() -> T?) {
 }
 
 class ArgumentContext<T>(
+    id: String = "context${UUID.randomUUID()}",
     val lambda: CommandSender.() -> T?
-) : Argument<ArgumentContextValue<T>>("context${UUID.randomUUID()}") {
+) : Argument<ArgumentContextValue<T>>(id) {
 
     init {
         setDefaultValue(ArgumentContextValue(lambda))
