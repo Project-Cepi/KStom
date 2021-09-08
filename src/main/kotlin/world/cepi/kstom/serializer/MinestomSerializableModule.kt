@@ -10,6 +10,7 @@ import kotlin.reflect.KClass
 
 val MinestomSerializableModule = SerializersModule {
     contextual(ItemStackSerializer)
+    contextual(PotionSerializer)
     contextual(NBTSerializer)
     contextual(PositionSerializer)
     contextual(SoundSerializer)

@@ -11,6 +11,7 @@ import net.minestom.server.entity.EntityType
 import net.minestom.server.instance.block.Block
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
+import net.minestom.server.potion.Potion
 import net.minestom.server.potion.PotionEffect
 import net.minestom.server.sound.SoundEvent
 import net.minestom.server.tag.Tag
@@ -49,6 +50,7 @@ inline operator fun <reified T: @Serializable Any> TagWritable.set(
         Duration::class -> DurationSerializer as KSerializer<T>
         EntityType::class -> EntityTypeSerializer as KSerializer<T>
         ItemStack::class -> ItemStackSerializer as KSerializer<T>
+        Potion::class -> PotionSerializer as KSerializer<T>
         Material::class -> MaterialSerializer as KSerializer<T>
         NamespaceID::class -> NamespaceIDSerializer as KSerializer<T>
         NBT::class -> NBTSerializer as KSerializer<T>
