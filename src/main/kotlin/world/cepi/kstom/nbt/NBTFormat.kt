@@ -36,7 +36,9 @@ open class NBTFormat(module: SerializersModule = EmptySerializersModule) {
      */
     fun <T> serialize(serializer: SerializationStrategy<T>, obj: T): NBTCompound {
         return SNBTParser(
-            StringReader(json.encodeToString(serializer, obj))
+            StringReader(json.encodeToString(serializer, obj)
+                .replace(Regex("(\\d{11,})"), "$1L")
+            )
         ).parse() as NBTCompound
     }
 
@@ -49,6 +51,7 @@ open class NBTFormat(module: SerializersModule = EmptySerializersModule) {
             deserializer, tag.toSNBT()
                 .replace("1B", "true")
                 .replace("0B", "false")
+                .replace(Regex("(\\d{11,})L"), "$1")
         )
     }
 
