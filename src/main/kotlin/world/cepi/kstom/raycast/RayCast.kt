@@ -50,7 +50,7 @@ object RayCast {
          Normalize the direction, making it less/equal to (1, 1, 1)
           then multiply by step to properly add to the step length.
          */
-        direction.normalize().mul(stepLength)
+        val adjustedDirection = direction.normalize().mul(stepLength)
 
         var lastPos = start
         var currentPos = start
@@ -62,27 +62,27 @@ object RayCast {
         while (step < maxDistance) {
 
             // checks the [shouldContinue] lambda, if it returns false this most likely hit some sort of block.
-            if (!shouldContinue.invoke(start)) {
-                return Result(start, HitType.BLOCK, null)
+            if (!shouldContinue.invoke(currentPos)) {
+                return Result(currentPos, HitType.BLOCK, null)
             }
 
             // checks if there is an entity in this step -- if so, return that.
-            val target = Fuzzy.positionInEntity(instance, start, origin, margin)
-            if (target != null && acceptEntity(start, target)) {
-                return Result(start, HitType.ENTITY, target)
+            val target = Fuzzy.positionInEntity(instance, currentPos, origin, margin)
+            if (target != null && acceptEntity(currentPos, target)) {
+                return Result(currentPos, HitType.ENTITY, target)
             }
 
-            if (lastPos != start) {
-                onBlockStep.invoke(start)
+            if (lastPos != currentPos) {
+                onBlockStep.invoke(currentPos)
             }
 
             // add the precalculated direction to the block position, and refresh the lastBlockCache
             lastPos = currentPos
-            currentPos = currentPos.add(direction)
+            currentPos = currentPos.add(adjustedDirection)
 
             step += stepLength
         }
 
-        return Result(start, HitType.NONE, null)
+        return Result(currentPos, HitType.NONE, null)
     }
 }
