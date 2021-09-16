@@ -18,6 +18,7 @@ import net.minestom.server.tag.Tag
 import net.minestom.server.tag.TagReadable
 import net.minestom.server.tag.TagWritable
 import net.minestom.server.utils.NamespaceID
+import net.minestom.server.utils.math.IntRange
 import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
 import world.cepi.kstom.nbt.NBTParser
@@ -60,6 +61,7 @@ inline operator fun <reified T: @Serializable Any> TagWritable.set(
         Sound::class -> SoundSerializer as KSerializer<T>
         UUID::class -> UUIDSerializer as KSerializer<T>
         Vector::class -> VectorSerializer as KSerializer<T>
+        IntRange::class -> IntRangeSerializer as KSerializer<T>
         else -> T::class.serializer()
                                                 },
     item: @Serializable T

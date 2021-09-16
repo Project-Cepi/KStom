@@ -15,6 +15,7 @@ val MinestomSerializableModule = SerializersModule {
     contextual(PositionSerializer)
     contextual(SoundSerializer)
     contextual(VectorSerializer)
+    contextual(IntRangeSerializer)
     contextual(UUIDSerializer)
     contextual(DurationSerializer)
     contextual(NamespaceIDSerializer)
