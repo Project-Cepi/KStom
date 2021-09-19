@@ -16,7 +16,7 @@ import net.minestom.server.utils.location.RelativeVec
 object RelativeVecSerializer : KSerializer<RelativeVec> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("Vector") {
         element<Vec>("vec")
-        element<RelativeVec.CoordinateType>("type")
+        element<Int>("type")
         element<Boolean>("relativeX")
         element<Boolean>("relativeY")
         element<Boolean>("relativeZ")
@@ -25,26 +25,32 @@ object RelativeVecSerializer : KSerializer<RelativeVec> {
     override fun serialize(encoder: Encoder, value: RelativeVec) {
         encoder.encodeStructure(descriptor) {
             encodeSerializableElement(descriptor, 0, VectorSerializer, value.from(Pos.ZERO))
-            encodeIntElement(descriptor, 1, value.)
-            encodeDoubleElement(descriptor, 2, value.z())
+            encodeIntElement(descriptor, 1, value.coordinateType().ordinal)
+            encodeBooleanElement(descriptor, 2, value.isRelativeX)
+            encodeBooleanElement(descriptor, 3, value.isRelativeY)
+            encodeBooleanElement(descriptor, 4, value.isRelativeZ)
         }
     }
 
     override fun deserialize(decoder: Decoder): RelativeVec {
         return decoder.decodeStructure(descriptor) {
-            var x = 0.0
-            var y = 0.0
-            var z = 0.0
+            var vec: Vec? = null
+            var coordinateType: RelativeVec.CoordinateType? = null
+            var relativeX: Boolean? = null
+            var relativeY: Boolean? = null
+            var relativeZ: Boolean? = null
             while (true) {
                 when (val index = decodeElementIndex(descriptor)) {
-                    0 -> x = decodeDoubleElement(descriptor, 0)
-                    1 -> y = decodeDoubleElement(descriptor, 1)
-                    2 -> z = decodeDoubleElement(descriptor, 2)
+                    0 -> vec = decodeSerializableElement(descriptor, 0, VectorSerializer)
+                    1 -> coordinateType = RelativeVec.CoordinateType.values()[decodeIntElement(descriptor, 1)]
+                    2 -> relativeX = decodeBooleanElement(descriptor, 2)
+                    3 -> relativeY = decodeBooleanElement(descriptor, 3)
+                    4 -> relativeZ = decodeBooleanElement(descriptor, 4)
                     CompositeDecoder.DECODE_DONE -> break
                     else -> error("Unexpected index: $index")
                 }
             }
-            Vec(x, y, z)
+            RelativeVec(vec!!, coordinateType!!, relativeX!!, relativeY!!, relativeZ!!)
         }
     }
 }

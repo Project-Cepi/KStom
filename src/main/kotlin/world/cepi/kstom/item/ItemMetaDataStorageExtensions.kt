@@ -18,6 +18,7 @@ import net.minestom.server.tag.Tag
 import net.minestom.server.tag.TagReadable
 import net.minestom.server.tag.TagWritable
 import net.minestom.server.utils.NamespaceID
+import net.minestom.server.utils.location.RelativeVec
 import net.minestom.server.utils.math.IntRange
 import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
@@ -46,6 +47,7 @@ inline operator fun <reified T: @Serializable Any> TagWritable.set(
     module: SerializersModule? = null,
     serializer: KSerializer<T> = when(T::class) {
         Block::class -> BlockSerializer as KSerializer<T>
+        RelativeVec::class -> RelativeVecSerializer as KSerializer<T>
         BossBar::class -> BossBarSerializer as KSerializer<T>
         Component::class -> ComponentSerializer as KSerializer<T>
         Duration::class -> DurationSerializer as KSerializer<T>

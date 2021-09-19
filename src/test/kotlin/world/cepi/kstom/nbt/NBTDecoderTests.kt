@@ -1,5 +1,7 @@
 package world.cepi.kstom.nbt
 
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 import org.jglrxavpok.hephaistos.nbt.NBTInt
 import org.jglrxavpok.hephaistos.nbt.NBTLong
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -10,34 +12,23 @@ import world.cepi.kstom.nbt.classes.ComplexClass
 import world.cepi.kstom.nbt.classes.InterestingClass
 import world.cepi.kstom.nbt.classes.PrimitiveClass
 
-class NBTDecoderTests {
-
-    @Test
-    fun `basic primitive classes are decoded correctly`() {
+class NBTDecoderTests : StringSpec({
+    "primitive classes are decoded correctly" {
         val primitive = PrimitiveClass(5, 6, 5)
 
-        assertEquals(primitive, NBTParser.deserialize<PrimitiveClass>(primitive.createNonAutoNBT()))
-
+        NBTParser.deserialize<PrimitiveClass>(primitive.createNonAutoNBT()) shouldBe primitive
     }
 
-    @Test
-    fun `complex primitive classes are decoded correctly`() {
+    "nested classes are decoded correctly" {
         val data = ComplexClass(5, 4, 2, true, InterestingClass("hey", 'h'))
+        val falseData = ComplexClass(5, 4, 2, false, InterestingClass("hey", 'h'))
 
-        assertEquals(data, NBTParser.deserialize<ComplexClass>(data.createNonAutoNBT()))
+        NBTParser.deserialize<ComplexClass>(data.createNonAutoNBT()) shouldBe data
+        NBTParser.deserialize<ComplexClass>(falseData.createNonAutoNBT()) shouldBe falseData
     }
 
-    @Test
-    fun `complex primitive classes are decoded with false boolean correctly`() {
-        val data = ComplexClass(5, 4, 2, false, InterestingClass("hey", 'h'))
-
-        assertEquals(data, NBTParser.deserialize<ComplexClass>(data.createNonAutoNBT()))
-    }
-
-    @Test
-    fun `collections are encoded correctly`() {
+    "collections are decoded correctly" {
         val data = CollectionClass(5, 9, 3, listOf(4, 3))
-        assertEquals(data, NBTParser.deserialize<CollectionClass>(data.createNonAutoNBT()))
+        NBTParser.deserialize<CollectionClass>(data.createNonAutoNBT()) shouldBe data
     }
-
-}
+})
