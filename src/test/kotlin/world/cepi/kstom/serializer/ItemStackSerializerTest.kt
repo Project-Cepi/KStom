@@ -1,5 +1,7 @@
 package world.cepi.kstom.serializer
 
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
@@ -11,10 +13,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Disabled
 import world.cepi.kstom.item.*
 
-class ItemStackSerializerTest {
-
-    @Disabled("Item stacks cant be serialized inside -- yet")
-    fun `ensure items can be serialized in items`() {
+class ItemStackSerializerTest : StringSpec({
+    "items should be serializable".config(enabled = false) {
         val item = item(Material.PAPER) {
 
             displayName(Component.text("A Paper"))
@@ -29,7 +29,7 @@ class ItemStackSerializerTest {
 
         val backItem = Json.decodeFromString(ItemStackSerializer, json)
 
-        assertEquals(item, backItem)
+        backItem shouldBe item
 
         val itemWithItem = item.and {
             withMeta {
@@ -37,8 +37,6 @@ class ItemStackSerializerTest {
             }
         }
 
-        assertEquals(item, itemWithItem.meta.get("item", serializer = ItemStackSerializer))
-
+        itemWithItem.meta.get("item", serializer = ItemStackSerializer) shouldBe item
     }
-
-}
+})

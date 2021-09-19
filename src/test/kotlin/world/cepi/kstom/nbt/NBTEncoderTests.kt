@@ -1,5 +1,7 @@
 package world.cepi.kstom.nbt
 
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 import org.jglrxavpok.hephaistos.nbt.NBTInt
 import org.jglrxavpok.hephaistos.nbt.NBTLong
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -10,41 +12,31 @@ import world.cepi.kstom.nbt.classes.ComplexClass
 import world.cepi.kstom.nbt.classes.InterestingClass
 import world.cepi.kstom.nbt.classes.PrimitiveClass
 
-class NBTEncoderTests {
-
-    @Test
-    fun `basic primitive classes are encoded correctly`() {
+class NBTEncoderTests : StringSpec({
+    "classes containing primitives should be encoded correctly" {
         val primitive = PrimitiveClass(5, 6, 5)
 
-        assertEquals(primitive.createNonAutoNBT(), NBTParser.serialize(primitive))
-
+        NBTParser.serialize(primitive) shouldBe primitive.createNonAutoNBT()
     }
 
-    @Disabled("They arent!")
-    fun `basic primitives are encoded correctly`() {
-        assertEquals(NBTInt(5), NBTParser.serialize(5))
-        assertEquals(NBTLong(5L), NBTParser.serialize(5L))
-
+    "primitives should be encoded correctly".config(enabled = false) {
+        NBTParser.serialize(5) shouldBe NBTInt(5)
+        NBTParser.serialize(5L) shouldBe NBTLong(5)
     }
 
-    @Test
-    fun `complex primitive classes are encoded correctly`() {
+    "nested classes should be encoded correctly" {
         val data = ComplexClass(5, 4, 2, false, InterestingClass("hey", 'h'))
 
-        assertEquals(data.createNonAutoNBT(), NBTParser.serialize(data))
+        NBTParser.serialize(data) shouldBe data.createNonAutoNBT()
+
+        val dataTrue = ComplexClass(5, 4, 2, true, InterestingClass("hey", 'h'))
+
+        NBTParser.serialize(dataTrue) shouldBe dataTrue.createNonAutoNBT()
     }
 
-    @Test
-    fun `complex primitive classes are encoded correctly with true boolean`() {
-        val data = ComplexClass(5, 4, 2, true, InterestingClass("hey", 'h'))
-
-        assertEquals(data.createNonAutoNBT(), NBTParser.serialize(data))
-    }
-
-    @Test
-    fun `collections are encoded correctly`() {
+    "collections in classes should be encoded correctly" {
         val data = CollectionClass(5, 9, 3, listOf(4, 3))
-        assertEquals(data.createNonAutoNBT(), NBTParser.serialize(data))
-    }
 
-}
+        NBTParser.serialize(data) shouldBe data.createNonAutoNBT()
+    }
+})

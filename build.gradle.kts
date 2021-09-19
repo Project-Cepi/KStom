@@ -33,14 +33,15 @@ dependencies {
     // Use the Kotlin reflect library.
     compileOnly(kotlin("reflect", "1.5.0"))
 
-    // Use the JUpiter test library.
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.0")
+    // Use the kotlin test library
+    testImplementation("io.kotest:kotest-assertions-core:4.6.3")
+    testImplementation("io.kotest:kotest-runner-junit5:4.6.3")
 
     // Add support for kotlinx courotines
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 
     // Compile Minestom into project
-    compileOnly("com.github.Minestom", "Minestom", "fa07d861a6")
+    compileOnly("com.github.Minestom", "Minestom", "cbc87a2a68")
     compileOnly("com.github.jglrxavpok", "Hephaistos", "1.1.8")
 
     // import kotlinx serialization
@@ -51,7 +52,7 @@ dependencies {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "16"
 }
 
 configurations {
@@ -68,19 +69,19 @@ tasks {
 
     }
 
-    test { useJUnitPlatform() }
+    withType<Test> { useJUnitPlatform() }
 
     build { dependsOn(shadowJar) }
 
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
 }
 
 val compileKotlin: org.jetbrains.kotlin.gradle.tasks.KotlinCompile by tasks
-compileKotlin.kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
+compileKotlin.kotlinOptions.jvmTarget = JavaVersion.VERSION_16.toString()
 compileKotlin.kotlinOptions {
     freeCompilerArgs = listOf("-Xinline-classes", "-Xopt-in=kotlin.RequiresOptIn")
 }

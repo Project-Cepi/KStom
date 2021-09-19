@@ -1,5 +1,8 @@
 package world.cepi.kstom.item
 
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.shouldBe
 import net.kyori.adventure.text.Component
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -8,8 +11,7 @@ import world.cepi.kstom.nbt.classes.ComplexClass
 import world.cepi.kstom.nbt.classes.InterestingClass
 import java.util.*
 
-object ItemTests {
-
+class ItemTests : StringSpec({
     val item = item {
         amount = 5
         lore = listOf(Component.text("Hello!"))
@@ -28,23 +30,19 @@ object ItemTests {
         amount = 7
     }
 
-    @Test
-    fun `check amount is mutated`() {
-        assertEquals(item.amount, 7)
+    "item should be mutated" {
+        item.amount shouldBe 7
     }
 
-    @Test
-    fun `ensure complex data is translated`() {
+    "complex data should be stored" {
         val data = ComplexClass(5, 4, 2, true, InterestingClass("hey", 'h'))
         val otherData = CollectionClass(5, 9, 3, listOf(4, 3))
 
-        assertEquals(data, item.meta.get<ComplexClass>("complexData"))
-        assertEquals(otherData, item.meta.get<CollectionClass>("complexListData"))
+        item.meta.get<ComplexClass>("complexData") shouldBe data
+        item.meta.get<CollectionClass>("complexListData") shouldBe otherData
     }
 
-    @Test
-    fun `return null if NBT is not found`() {
-        assertEquals(item.meta.get<ComplexClass>("weirdData"), null)
-    }
+    "data should return null if not found"
 
-}
+    item.meta.get<ComplexClass>("weirdData").shouldBeNull()
+})
