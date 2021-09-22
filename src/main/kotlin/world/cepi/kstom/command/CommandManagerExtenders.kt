@@ -12,8 +12,8 @@ public inline fun commandUnregistered(name: String, block: Command.() -> Unit) =
 public inline fun CommandManager.command(name: String, block: Command.() -> Unit): Unit =
     register(Command(name).apply(block))
 
-public inline fun CommandManager.register(name: String, crossinline block: (sender: CommandSender, args: CommandContext) -> Unit): Unit =
-    register(Command(name).apply { default(block) })
+public fun CommandManager.register(name: String, block: (sender: CommandSender, args: CommandContext) -> Unit): Unit =
+    register(Command(name).apply { setDefaultExecutor(block) })
 
 public fun Command.register() {
     Manager.command.register(this)

@@ -3,7 +3,7 @@ package world.cepi.kstom.command
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.SimpleCommand
 
-object Old : SimpleCommand("hello", "howdy", "ello") {
+object OldSimple : SimpleCommand("hello", "howdy", "ello") {
 
     override fun hasAccess(sender: CommandSender, commandString: String?): Boolean {
         return sender.isConsole
@@ -16,7 +16,7 @@ object Old : SimpleCommand("hello", "howdy", "ello") {
 
 }
 
-object New : SimpleKommand(
+object NewSimple : SimpleKommand(
     "hello", "howdy", "ello",
     condition = { sender, _ -> sender.isConsole },
     process = { _, _, _, -> true }
