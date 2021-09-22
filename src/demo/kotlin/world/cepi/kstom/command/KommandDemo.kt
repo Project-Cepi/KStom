@@ -52,7 +52,7 @@ object New : Kommand({
     val remove by literal
     val set by literal
 
-    val amount by ArgumentType::Integer.delegate { this.min(0) }
+    val amount by ArgumentType::Integer.delegate { min(0) }
 
     syntax {
         sender.sendMessage("Usage: add|remove|set <amount>")
