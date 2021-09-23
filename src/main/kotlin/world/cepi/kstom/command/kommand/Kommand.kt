@@ -52,8 +52,8 @@ open class Kommand(val k : Kommand.() -> Unit, name: String, vararg aliases: Str
         setCallback { sender, exception -> lambda(ArgumentCallbackContext(sender, exception)) }
     }
 
-    inline fun default(crossinline block:  (sender: CommandSender, args: CommandContext) -> Unit) {
-        command.defaultExecutor = CommandExecutor { sender, args ->  block(sender, args) }
+    inline fun default(crossinline block: SyntaxContext.() -> Unit) {
+        command.defaultExecutor = CommandExecutor { sender, args ->  block(SyntaxContext(sender, args)) }
     }
 
     fun addSubcommands(vararg subcommands: Command) {

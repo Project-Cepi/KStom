@@ -43,6 +43,8 @@ class AnyArgument<T : Argument<out Any>>(
  */
 val literal get() = Literal()
 
+fun String.literal() = ArgumentLiteral(this)
+
 fun <T : Argument<out Any>> ((String) -> T).delegate(lambda: T.() -> Unit = { }) = AnyArgument(this, { lambda(
     this
 ) })

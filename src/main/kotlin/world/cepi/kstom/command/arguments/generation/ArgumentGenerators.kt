@@ -26,13 +26,10 @@ import net.minestom.server.utils.math.IntRange
 import net.minestom.server.utils.time.TimeUnit
 import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
-import world.cepi.kstom.command.ArgumentCallbackContext
-import world.cepi.kstom.command.SyntaxContext
-import world.cepi.kstom.command.addSyntax
 import world.cepi.kstom.command.arguments.*
 import world.cepi.kstom.command.arguments.generation.annotations.*
 import world.cepi.kstom.command.arguments.context.ContextParser
-import world.cepi.kstom.command.failCallback
+import world.cepi.kstom.command.kommand.Kommand
 import world.cepi.kstom.serializer.SerializableEntityFinder
 import world.cepi.kstom.tree.CombinationNode
 import java.lang.IllegalArgumentException
@@ -56,25 +53,29 @@ class GeneratedArguments<T : Any>(
      *
      * Setting this will set all the callbacks for every argument.
      */
-    var callback: ArgumentCallbackContext.() -> Unit = {  }
+    var callback: Kommand.ArgumentCallbackContext.() -> Unit = {  }
         set(value) {
-            args.forEach { subArgs -> subArgs.forEach { it.failCallback { value(this) } } }
+            args.forEach { subArgs ->
+                subArgs.forEach {
+                    it.setCallback { sender, exception -> value(Kommand.ArgumentCallbackContext(sender, exception)) }
+                }
+            }
             field = value
         }
 
     fun applySyntax(
-        command: Command,
+        command: Kommand,
         vararg arguments: Argument<*>,
-        lambda: SyntaxContext.(T) -> Unit
+        lambda: Kommand.SyntaxContext.(T) -> Unit
     ) = applySyntax(command, arguments, lambda)
 
     @JvmName("arrayApplySyntax")
     fun applySyntax(
-        command: Command,
+        command: Kommand,
         argumentsBefore: Array<out Argument<*>>,
-        lambda: SyntaxContext.(T) -> Unit
+        lambda: Kommand.SyntaxContext.(T) -> Unit
     ) = args.forEach {
-        command.addSyntax(*argumentsBefore, *it.toTypedArray()) {
+        command.syntax(*argumentsBefore, *it.toTypedArray()) {
             val instance = createInstance(clazz, it.map { arg -> arg.id }, context, sender)
 
             lambda(this, instance)
@@ -138,15 +139,15 @@ class GeneratedArguments<T : Any>(
             }
         }
 
-        inline fun <reified T: Any> Command.createSyntaxesFrom(
+        inline fun <reified T: Any> Kommand.createSyntaxesFrom(
             vararg arguments: Argument<*>,
-            noinline lambda: SyntaxContext.(T) -> Unit
+            noinline lambda: Kommand.SyntaxContext.(T) -> Unit
         ): GeneratedArguments<T> = generateSyntaxes<T>().also { it.applySyntax(this, arguments, lambda) }
 
-        fun <T : Any> Command.createSyntaxesFrom(
+        fun <T : Any> Kommand.createSyntaxesFrom(
             clazz: KClass<T>,
             vararg arguments: Argument<*>,
-            lambda: SyntaxContext.(T) -> Unit
+            lambda: Kommand.SyntaxContext.(T) -> Unit
         ): GeneratedArguments<T> = generateSyntaxes(clazz).also { it.applySyntax(this, arguments, lambda) }
     }
 

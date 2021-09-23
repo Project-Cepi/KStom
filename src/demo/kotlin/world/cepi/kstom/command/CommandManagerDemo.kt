@@ -9,7 +9,7 @@ fun old() {
 
     Manager.command.register(object : Command("otherShell") {
         init {
-            default { sender, _ ->
+            setDefaultExecutor { sender, _ ->
                 sender.sendMessage("This is another shell!")
             }
         }
@@ -17,7 +17,7 @@ fun old() {
 
     Manager.command.register(object : Command("anotherShell") {
         init {
-            default { sender, _ ->
+            setDefaultExecutor { sender, _ ->
                 sender.sendMessage("This is another shell!")
             }
         }
@@ -29,12 +29,12 @@ fun old() {
 
 fun new() {
 
-    Manager.command.register("otherShell") { sender, _ ->
+    Manager.command.register("otherShell") {
         sender.sendMessage("This is another shell!")
     }
 
     Manager.command.command("anotherShell") {
-        default { sender, _ ->
+        default {
             sender.sendMessage("This is another shell!")
         }
     }
