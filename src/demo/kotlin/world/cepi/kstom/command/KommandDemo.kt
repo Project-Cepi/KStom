@@ -20,7 +20,7 @@ object Old : Command("hey") {
 
         val amount = ArgumentType.Integer("amount").min(0)
 
-        addSyntax({ sender, context ->
+        addSyntax({ sender, _ ->
             sender.sendMessage("Usage: add|remove|set <amount>")
         })
 
