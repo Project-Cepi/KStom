@@ -1,66 +1,33 @@
 package world.cepi.kstom.command.kommand
 
-import net.minestom.server.command.ConsoleSender
 import net.minestom.server.command.builder.arguments.Argument
-import net.minestom.server.entity.Player
 
 class KSyntax(
-    vararg val arguments: Argument<*>,
-    val conditions: MutableList<Kommand.ConditionContext.() -> Boolean> = mutableListOf(),
-    val kommandReference: Kommand
-) {
+  vararg val arguments: Argument<*>,
+  override val conditions: MutableList<Kommand.ConditionContext.() -> Boolean> = mutableListOf(),
+  override val kommandReference: Kommand
+) : Kondition<KSyntax>() {
+  override val t: KSyntax
+    get() = this
 
-    fun conditionPasses(context: Kommand.ConditionContext) = conditions.all { it(context) }
+  operator fun invoke(executor: Kommand.SyntaxContext.() -> Unit) {
+    if (arguments.isEmpty()) {
+      kommandReference.command.setDefaultExecutor { sender, context ->
 
-    fun condition(lambda: Kommand.ConditionContext.() -> Boolean): KSyntax {
-        conditions += lambda
-        return this
+        if (!conditionPasses(Kommand.ConditionContext(sender, context.input))) return@setDefaultExecutor
+
+        executor(Kommand.SyntaxContext(sender, context))
+      }
+
+      return
     }
 
-    operator fun invoke(executor: Kommand.SyntaxContext.() -> Unit) {
-        if (arguments.isEmpty()) {
-            kommandReference.command.setDefaultExecutor { sender, context ->
+    kommandReference.command.addConditionalSyntax(
+      { sender, string -> conditionPasses(Kommand.ConditionContext(sender, string ?: "")) },
+      { sender, context -> executor(Kommand.SyntaxContext(sender, context)) },
+      *arguments
+    )
 
-                if (!conditionPasses(Kommand.ConditionContext(sender, context.input))) return@setDefaultExecutor
-
-                executor(Kommand.SyntaxContext(sender, context))
-            }
-
-            return
-        }
-
-        kommandReference.command.addConditionalSyntax(
-            { sender, string -> conditionPasses(Kommand.ConditionContext(sender, string ?: "")) },
-            { sender, context -> executor(Kommand.SyntaxContext(sender, context)) },
-            *arguments
-        )
-
-        return
-    }
-
-    val onlyPlayers: KSyntax get() = run {
-        conditions += condition@ {
-            if (sender !is Player) {
-                kommandReference.playerCallbackFailMessage(sender)
-                return@condition false
-            }
-
-            return@condition true
-        }
-
-        this
-    }
-
-    val onlyConsole: KSyntax get() = run {
-        conditions += condition@ {
-            if (sender !is ConsoleSender) {
-                kommandReference.consoleCallbackFailMessage(sender)
-                return@condition false
-            }
-
-            return@condition true
-        }
-
-        return this
-    }
+    return
+  }
 }
