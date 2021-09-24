@@ -8,7 +8,7 @@ import net.minestom.server.entity.Player
 import org.jetbrains.annotations.Contract
 import world.cepi.kstom.Manager
 
-open class Kommand(val k: Kommand.() -> Unit, name: String, vararg aliases: String) : Kondition<Kommand>() {
+open class Kommand(val k: Kommand.() -> Unit = {}, name: String, vararg aliases: String) : Kondition<Kommand>() {
     override val conditions: MutableList<ConditionContext.() -> Boolean> = mutableListOf()
     var playerCallbackFailMessage: (CommandSender) -> Unit = { }
     var consoleCallbackFailMessage: (CommandSender) -> Unit = { }
