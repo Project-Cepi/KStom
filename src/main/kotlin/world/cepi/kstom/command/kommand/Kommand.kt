@@ -72,4 +72,11 @@ open class Kommand(val k: Kommand.() -> Unit, name: String, vararg aliases: Stri
     fun register() {
         Manager.command.register(command)
     }
+
+    fun unregister() {
+        Manager.command.unregister(command)
+    }
+
+
+
 }
