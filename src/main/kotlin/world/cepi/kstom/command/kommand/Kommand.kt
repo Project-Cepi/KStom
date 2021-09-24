@@ -19,6 +19,10 @@ open class Kommand(val k: Kommand.() -> Unit, name: String, vararg aliases: Stri
 
     val command = Command(name, *aliases)
 
+    init {
+        k()
+    }
+
     data class SyntaxContext(val sender: CommandSender, val context: CommandContext) {
 
         val player by lazy { sender as Player }
