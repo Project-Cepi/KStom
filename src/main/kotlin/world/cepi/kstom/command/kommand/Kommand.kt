@@ -1,22 +1,27 @@
 package world.cepi.kstom.command.kommand
 
 import net.minestom.server.command.CommandSender
-import net.minestom.server.command.builder.Command
-import net.minestom.server.command.builder.CommandContext
-import net.minestom.server.command.builder.CommandExecutor
-import net.minestom.server.command.builder.CommandSyntax
+import net.minestom.server.command.builder.*
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.exception.ArgumentSyntaxException
 import net.minestom.server.entity.Player
 import org.jetbrains.annotations.Contract
 import world.cepi.kstom.Manager
 
-open class Kommand(val k : Kommand.() -> Unit, name: String, vararg aliases: String) {
-
+open class Kommand(val k: Kommand.() -> Unit, name: String, vararg aliases: String) : Kondition<Kommand>() {
+    override val conditions: MutableList<ConditionContext.() -> Boolean> = mutableListOf()
     var playerCallbackFailMessage: (CommandSender) -> Unit = { }
     var consoleCallbackFailMessage: (CommandSender) -> Unit = { }
 
+    override val t: Kommand
+        get() = this
+    override val kommandReference: Kommand by ::t
+
     val command = Command(name, *aliases)
+
+    init {
+        k()
+    }
 
     data class SyntaxContext(val sender: CommandSender, val context: CommandContext) {
 
@@ -33,19 +38,19 @@ open class Kommand(val k : Kommand.() -> Unit, name: String, vararg aliases: Str
     @Contract(pure = true)
     fun syntax(
         vararg arguments: Argument<*> = arrayOf(),
-    ) = KSyntax(*arguments, kommandReference = this)
+    ) = KSyntax(*arguments, conditions = conditions.toMutableList(), kommandReference = this)
 
     @Contract(pure = true)
     fun syntax(
         vararg arguments: Argument<*> = arrayOf(),
         executor: SyntaxContext.() -> Unit
-    ) = KSyntax(*arguments, kommandReference = this).invoke(executor)
+    ) = KSyntax(*arguments, conditions = conditions.toMutableList(), kommandReference = this).invoke(executor)
 
     inline fun argumentCallback(
         arg: Argument<*>,
         crossinline lambda: ArgumentCallbackContext.() -> Unit
     ) {
-        command.setArgumentCallback({ source, value ->  lambda(ArgumentCallbackContext(source, value)) }, arg)
+        command.setArgumentCallback({ source, value -> lambda(ArgumentCallbackContext(source, value)) }, arg)
     }
 
     inline fun <T> Argument<T>.failCallback(crossinline lambda: ArgumentCallbackContext.() -> Unit) {
@@ -53,7 +58,7 @@ open class Kommand(val k : Kommand.() -> Unit, name: String, vararg aliases: Str
     }
 
     inline fun default(crossinline block: SyntaxContext.() -> Unit) {
-        command.defaultExecutor = CommandExecutor { sender, args ->  block(SyntaxContext(sender, args)) }
+        command.defaultExecutor = CommandExecutor { sender, args -> block(SyntaxContext(sender, args)) }
     }
 
     fun addSubcommands(vararg subcommands: Command) {
@@ -67,7 +72,4 @@ open class Kommand(val k : Kommand.() -> Unit, name: String, vararg aliases: Str
     fun register() {
         Manager.command.register(command)
     }
-
-
-
 }
