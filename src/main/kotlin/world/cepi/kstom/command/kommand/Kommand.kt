@@ -29,6 +29,8 @@ open class Kommand(val k: Kommand.() -> Unit = {}, name: String, vararg aliases:
 
         operator fun <T> get(argument: Argument<T>): T = context[argument]
 
+        val commandName = context.commandName
+
         operator fun <T> Argument<T>.not(): T = context[this]
     }
 
