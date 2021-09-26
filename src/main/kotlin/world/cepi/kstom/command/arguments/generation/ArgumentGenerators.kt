@@ -346,7 +346,14 @@ fun argumentFromClass(
             if (clazz.java.enumConstants == null) throw IllegalStateException("Class ${clazz.qualifiedName} Must be a valid argument!")
 
             @Suppress("UNCHECKED_CAST") // We already check if the class is an enum or not.
-            return (ArgumentEnum(name, clazz.java as Class<Enum<*>>))
+            return (ArgumentEnum(name, clazz.java as Class<Enum<*>>)).also { enumArgument ->
+                val annotation = annotations.filterIsInstance<EnumArgument>().firstOrNull() ?: return@also
+
+                val enumConstraints = (clazz.java as Class<Enum<*>>).enumConstants
+
+                enumArgument.setFormat(annotation.flattenType)
+                enumArgument.defaultValue(enumConstraints.firstOrNull { it.name.lowercase() == annotation.default.lowercase() })
+            }
         }
     }
 }
