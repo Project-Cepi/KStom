@@ -65,22 +65,7 @@ class GeneratedArguments<T : Any>(
         }
 
     init {
-        callback = {
-
-            val flattenedArgs = args.flatten()
-
-            sender.sendMessage(flattenedArgs.map {
-                Component.text(it::class.simpleName!!.replace("Argument", ""), NamedTextColor.GRAY)
-                    .append(Component.text("<${it.id}>", NamedTextColor.RED))
-            }.foldIndexed(Component.empty()) { index, acc, textComponent ->
-                acc.append(textComponent).let {
-                    if (index + 1 == flattenedArgs.size)
-                        it
-                    else
-                        it.append(Component.newline())
-                }
-            })
-        }
+        CallbackGenerator.applyCallback(this)
     }
 
     fun applySyntax(
