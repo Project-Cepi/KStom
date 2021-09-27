@@ -1,6 +1,7 @@
 package world.cepi.kstom.command.arguments.generation
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.color.Color
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
@@ -62,6 +63,25 @@ class GeneratedArguments<T : Any>(
             }
             field = value
         }
+
+    init {
+        callback = {
+
+            val flattenedArgs = args.flatten()
+
+            sender.sendMessage(flattenedArgs.map {
+                Component.text(it::class.simpleName!!.replace("Argument", ""), NamedTextColor.GRAY)
+                    .append(Component.text("<${it.id}>", NamedTextColor.RED))
+            }.foldIndexed(Component.empty()) { index, acc, textComponent ->
+                acc.append(textComponent).let {
+                    if (index + 1 == flattenedArgs.size)
+                        it
+                    else
+                        it.append(Component.newline())
+                }
+            })
+        }
+    }
 
     fun applySyntax(
         command: Kommand,
