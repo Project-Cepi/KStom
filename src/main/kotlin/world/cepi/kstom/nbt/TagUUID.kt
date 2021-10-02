@@ -15,8 +15,8 @@ class TagUUID(val name: String) : Tag<UUID>(name,
     },
     BiConsumer { compound, value ->
         compound.setLongArray(name, LongArray(2).also {
-            it[0] = value.leastSignificantBits
-            it[1] = value.mostSignificantBits
+            it[0] = value.mostSignificantBits
+            it[1] = value.leastSignificantBits
         })
     }
 )
