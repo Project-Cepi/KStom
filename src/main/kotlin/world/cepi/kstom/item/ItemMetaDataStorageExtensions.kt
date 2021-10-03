@@ -48,6 +48,7 @@ inline operator fun <reified T: @Serializable Any> TagWritable.set(
     serializer: KSerializer<T> = when(T::class) {
         Block::class -> BlockSerializer as KSerializer<T>
         RelativeVec::class -> RelativeVecSerializer as KSerializer<T>
+        ParticleSerializer::class -> ParticleSerializer as KSerializer<T>
         BossBar::class -> BossBarSerializer as KSerializer<T>
         Component::class -> ComponentSerializer as KSerializer<T>
         Duration::class -> DurationSerializer as KSerializer<T>
