@@ -11,9 +11,9 @@ fun TagUUID(name: String) = Tag.LongArray(name).map<UUID>(
         )
     },
     set@ { value ->
-        LongArray(2).also {
-            it[0] = value?.mostSignificantBits ?: return@set null
-            it[1] = value.leastSignificantBits
-        }
+        longArrayOf(
+            value?.mostSignificantBits ?: return@set null,
+            value.leastSignificantBits
+        )
     }
 )
