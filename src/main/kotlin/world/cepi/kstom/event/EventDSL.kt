@@ -20,7 +20,7 @@ class KEventListener<T : Event>(val eventListener: EventListener.Builder<T>) {
 
     fun handler(lambda: T.() -> Unit) = eventListener.handler(lambda)
 
-    fun handler(context: CoroutineContext = Dispatchers.IO, lambda: suspend T.() -> Unit) = eventListener.handler {
+    fun suspendingHandler(context: CoroutineContext = Dispatchers.IO, lambda: suspend T.() -> Unit) = eventListener.handler {
         CoroutineScope(context).launch {
             lambda(it)
         }
