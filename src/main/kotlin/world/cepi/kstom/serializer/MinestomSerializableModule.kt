@@ -9,6 +9,7 @@ import net.minestom.server.entity.EntityType
 import kotlin.reflect.KClass
 
 val MinestomSerializableModule = SerializersModule {
+    contextual(BlockSerializer)
     contextual(ItemStackSerializer)
     contextual(PotionSerializer)
     contextual(NBTSerializer)
