@@ -51,7 +51,7 @@ operator fun Inventory.get(slot: Int) = this.getItemStack(slot)
 operator fun Inventory.get(range: IntRange): List<ItemStack> {
     val itemStacks = mutableListOf<ItemStack>()
 
-    for (slot in max(0, range.first)..min(this.size, range.last)) {
+    for (slot in max(0, range.first) until min(this.size, range.last)) {
         itemStacks.add(this[slot])
     }
 
