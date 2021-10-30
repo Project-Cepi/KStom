@@ -27,6 +27,7 @@ import net.minestom.server.utils.math.IntRange
 import net.minestom.server.utils.time.TimeUnit
 import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
+import world.cepi.kstom.Manager.command
 import world.cepi.kstom.command.arguments.*
 import world.cepi.kstom.command.arguments.generation.annotations.*
 import world.cepi.kstom.command.arguments.context.ContextParser
@@ -73,15 +74,16 @@ class GeneratedArguments<T : Any>(
         command: Kommand,
         vararg arguments: Argument<*>,
         lambda: Kommand.SyntaxContext.(T) -> Unit
-    ) = applySyntax(command, arguments, lambda)
+    ) = applySyntax(command, arguments, emptyArray(), lambda)
 
     @JvmName("arrayApplySyntax")
     fun applySyntax(
         command: Kommand,
         argumentsBefore: Array<out Argument<*>>,
+        argumentsAfter: Array<out Argument<*>>,
         lambda: Kommand.SyntaxContext.(T) -> Unit
     ) = args.forEach {
-        command.syntax(*argumentsBefore, *it.toTypedArray()) {
+        command.syntax(*argumentsBefore, *it.toTypedArray(), *argumentsAfter) {
             val instance = createInstance(clazz, it.map { arg -> arg.id }, context, sender)
 
             lambda(this, instance)
@@ -150,13 +152,27 @@ class GeneratedArguments<T : Any>(
         inline fun <reified T: Any> Kommand.createSyntaxesFrom(
             vararg arguments: Argument<*>,
             noinline lambda: Kommand.SyntaxContext.(T) -> Unit
-        ): GeneratedArguments<T> = generateSyntaxes<T>().also { it.applySyntax(this, arguments, lambda) }
+        ): GeneratedArguments<T> = generateSyntaxes<T>().also { it.applySyntax(this, arguments, emptyArray(), lambda) }
 
         fun <T : Any> Kommand.createSyntaxesFrom(
             clazz: KClass<T>,
             vararg arguments: Argument<*>,
             lambda: Kommand.SyntaxContext.(T) -> Unit
-        ): GeneratedArguments<T> = generateSyntaxes(clazz).also { it.applySyntax(this, arguments, lambda) }
+        ): GeneratedArguments<T> = generateSyntaxes(clazz).also { it.applySyntax(this, arguments, emptyArray(), lambda) }
+
+        inline fun <reified T: Any> Kommand.createSyntaxesFrom(
+            beforeArguments: Array<Argument<*>>,
+            afterArguments: Array<Argument<*>>,
+            noinline lambda: Kommand.SyntaxContext.(T) -> Unit
+        ): GeneratedArguments<T> = generateSyntaxes<T>().also { it.applySyntax(this, beforeArguments, afterArguments, lambda) }
+
+        fun <T: Any> Kommand.createSyntaxesFrom(
+            clazz: KClass<T>,
+            beforeArguments: Array<Argument<*>>,
+            afterArguments: Array<Argument<*>>,
+            lambda: Kommand.SyntaxContext.(T) -> Unit
+        ): GeneratedArguments<T> = generateSyntaxes(clazz).also { it.applySyntax(this, beforeArguments, afterArguments, lambda) }
+
     }
 
 }
