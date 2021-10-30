@@ -40,6 +40,7 @@ import java.util.*
 import java.util.function.Supplier
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
@@ -95,8 +96,10 @@ class GeneratedArguments<T : Any>(
             sender: CommandSender
         ): T {
 
-            val constructor = clazzToGenerate.primaryConstructor
-                ?: throw NullPointerException("Constructor is null, make sure the class has a constructor!")
+            val constructor =
+                clazzToGenerate.constructors.firstOrNull { it.hasAnnotation<GenerationConstructor>() }
+                    ?: clazzToGenerate.primaryConstructor
+                    ?: throw NullPointerException("Constructor is null, make sure the class has a constructor!")
 
             val classes = constructor.valueParameters.map {
                 it.type.classifier as KClass<*>
