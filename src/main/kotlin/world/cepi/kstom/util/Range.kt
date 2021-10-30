@@ -12,4 +12,4 @@ fun FloatRange.random(): Float =
     Random.Default.nextDouble(minimum.toDouble(), maximum.toDouble()).toFloat()
 
 fun IntRange.random(): Int =
-  Fl  Random.Default.nextInt(minimum, maximum)
+    Random.Default.nextInt(minimum, maximum)
