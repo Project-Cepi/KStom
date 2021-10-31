@@ -347,7 +347,10 @@ fun argumentFromClass(
                 }
         }
         IntRange::class -> ArgumentType.IntRange(name)
-        FloatRange::class -> ArgumentType.FloatRange(name)
+        FloatRange::class -> ArgumentType.FloatRange(name).also { argument ->
+            annotations.filterIsInstance<DefaultFloatRange>().firstOrNull()
+                ?.let { argument.defaultValue(FloatRange(it.minimum, it.maximum)) }
+        }
         SerializableEntityFinder::class -> ArgumentType.Entity(name)
         Enchantment::class -> ArgumentType.Enchantment(name)
         RelativeVec::class -> ArgumentType.RelativeVec3(name)
