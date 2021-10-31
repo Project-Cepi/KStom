@@ -42,7 +42,7 @@ class ItemTests : StringSpec({
         item.meta.get<CollectionClass>("complexListData") shouldBe otherData
     }
 
-    "data should return null if not found"
-
-    item.meta.get<ComplexClass>("weirdData").shouldBeNull()
+    "data should return null if not found" {
+        item.meta.get<ComplexClass>("weirdData").shouldBeNull()
+    }
 })
