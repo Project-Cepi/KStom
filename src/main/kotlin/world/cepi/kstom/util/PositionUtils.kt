@@ -20,6 +20,9 @@ operator fun Entity.component2() = this.position.y()
 operator fun Entity.component3() = this.position.z()
 
 fun Point.asVec(): Vec = Vec(this.x(), this.y(), this.z())
+fun Point.asPos(): Pos = Pos(this)
+
+fun Point.roundToBlock(): Point = Vec(this.blockX().toDouble(), this.blockY().toDouble(), this.blockZ().toDouble())
 
 fun Vec.rotateAroundXDegrees(degrees: Double) = rotateAroundX(degrees * (PI/180))
 fun Vec.rotateAroundYDegrees(degrees: Double) = rotateAroundY(degrees * (PI/180))
