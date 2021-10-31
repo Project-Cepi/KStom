@@ -109,7 +109,7 @@ fun <T: @Serializable Any> TagReadable.get(
 }
 
 @OptIn(InternalSerializationApi::class)
-public inline fun <reified T: @Serializable Any> TagReadable.get(
+inline fun <reified T: @Serializable Any> TagReadable.get(
     tag: String,
     module: SerializersModule? = null,
     serializer: KSerializer<T> = T::class.serializer()
