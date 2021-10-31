@@ -222,7 +222,7 @@ fun <T : Any> generateSyntaxes(clazz: KClass<T>): GeneratedArguments<T> {
  *
  * @param function The function to generate args from.
  *
- * @return A list of lists; the first list is possiblec743081338 argument combinations. The second list is a list of arguments.
+ * @return A list of lists; the first list is possible argument combinations. The second list is a list of arguments.
  */
 fun argumentsFromFunction(function: KFunction<*>): List<List<Argument<*>>> {
     // list of all combinations ordered.
