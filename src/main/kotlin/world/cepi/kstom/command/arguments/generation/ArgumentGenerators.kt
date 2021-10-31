@@ -207,7 +207,9 @@ fun <T : Any> generateSyntaxes(clazz: KClass<T>): GeneratedArguments<T> {
         }.flatten())
     }
 
-    return GeneratedArguments(clazz, argumentsFromFunction(clazz.primaryConstructor!!))
+    return GeneratedArguments(clazz, argumentsFromFunction(clazz
+        .constructors.firstOrNull { con -> con.hasAnnotation<GenerationConstructor>() }
+        ?: clazz.primaryConstructor!!))
 }
 
 /**
