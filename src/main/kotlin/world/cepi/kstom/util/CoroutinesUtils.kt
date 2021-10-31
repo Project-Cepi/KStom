@@ -13,21 +13,21 @@ import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-public suspend fun FakePlayer(uuid: UUID, username: String, option: FakePlayerOption = FakePlayerOption()): FakePlayer = suspendCoroutine { cont ->
+suspend fun FakePlayer(uuid: UUID, username: String, option: FakePlayerOption = FakePlayerOption()): FakePlayer = suspendCoroutine { cont ->
     FakePlayer.initPlayer(uuid, username, option) {
         cont.resume(it)
     }
 }
 
-public suspend fun Entity.waitNextTick(): Entity = suspendCoroutine { cont -> scheduleNextTick { cont.resume(it) } }
+suspend fun Entity.waitNextTick(): Entity = suspendCoroutine { cont -> scheduleNextTick { cont.resume(it) } }
 
-public suspend fun Entity.suspendTeleport(position: Pos): Unit = suspendCoroutine { teleport(position).whenComplete { _, _ -> it.resume(Unit) } }
-public suspend fun Player.suspendTeleport(position: Pos): Unit = suspendCoroutine { teleport(position).whenComplete { _, _ -> it.resume(Unit) } }
+suspend fun Entity.suspendTeleport(position: Pos): Unit = suspendCoroutine { teleport(position).whenComplete { _, _ -> it.resume(Unit) } }
+suspend fun Player.suspendTeleport(position: Pos): Unit = suspendCoroutine { teleport(position).whenComplete { _, _ -> it.resume(Unit) } }
 
-public suspend fun IChunkLoader.saveChunk(chunk: Chunk): Unit = suspendCoroutine { saveChunk(chunk).whenComplete { _, _ -> it.resume(Unit) } }
-public suspend fun IChunkLoader.saveChunks(chunk: Collection<Chunk>): Unit = suspendCoroutine { saveChunks(chunk).whenComplete { _, _ -> it.resume(Unit) } }
+suspend fun IChunkLoader.saveChunk(chunk: Chunk): Unit = suspendCoroutine { saveChunk(chunk).whenComplete { _, _ -> it.resume(Unit) } }
+suspend fun IChunkLoader.saveChunks(chunk: Collection<Chunk>): Unit = suspendCoroutine { saveChunks(chunk).whenComplete { _, _ -> it.resume(Unit) } }
 
-public suspend fun Instance.suspendSaveChunkToStorage(chunk: Chunk): Unit = suspendCoroutine { saveChunkToStorage(chunk).whenComplete { _, _ -> it.resume(Unit) } }
-public suspend fun Instance.suspendSaveChunksToStorage(): Unit = suspendCoroutine { saveChunksToStorage().whenComplete { _, _ -> it.resume(Unit) } }
+suspend fun Instance.suspendSaveChunkToStorage(chunk: Chunk): Unit = suspendCoroutine { saveChunkToStorage(chunk).whenComplete { _, _ -> it.resume(Unit) } }
+suspend fun Instance.suspendSaveChunksToStorage(): Unit = suspendCoroutine { saveChunksToStorage().whenComplete { _, _ -> it.resume(Unit) } }
 
-public suspend fun InstanceContainer.suspendSaveInstance(): Unit = suspendCoroutine { saveInstance().whenComplete { _, _ -> it.resume(Unit) } }
+suspend fun InstanceContainer.suspendSaveInstance(): Unit = suspendCoroutine { saveInstance().whenComplete { _, _ -> it.resume(Unit) } }

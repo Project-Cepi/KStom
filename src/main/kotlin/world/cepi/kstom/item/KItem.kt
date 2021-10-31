@@ -11,6 +11,6 @@ import net.minestom.server.item.Material
  * @param amount The amount of item to have
  * @param init The DSL lambda
  */
-public fun item(material: Material = Material.PAPER, amount: Int = 1, init: ItemStackBuilder.() -> Unit): ItemStack {
+fun item(material: Material = Material.PAPER, amount: Int = 1, init: ItemStackBuilder.() -> Unit): ItemStack {
     return ItemStack.of(material, amount).with(init)
 }

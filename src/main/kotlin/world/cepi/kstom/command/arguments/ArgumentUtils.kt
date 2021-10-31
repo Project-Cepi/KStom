@@ -13,9 +13,9 @@ import world.cepi.kstom.command.SyntaxContext
  *
  * @return an [ArgumentLiteral] based on the String being passed
  */
-public fun String.literal(): ArgumentLiteral = ArgumentType.Literal(this)
+fun String.literal(): ArgumentLiteral = ArgumentType.Literal(this)
 
-public fun <T> Argument<T>.defaultValue(value: T): Argument<T> =
+fun <T> Argument<T>.defaultValue(value: T): Argument<T> =
     this.setDefaultValue { value }
 
 open class SuggestionIgnoreOption(val modifier: (String) -> String = { it }) {
@@ -33,7 +33,7 @@ open class SuggestionIgnoreOption(val modifier: (String) -> String = { it }) {
  */
 @Beta
 @Contract("_ -> this")
-public fun <T> Argument<T>.suggestComplex(
+fun <T> Argument<T>.suggestComplex(
     suggestionIgnoreOption: SuggestionIgnoreOption = SuggestionIgnoreOption.NONE,
     lambda: SyntaxContext.() -> List<SuggestionEntry>
 ): Argument<T>

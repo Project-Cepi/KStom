@@ -10,4 +10,4 @@ import org.jglrxavpok.hephaistos.nbt.NBTCompound
  * @param string The string to add to the player's permissions.
  * @param nbt The additional NBT data to add to the permission.
  */
-public fun Player.addPermission(string: String, nbt: NBTCompound? = null): Unit = this.addPermission(Permission(string, nbt))
+fun Player.addPermission(string: String, nbt: NBTCompound? = null): Unit = this.addPermission(Permission(string, nbt))
