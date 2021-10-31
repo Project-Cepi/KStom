@@ -35,10 +35,10 @@ import world.cepi.kstom.command.kommand.Kommand
 import world.cepi.kstom.serializer.SerializableEntityFinder
 import world.cepi.kstom.tree.CombinationNode
 import java.lang.IllegalArgumentException
-import java.lang.IllegalStateException
 import java.time.Duration
 import java.util.*
 import java.util.function.Supplier
+import kotlin.IllegalStateException
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.hasAnnotation
@@ -98,10 +98,10 @@ class GeneratedArguments<T : Any>(
             sender: CommandSender
         ): T {
 
-            val constructor =
-                clazzToGenerate.constructors.firstOrNull { it.hasAnnotation<GenerationConstructor>() }
-                    ?: clazzToGenerate.primaryConstructor
-                    ?: throw NullPointerException("Constructor is null, make sure the class has a constructor!")
+            val constructor = clazzToGenerate.constructors
+                .firstOrNull { it.hasAnnotation<GenerationConstructor>() }
+                ?: clazzToGenerate.primaryConstructor
+                ?: throw IllegalStateException("No constructor found, make sure the class has a constructor!")
 
             val classes = constructor.valueParameters.map {
                 it.type.classifier as KClass<*>
@@ -201,7 +201,9 @@ inline fun <reified T : Any> generateSyntaxes(): GeneratedArguments<T> =
 fun <T : Any> generateSyntaxes(clazz: KClass<T>): GeneratedArguments<T> {
     if (clazz.isSealed && clazz.sealedSubclasses.isNotEmpty()) {
         return GeneratedArguments(clazz, clazz.sealedSubclasses.map {
-            argumentsFromFunction(it.primaryConstructor!!)
+            argumentsFromFunction(it
+                .constructors.firstOrNull { con -> con.hasAnnotation<GenerationConstructor>() }
+                ?: it.primaryConstructor!!)
         }.flatten())
     }
 
@@ -220,7 +222,7 @@ fun <T : Any> generateSyntaxes(clazz: KClass<T>): GeneratedArguments<T> {
  *
  * @param function The function to generate args from.
  *
- * @return A list of lists; the first list is possible argument combinations. The second list is a list of arguments.
+ * @return A list of lists; the first list is possiblec743081338 argument combinations. The second list is a list of arguments.
  */
 fun argumentsFromFunction(function: KFunction<*>): List<List<Argument<*>>> {
     // list of all combinations ordered.
@@ -367,7 +369,7 @@ fun argumentFromClass(
         UUID::class -> ArgumentType.UUID(name)
         else -> {
 
-            if (clazz.java.enumConstants == null) throw IllegalStateException("Class ${clazz.qualifiedName} Must be a valid argument!")
+            if (clazz.java.enumConstants == null) throw IllegalStateException("Class ${clazz.qualifiedName} must be a valid argument!")
 
             @Suppress("UNCHECKED_CAST") // We already check if the class is an enum or not.
             return (ArgumentEnum(name, clazz.java as Class<Enum<*>>)).also { enumArgument ->
