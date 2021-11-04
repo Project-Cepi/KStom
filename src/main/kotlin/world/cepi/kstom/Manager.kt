@@ -1,6 +1,8 @@
 package world.cepi.kstom
 
+import net.kyori.adventure.bossbar.BossBar
 import net.minestom.server.MinecraftServer
+import net.minestom.server.MinecraftServer.*
 import net.minestom.server.UpdateManager
 import net.minestom.server.advancements.AdvancementManager
 import net.minestom.server.adventure.bossbar.BossBarManager
@@ -19,6 +21,7 @@ import net.minestom.server.recipe.RecipeManager
 import net.minestom.server.scoreboard.TeamManager
 import net.minestom.server.storage.StorageManager
 import net.minestom.server.timer.SchedulerManager
+import net.minestom.server.world.DimensionTypeManager
 import net.minestom.server.world.biomes.BiomeManager
 
 /**
@@ -26,61 +29,24 @@ import net.minestom.server.world.biomes.BiomeManager
  */
 object Manager {
 
-    val command: CommandManager
-        get() = MinecraftServer.getCommandManager()
-
-    val block: BlockManager
-        get() = MinecraftServer.getBlockManager()
-
-    val instance: InstanceManager
-        get() = MinecraftServer.getInstanceManager()
-
-    val advancement: AdvancementManager
-        get() = MinecraftServer.getAdvancementManager()
-
-    val packetListener: PacketListenerManager
-        get() = MinecraftServer.getPacketListenerManager()
-
-    val recipe: RecipeManager
-        get() = MinecraftServer.getRecipeManager()
-
-    val benchmark: BenchmarkManager
-        get() = MinecraftServer.getBenchmarkManager()
-
-    val biome: BiomeManager
-        get() = MinecraftServer.getBiomeManager()
-
-    val bossBar: BossBarManager
-        get() = MinecraftServer.getBossBarManager()
-
-    val connection: ConnectionManager
-        get() = MinecraftServer.getConnectionManager()
-
-    val data: DataManager
-        get() = MinecraftServer.getDataManager()
-
-    val storage: StorageManager
-        get() = MinecraftServer.getStorageManager()
-
-    val tag: TagManager
-        get() = MinecraftServer.getTagManager()
-
-    val team: TeamManager
-        get() = MinecraftServer.getTeamManager()
-
-    val update: UpdateManager
-        get() = MinecraftServer.getUpdateManager()
-
-    val exception: ExceptionManager
-        get() = MinecraftServer.getExceptionManager()
-
-    val extension: ExtensionManager
-        get() = MinecraftServer.getExtensionManager()
-
-    val scheduler: SchedulerManager
-        get() = MinecraftServer.getSchedulerManager()
-
-    val globalEvent: GlobalEventHandler
-        get() = MinecraftServer.getGlobalEventHandler()
+    val packetListener: PacketListenerManager get() = getPacketListenerManager()
+    val exception: ExceptionManager get() = getExceptionManager()
+    val connection: ConnectionManager get() = getConnectionManager()
+    val instance: InstanceManager get() = getInstanceManager()
+    val block: BlockManager get() = getBlockManager()
+    val command: CommandManager get() = getCommandManager()
+    val recipe: RecipeManager get() = getRecipeManager()
+    val storage: StorageManager get() = getStorageManager()
+    val data: DataManager get() = getDataManager()
+    val team: TeamManager get() = getTeamManager()
+    val scheduler: SchedulerManager get() = getSchedulerManager()
+    val benchmark: BenchmarkManager get() = getBenchmarkManager()
+    val dimensionType: DimensionTypeManager get() = getDimensionTypeManager()
+    val biome: BiomeManager get() = getBiomeManager()
+    val advancement: AdvancementManager get() = getAdvancementManager()
+    val bossBar: BossBarManager get() = getBossBarManager()
+    val extension: ExtensionManager get() = getExtensionManager()
+    val update: UpdateManager get() = getUpdateManager()
+    val globalEvent: GlobalEventHandler get() = getGlobalEventHandler()
 
 }
