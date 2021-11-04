@@ -1,5 +1,8 @@
 package world.cepi.kstom.command.kommand
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.*
 import net.minestom.server.command.builder.arguments.Argument
@@ -7,6 +10,7 @@ import net.minestom.server.command.builder.exception.ArgumentSyntaxException
 import net.minestom.server.entity.Player
 import org.jetbrains.annotations.Contract
 import world.cepi.kstom.Manager
+import kotlin.coroutines.CoroutineContext
 
 open class Kommand(val k: Kommand.() -> Unit = {}, name: String, vararg aliases: String) : Kondition<Kommand>() {
     override val conditions: MutableList<ConditionContext.() -> Boolean> = mutableListOf()
@@ -48,6 +52,15 @@ open class Kommand(val k: Kommand.() -> Unit = {}, name: String, vararg aliases:
         executor: SyntaxContext.() -> Unit
     ) = KSyntax(*arguments, conditions = conditions.toMutableList(), kommandReference = this).invoke(executor)
 
+    @Contract(pure = true)
+    fun syntaxSuspending(
+        context: CoroutineContext = Dispatchers.IO,
+        vararg arguments: Argument<*> = arrayOf(),
+        executor: suspend SyntaxContext.() -> Unit
+    ) = KSyntax(*arguments, conditions = conditions.toMutableList(), kommandReference = this).invoke {
+        CoroutineScope(context).launch { executor() }
+    }
+
     inline fun argumentCallback(
         arg: Argument<*>,
         crossinline lambda: ArgumentCallbackContext.() -> Unit
@@ -61,6 +74,12 @@ open class Kommand(val k: Kommand.() -> Unit = {}, name: String, vararg aliases:
 
     inline fun default(crossinline block: SyntaxContext.() -> Unit) {
         command.defaultExecutor = CommandExecutor { sender, args -> block(SyntaxContext(sender, args)) }
+    }
+
+    inline fun defaultSuspending(context: CoroutineContext = Dispatchers.IO, crossinline block: suspend SyntaxContext.() -> Unit) {
+        command.defaultExecutor = CommandExecutor { sender, args ->
+            CoroutineScope(context).launch { block(SyntaxContext(sender, args)) }
+        }
     }
 
     fun addSubcommands(vararg subcommands: Command) {
