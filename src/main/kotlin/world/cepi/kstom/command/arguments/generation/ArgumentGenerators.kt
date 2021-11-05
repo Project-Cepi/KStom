@@ -1,10 +1,8 @@
 package world.cepi.kstom.command.arguments.generation
 
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.color.Color
 import net.minestom.server.command.CommandSender
-import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.CommandContext
 import net.minestom.server.command.builder.CommandResult
 import net.minestom.server.command.builder.arguments.Argument
@@ -27,7 +25,6 @@ import net.minestom.server.utils.math.IntRange
 import net.minestom.server.utils.time.TimeUnit
 import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
-import world.cepi.kstom.Manager.command
 import world.cepi.kstom.command.arguments.*
 import world.cepi.kstom.command.arguments.generation.annotations.*
 import world.cepi.kstom.command.arguments.context.ContextParser
@@ -37,7 +34,6 @@ import world.cepi.kstom.tree.CombinationNode
 import java.lang.IllegalArgumentException
 import java.time.Duration
 import java.util.*
-import java.util.function.Supplier
 import kotlin.IllegalStateException
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -293,7 +289,7 @@ fun argumentFromClass(
 
         val instance = annotation.parser.objectInstance!! as ContextParser<*>
 
-        return ArgumentContext(lambda = instance::parse)
+        return ArgumentContext(argument = instance.or()) { instance.parse(this) }
     }
 
     return when (clazz) {
