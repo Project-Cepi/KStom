@@ -22,6 +22,7 @@ val MinestomSerializableModule = SerializersModule {
     contextual(NamespaceIDSerializer)
     contextual(ComponentSerializer)
     contextual(BossBarSerializer)
+    contextual(PermissionSerializer)
 }
 
 val MinestomJSON = Json {
