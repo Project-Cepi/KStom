@@ -2,7 +2,7 @@ plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.5.31"
     // Kotlinx serialization for any data format
-    kotlin("plugin.serialization") version "1.5.31"
+    kotlin("plugin.serialization") version "1.6.0"
     // Shade the plugin
     id("com.github.johnrengelman.shadow") version "7.0.0"
     // Allow publishing
