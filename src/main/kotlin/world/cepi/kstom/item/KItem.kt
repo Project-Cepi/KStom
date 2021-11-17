@@ -1,5 +1,6 @@
 package world.cepi.kstom.item
 
+import net.minestom.server.item.ItemMetaBuilder
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.ItemStackBuilder
 import net.minestom.server.item.Material
@@ -11,6 +12,6 @@ import net.minestom.server.item.Material
  * @param amount The amount of item to have
  * @param init The DSL lambda
  */
-fun item(material: Material = Material.PAPER, amount: Int = 1, init: ItemStackBuilder.() -> Unit): ItemStack {
-    return ItemStack.of(material, amount).with(init)
+fun item(material: Material = Material.PAPER, amount: Int = 1, init: ItemMetaBuilder.() -> Unit): ItemStack {
+    return ItemStack.of(material, amount).withMeta { meta -> init(meta); meta }
 }

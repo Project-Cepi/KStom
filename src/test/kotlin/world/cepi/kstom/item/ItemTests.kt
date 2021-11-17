@@ -1,34 +1,24 @@
 package world.cepi.kstom.item
 
+import io.kotest.core.plan.Descriptor.EngineDescriptor.displayName
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import net.kyori.adventure.text.Component
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
 import world.cepi.kstom.nbt.classes.CollectionClass
 import world.cepi.kstom.nbt.classes.ComplexClass
 import world.cepi.kstom.nbt.classes.InterestingClass
-import java.util.*
 
 class ItemTests : StringSpec({
-    val item = item {
-        amount = 5
+    val item = item(amount = 5) {
         lore = listOf(Component.text("Hello!"))
         displayName = Component.text("Hey!")
+        damage = 5
+        unbreakable = true
 
-        withMeta {
-            damage = 5
-            unbreakable = true
-
-            this["complexData"] = ComplexClass(5, 4, 2, true, InterestingClass("hey", 'h'))
-            this["complexListData"] = CollectionClass(5, 9, 3, listOf(4, 3))
-
-        }
-
-    }.and {
-        amount = 7
-    }
+        this["complexData"] = ComplexClass(5, 4, 2, true, InterestingClass("hey", 'h'))
+        this["complexListData"] = CollectionClass(5, 9, 3, listOf(4, 3))
+    }.withAmount(7)
 
     "item should be mutated" {
         item.amount shouldBe 7

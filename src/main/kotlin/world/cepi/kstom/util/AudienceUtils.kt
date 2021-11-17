@@ -2,6 +2,7 @@ package world.cepi.kstom.util
 
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.Component
 import net.minestom.server.coordinate.Point
 
 /**
@@ -12,3 +13,5 @@ import net.minestom.server.coordinate.Point
  */
 fun Audience.playSound(sound: Sound, position: Point) =
     playSound(sound, position.x(), position.y(), position.z())
+
+fun Audience.sendMessage(message: String) = this.sendMessage(Component.text(message))

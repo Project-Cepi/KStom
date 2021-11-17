@@ -19,10 +19,9 @@ class ItemStackSerializerTest : StringSpec({
 
             displayName(Component.text("A Paper"))
 
-            withMeta {
-                customModelData(4)
-                canDestroy(Block.EMERALD_BLOCK)
-            }
+            customModelData(4)
+            canDestroy(Block.EMERALD_BLOCK)
+
         }
 
         val json = Json.encodeToString(ItemStackSerializer, item)
@@ -32,9 +31,7 @@ class ItemStackSerializerTest : StringSpec({
         backItem shouldBe item
 
         val itemWithItem = item.and {
-            withMeta {
-                this["item"] = item
-            }
+            this["item"] = item
         }
 
         itemWithItem.meta.get("item", serializer = ItemStackSerializer) shouldBe item
