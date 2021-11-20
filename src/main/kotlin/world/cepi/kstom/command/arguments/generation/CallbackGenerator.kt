@@ -21,6 +21,7 @@ object CallbackGenerator {
         else -> argument.id
     }
 
+    var errorSymbol = Component.text("!")
 
     fun applyCallback(generatedArguments: GeneratedArguments<*>) {
         generatedArguments.callback = {
@@ -28,7 +29,7 @@ object CallbackGenerator {
             val flattenedArgs = generatedArguments.args.flatten()
 
             sender.sendMessage(
-                Component.text("\uE006")
+                errorSymbol
                     .append(Component.text(" Wrong input (Yours: ${exception.input})", NamedTextColor.RED))
                     .append(Component.newline())
             )

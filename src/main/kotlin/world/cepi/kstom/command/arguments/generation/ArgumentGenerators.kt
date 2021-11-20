@@ -289,10 +289,7 @@ fun argumentFromClass(
 
         val instance = annotation.parser.objectInstance!! as ContextParser<*>
 
-        return ArgumentContext(
-            id = instance.or()?.id,
-            argument = instance.or()
-        ) { instance.parse(this) }
+        return instance.toArgumentContext()
     }
 
     return when (clazz) {
