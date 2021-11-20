@@ -12,10 +12,10 @@ class ArgumentContextValue<T>(val lambda: CommandSender.() -> T?) {
 }
 
 class ArgumentContext<T>(
-    id: String = "context${UUID.randomUUID()}",
+    id: String? = null,
     val argument: Argument<out T>? = null,
     val lambda: CommandSender.() -> T?
-) : Argument<ArgumentContextValue<T>>(id) {
+) : Argument<ArgumentContextValue<T>>(id ?: "context${UUID.randomUUID()}") {
 
     init {
         setDefaultValue(ArgumentContextValue(lambda))
@@ -26,7 +26,7 @@ class ArgumentContext<T>(
 
     override fun processNodes(nodeMaker: NodeMaker, executable: Boolean) {
         if (argument != null) argument.processNodes(nodeMaker, executable)
-        else ArgumentType.Integer("autoInteger" + UUID.randomUUID())
+        else ArgumentType.Integer(id)
             .setDefaultValue { 0 }
             .processNodes(nodeMaker, executable)
     }
