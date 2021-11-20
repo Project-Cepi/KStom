@@ -10,7 +10,7 @@ import net.minestom.server.command.builder.arguments.Argument
  */
 interface ContextParser<T> {
 
-    fun or(): Pair<Argument<out T>, String>? = null
+    fun or(): Argument<out T>? = null
 
     fun parse(sender: CommandSender): T?
 
