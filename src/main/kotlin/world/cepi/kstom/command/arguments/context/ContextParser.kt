@@ -1,6 +1,7 @@
 package world.cepi.kstom.command.arguments.context
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.ArgumentCallback
 import net.minestom.server.command.builder.arguments.Argument
@@ -25,7 +26,7 @@ interface ContextParser<T> {
         argument = or()
     ) { parse(this) }.also {
         it.callback = ArgumentCallback { sender, _ ->
-            sender.sendMessage(CallbackGenerator.errorSymbol.append(callbackMessage))
+            sender.sendMessage(CallbackGenerator.errorSymbol.append(callbackMessage.color(NamedTextColor.RED)))
         }
     }
 
