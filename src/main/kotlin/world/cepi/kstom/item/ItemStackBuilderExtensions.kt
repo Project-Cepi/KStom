@@ -26,5 +26,5 @@ fun ItemStack.and(amount: Int = -1, init: ItemMetaBuilder.() -> Unit): ItemStack
     return this.let {
         if (amount != -1) it.withAmount(amount)
         else it
-    }.withMeta { meta -> init(meta); meta }
+    }.withMeta(meta.with { init(it) })
 }
