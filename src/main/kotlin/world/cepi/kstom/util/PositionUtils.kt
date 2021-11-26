@@ -1,5 +1,6 @@
 package world.cepi.kstom.util
 
+import net.kyori.adventure.text.BlockNBTComponent
 import net.minestom.server.coordinate.Point
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.coordinate.Vec
@@ -22,7 +23,8 @@ operator fun Entity.component3() = this.position.z()
 fun Point.asVec(): Vec = Vec(this.x(), this.y(), this.z())
 fun Point.asPos(): Pos = Pos(this)
 
-fun Point.roundToBlock(): Point = Vec(this.blockX().toDouble(), this.blockY().toDouble(), this.blockZ().toDouble())
+fun Pos.roundToBlock(): Pos = Pos(this.blockX().toDouble(), this.blockY().toDouble(), this.blockZ().toDouble(), this.yaw, this.pitch)
+fun Vec.roundToBlock(): Vec = Vec(this.blockX().toDouble(), this.blockY().toDouble(), this.blockZ().toDouble())
 
 fun Vec.rotateAroundXDegrees(degrees: Double) = rotateAroundX(degrees * (PI/180))
 fun Vec.rotateAroundYDegrees(degrees: Double) = rotateAroundY(degrees * (PI/180))
