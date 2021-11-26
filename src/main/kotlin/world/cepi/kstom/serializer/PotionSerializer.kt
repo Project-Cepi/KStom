@@ -33,7 +33,7 @@ object PotionSerializer : KSerializer<Potion> {
         }
     }
 
-    @ExperimentalSerializationApi
+    @OptIn(ExperimentalSerializationApi::class)
     override fun deserialize(decoder: Decoder): Potion =
         decoder.decodeStructure(descriptor) {
             var potionEffect: PotionEffect? = null

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Disabled
 import world.cepi.kstom.item.*
 
 class ItemStackSerializerTest : StringSpec({
+    @OptIn(kotlin.time.ExperimentalTime::class)
     "items should be serializable".config(enabled = false) {
         val item = item(Material.PAPER) {
 

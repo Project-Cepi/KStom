@@ -32,7 +32,7 @@ object SoundSerializer : KSerializer<Sound> {
         }
     }
 
-    @ExperimentalSerializationApi
+    @OptIn(ExperimentalSerializationApi::class)
     override fun deserialize(decoder: Decoder): Sound =
         decoder.decodeStructure(descriptor) {
             var name = ""

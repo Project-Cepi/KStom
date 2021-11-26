@@ -16,9 +16,18 @@ fun Chunk.getCustomBlockId(position: Pos): Short = this.getCustomBlockId(positio
 fun Instance.blockUtilsAt(position: Pos): BlockUtils = BlockUtils(this, position)
 fun Pos.blockUtilsIn(instance: Instance): BlockUtils = BlockUtils(instance, this)
 
-fun Instance.chunksInRange(position: Pos, range: Int): List<Pair<Int, Int>> = ChunkUtils
-    .getChunksInRange(position, range)
-    .map { ChunkUtils.getChunkCoordX(it) to ChunkUtils.getChunkCoordZ(it) }
+fun Instance.chunksInRange(position: Pos, range: Int): List<Pair<Int, Int>> {
+
+    val list = mutableListOf<Pair<Int, Int>>()
+
+    for (x in -range..range) {
+        for (z in -range..range) {
+            list.add(position.chunkX() + x to position.chunkZ() + z)
+        }
+    }
+
+    return list
+}
 fun Instance.isChunkLoaded(x: Double, y: Double): Boolean = ChunkUtils.isLoaded(this, x, y)
 
 fun Vec.toBlockPosition(): Pos =

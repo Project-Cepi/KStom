@@ -23,7 +23,7 @@ object UUIDSerializer : KSerializer<UUID> {
         }
     }
 
-    @ExperimentalSerializationApi
+    @OptIn(ExperimentalSerializationApi::class)
     override fun deserialize(decoder: Decoder): UUID =
         decoder.decodeStructure(SoundSerializer.descriptor) {
             var least = 0L

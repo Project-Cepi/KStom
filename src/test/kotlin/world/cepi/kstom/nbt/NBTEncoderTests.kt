@@ -14,6 +14,7 @@ import world.cepi.kstom.nbt.classes.InterestingClass
 import world.cepi.kstom.nbt.classes.PrimitiveClass
 
 class NBTEncoderTests : StringSpec({
+    @OptIn(kotlin.time.ExperimentalTime::class)
     "classes containing primitives should be encoded correctly".config(enabled = false) {
         val primitive = PrimitiveClass(5, 6, 5, "\"Hi\"")
 

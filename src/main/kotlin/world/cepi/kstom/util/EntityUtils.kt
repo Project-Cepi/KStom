@@ -5,13 +5,11 @@ import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.Player
 import net.minestom.server.instance.Instance
+import net.minestom.server.utils.chunk.ChunkUtils.isLoaded
 import net.minestom.server.utils.entity.EntityUtils
 import world.cepi.kstom.Manager
 import java.util.*
 import java.util.function.Consumer
-
-fun Instance.forEachRange(position: Pos, viewDistance: Int, consumer: Consumer<Entity>): Unit =
-    EntityUtils.forEachRange(this, position, viewDistance, consumer)
 
 fun Instance.entitiesInRoughRange(position: Point, distance: Int): List<Entity> =
         this.chunksInRange(Pos(position), distance)
