@@ -1,12 +1,9 @@
 package world.cepi.kstom.util
 
-import net.kyori.adventure.text.BlockNBTComponent
 import net.minestom.server.coordinate.Point
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.coordinate.Vec
 import net.minestom.server.entity.Entity
-import net.minestom.server.entity.Player
-import org.checkerframework.checker.units.qual.degrees
 import kotlin.math.PI
 
 operator fun Pos.component4() = this.yaw()
