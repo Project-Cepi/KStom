@@ -1,10 +1,10 @@
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.5.31"
+    id("org.jetbrains.kotlin.jvm") version "1.6.0"
     // Kotlinx serialization for any data format
     kotlin("plugin.serialization") version "1.6.0"
     // Shade the plugin
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.github.johnrengelman.shadow") version "7.1.0"
     // Allow publishing
     `maven-publish`
 
@@ -41,7 +41,7 @@ dependencies {
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 
     // Compile Minestom into project
-    compileOnly("com.github.Minestom", "Minestom", "cbc87a2a68")
+    compileOnly("com.github.Minestom", "Minestom", "e53c0a68fb")
     compileOnly("com.github.jglrxavpok", "Hephaistos", "1.1.8")
 
     // import kotlinx serialization
@@ -52,7 +52,7 @@ dependencies {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "16"
+    kotlinOptions.jvmTarget = "17"
 }
 
 configurations {
@@ -76,12 +76,12 @@ tasks {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_16
-    targetCompatibility = JavaVersion.VERSION_16
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 val compileKotlin: org.jetbrains.kotlin.gradle.tasks.KotlinCompile by tasks
-compileKotlin.kotlinOptions.jvmTarget = JavaVersion.VERSION_16.toString()
+compileKotlin.kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
 compileKotlin.kotlinOptions {
     freeCompilerArgs = listOf("-Xinline-classes", "-Xopt-in=kotlin.RequiresOptIn")
 }
