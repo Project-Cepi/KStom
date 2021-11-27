@@ -22,9 +22,7 @@ var ItemMetaBuilder.unbreakable: Boolean
     get() = false
     set(value) = run { this.unbreakable(value) }
 
-fun ItemStack.and(amount: Int = -1, init: ItemMetaBuilder.() -> Unit): ItemStack {
-    return this.let {
-        if (amount != -1) it.withAmount(amount)
-        else it
-    }.withMeta(meta.with { init(it) })
+fun ItemStack.and(amount: Int = -1, init: ItemMetaBuilder.() -> Unit) = this.with {
+    if (amount != -1) it.amount(amount)
+    it.meta(meta.with(init))
 }

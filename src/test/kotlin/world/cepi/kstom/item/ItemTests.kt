@@ -18,10 +18,13 @@ class ItemTests : StringSpec({
 
         this["complexData"] = ComplexClass(5, 4, 2, true, InterestingClass("hey", 'h'))
         this["complexListData"] = CollectionClass(5, 9, 3, listOf(4, 3))
-    }.withAmount(7)
+    }.withAmount(7).and {
+        displayName(Component.text("Hay!"))
+    }
 
     "item should be mutated" {
         item.amount shouldBe 7
+        item.displayName shouldBe Component.text("Hay!")
     }
 
     "complex data should be stored" {
