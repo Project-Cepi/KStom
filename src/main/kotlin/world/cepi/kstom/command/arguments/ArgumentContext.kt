@@ -22,12 +22,11 @@ class ArgumentContext<T>(
     }
 
     override fun parse(input: String): ArgumentContextValue<T> =
-        ArgumentContextValue(lambda)
+        ArgumentContextValue(argument?.let { { it.parse(input) } } ?: lambda)
 
     override fun processNodes(nodeMaker: NodeMaker, executable: Boolean) {
         if (argument != null) argument.processNodes(nodeMaker, executable)
         else ArgumentType.Integer(id)
-            .setDefaultValue { 0 }
             .processNodes(nodeMaker, executable)
     }
 

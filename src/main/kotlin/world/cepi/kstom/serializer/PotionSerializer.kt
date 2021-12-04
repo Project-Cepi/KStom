@@ -59,9 +59,7 @@ object PotionSerializer : KSerializer<Potion> {
 
             Potion(
                 potionEffect!!, amplifier, duration,
-                flags and 0x01 == 1.toByte(),
-                flags and 0x02 == 2.toByte(),
-                flags and 0x04 == 4.toByte()
+                flags
             )
         }
 
