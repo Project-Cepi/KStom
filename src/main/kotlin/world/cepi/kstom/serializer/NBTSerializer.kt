@@ -27,6 +27,7 @@ object NBTSerializer : KSerializer<NBT> {
         encoder.encodeString(value.toSNBT()
             .replace("1B", "true")
             .replace("0B", "false")
+            .replace("\\\\", "\\")
         )
     }
 
