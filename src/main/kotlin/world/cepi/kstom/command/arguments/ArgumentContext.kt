@@ -25,9 +25,7 @@ class ArgumentContext<T>(
         ArgumentContextValue(argument?.let { { it.parse(input) } } ?: lambda)
 
     override fun processNodes(nodeMaker: NodeMaker, executable: Boolean) {
-        if (argument != null) argument.processNodes(nodeMaker, executable)
-        else ArgumentType.Integer(id)
-            .processNodes(nodeMaker, executable)
+        (argument ?: ArgumentType.Integer(id)).processNodes(nodeMaker, executable)
     }
 
     override fun toString() = "Context<$id>"
