@@ -287,9 +287,17 @@ fun argumentFromClass(
     if (annotations.any { it is ParameterContext }) {
         val annotation = annotations.filterIsInstance<ParameterContext>().first()
 
-        val instance = annotation.parser.objectInstance!! as ContextParser<*>
+        val instance = annotation.parser.objectInstance!!
 
         return instance.toArgumentContext()
+    }
+
+    if (annotations.any { it is CustomArgument }) {
+        val annotation = annotations.filterIsInstance<CustomArgument>().first()
+
+        val instance = annotation.generator.objectInstance!!
+
+        return instance.new(name, annotations)
     }
 
     return when (clazz) {
@@ -381,6 +389,14 @@ fun argumentFromClass(
                 enumArgument.setFormat(annotation.flattenType)
                 enumArgument.defaultValue(enumConstraints.firstOrNull { it.name.lowercase() == annotation.default.lowercase() })
             }
+        }
+    }.also {
+        if (annotations.any { it is DynamicWord }) {
+            val annotation = annotations.filterIsInstance<DynamicWord>().first()
+
+            val instance = annotation.generator.objectInstance!!
+
+            it.suggestComplex(lambda = { instance.grab(sender) })
         }
     }
 }
