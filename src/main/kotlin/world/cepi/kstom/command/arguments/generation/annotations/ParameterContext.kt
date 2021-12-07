@@ -5,4 +5,4 @@ import kotlin.reflect.KClass
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.VALUE_PARAMETER)
-annotation class ParameterContext(val parser: KClass<ContextParser<*>>)
+annotation class ParameterContext(val parser: KClass<out ContextParser<*>>)
