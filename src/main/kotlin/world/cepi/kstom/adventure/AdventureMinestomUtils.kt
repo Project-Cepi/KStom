@@ -2,6 +2,7 @@ package world.cepi.kstom.adventure
 
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
@@ -13,3 +14,4 @@ fun Audience.sendMiniMessage(miniMessage: String, placeholders: Map<String, Stri
 
 fun Component.plainText(): String = PlainTextComponentSerializer.plainText().serialize(this)
 fun Component.legacyAmpersand(): String = LegacyComponentSerializer.legacyAmpersand().serialize(this)
+fun Component.noItalic() = decoration(TextDecoration.ITALIC, false)
