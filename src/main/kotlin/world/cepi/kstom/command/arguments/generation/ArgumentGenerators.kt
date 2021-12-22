@@ -80,12 +80,7 @@ class GeneratedArguments<T : Any>(
         lambda: Kommand.SyntaxContext.(T) -> Unit
     ) = args.forEach {
         command.syntax(*argumentsBefore, *it.toTypedArray(), *argumentsAfter) {
-            val instance = createInstance(
-                clazz,
-                it.map { arg -> if (arg is ArgumentContext<*>) arg.lambda else arg.id },
-                context,
-                sender
-            )
+            val instance = createInstance(clazz, it.map { arg -> arg.id }, context, sender)
 
             lambda(this, instance)
         }
@@ -94,7 +89,7 @@ class GeneratedArguments<T : Any>(
     companion object {
         fun <T : Any> createInstance(
             clazzToGenerate: KClass<T>,
-            currentArgs: List<Any>,
+            currentArgs: List<String>,
             context: CommandContext,
             sender: CommandSender
         ): T {
@@ -108,30 +103,27 @@ class GeneratedArguments<T : Any>(
                 it.type.classifier as KClass<*>
             }
 
-            val generatedArguments = currentArgs.mapIndexed { index, argumentValue ->
+            val generatedArguments = currentArgs.mapIndexed { index, argumentName ->
 
-                if (argumentValue !is String) {
-
-                    val argumentLambda = argumentValue as CommandSender.() -> Any
-
-                    return@mapIndexed argumentLambda(sender)
-                }
-
-                val value = context.get<Any>(argumentValue)
+                val value = context.get<Any>(argumentName)
                 val clazz = classes[index]
 
                 // Entity finder serializable exception
                 if (value is EntityFinder) {
-                    return@mapIndexed SerializableEntityFinder(context.getRaw(argumentValue))
+                    return@mapIndexed SerializableEntityFinder(context.getRaw(argumentName))
                 }
+
+                if (value is ArgumentContextValue<*>) {
+                    return@mapIndexed value.from(sender)
+                }
+
                 if (value is Pair<*, *>) {
 
                     value as Pair<String, CommandContext>
 
                     return@mapIndexed createInstance(
                         clazz.sealedSubclasses.first { it.simpleName == value.first },
-                        value.second.map.keys.toMutableList().also { it.removeAt(0) },
-                        value.second,
+                        value.second.map.keys.toMutableList().also { it.removeAt(0) }, value.second,
                         sender
                     )
                 }
