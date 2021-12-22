@@ -38,7 +38,7 @@ dependencies {
     testImplementation("io.kotest:kotest-runner-junit5:4.6.4")
 
     // Add support for kotlinx courotines
-    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
 
     // Compile Minestom into project
     compileOnly("com.github.Minestom", "Minestom", "3843cacef5")
