@@ -23,10 +23,10 @@ object CallbackGenerator {
 
     var errorSymbol = Component.text("!")
 
-    fun applyCallback(generatedArguments: GeneratedArguments<*>) {
+    fun applyCallback(generatedArguments: ArgumentGenerator<*>) {
         generatedArguments.callback = {
 
-            val flattenedArgs = generatedArguments.args.flatten()
+            val flattenedArgs = generatedArguments.arguments.flatten()
 
             sender.sendMessage(
                 errorSymbol

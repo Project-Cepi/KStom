@@ -42,137 +42,6 @@ import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
-class GeneratedArguments<T : Any>(
-    val clazz: KClass<T>,
-    val args: List<List<Argument<*>>>
-) {
-
-    /**
-     * The callback for all the arguments in this [GeneratedArguments].
-     *
-     * Setting this will set all the callbacks for every argument.
-     */
-    var callback: Kommand.ArgumentCallbackContext.() -> Unit = {  }
-        set(value) {
-            args.forEach { subArgs ->
-                subArgs.forEach {
-                    it.setCallback { sender, exception -> value(Kommand.ArgumentCallbackContext(sender, exception)) }
-                }
-            }
-            field = value
-        }
-
-    init {
-        CallbackGenerator.applyCallback(this)
-    }
-
-    fun applySyntax(
-        command: Kommand,
-        vararg arguments: Argument<*>,
-        lambda: Kommand.SyntaxContext.(T) -> Unit
-    ) = applySyntax(command, arguments, emptyArray(), lambda)
-
-    @JvmName("arrayApplySyntax")
-    fun applySyntax(
-        command: Kommand,
-        argumentsBefore: Array<out Argument<*>>,
-        argumentsAfter: Array<out Argument<*>>,
-        lambda: Kommand.SyntaxContext.(T) -> Unit
-    ) = args.forEach {
-        command.syntax(*argumentsBefore, *it.toTypedArray(), *argumentsAfter) {
-            val instance = createInstance(clazz, it.map { arg -> arg.id }, context, sender)
-
-            lambda(this, instance)
-        }
-    }
-
-    companion object {
-        fun <T : Any> createInstance(
-            clazzToGenerate: KClass<T>,
-            currentArgs: List<String>,
-            context: CommandContext,
-            sender: CommandSender
-        ): T {
-
-            val constructor = clazzToGenerate.constructors
-                .firstOrNull { it.hasAnnotation<GenerationConstructor>() }
-                ?: clazzToGenerate.primaryConstructor
-                ?: throw IllegalStateException("No constructor found, make sure the class has a constructor!")
-
-            val classes = constructor.valueParameters.map {
-                it.type.classifier as KClass<*>
-            }
-
-            val generatedArguments = currentArgs.mapIndexed { index, argumentName ->
-
-                val value = context.get<Any>(argumentName)
-                val clazz = classes[index]
-
-                // Entity finder serializable exception
-                if (value is EntityFinder) {
-                    return@mapIndexed SerializableEntityFinder(context.getRaw(argumentName))
-                }
-
-                if (value is ArgumentContextValue<*>) {
-                    return@mapIndexed value.from(sender)
-                }
-
-                if (value is Pair<*, *>) {
-
-                    value as Pair<String, CommandContext>
-
-                    return@mapIndexed createInstance(
-                        clazz.sealedSubclasses.first { it.simpleName == value.first },
-                        value.second.map.keys.toMutableList().also { it.removeAt(0) }, value.second,
-                        sender
-                    )
-                }
-
-                // Handle special context / sub edge cases
-                when (value) {
-                    is RelativeVec -> return@mapIndexed value.from(sender as? Entity)
-                }
-
-                return@mapIndexed value
-            }
-
-            try {
-                return constructor.call(*generatedArguments.toTypedArray())
-            } catch (exception: IllegalArgumentException) {
-                // Print a more useful debug exception
-
-                throw IllegalArgumentException("Expected types were $classes but received $generatedArguments; input: ${context.input}")
-            }
-        }
-
-        inline fun <reified T: Any> Kommand.createSyntaxesFrom(
-            vararg arguments: Argument<*>,
-            noinline lambda: Kommand.SyntaxContext.(T) -> Unit
-        ): GeneratedArguments<T> = generateSyntaxes<T>().also { it.applySyntax(this, arguments, emptyArray(), lambda) }
-
-        fun <T : Any> Kommand.createSyntaxesFrom(
-            clazz: KClass<T>,
-            vararg arguments: Argument<*>,
-            lambda: Kommand.SyntaxContext.(T) -> Unit
-        ): GeneratedArguments<T> = generateSyntaxes(clazz).also { it.applySyntax(this, arguments, emptyArray(), lambda) }
-
-        inline fun <reified T: Any> Kommand.createSyntaxesFrom(
-            beforeArguments: Array<Argument<*>>,
-            afterArguments: Array<Argument<*>>,
-            noinline lambda: Kommand.SyntaxContext.(T) -> Unit
-        ): GeneratedArguments<T> = generateSyntaxes<T>().also { it.applySyntax(this, beforeArguments, afterArguments, lambda) }
-
-        fun <T: Any> Kommand.createSyntaxesFrom(
-            clazz: KClass<T>,
-            beforeArguments: Array<Argument<*>>,
-            afterArguments: Array<Argument<*>>,
-            lambda: Kommand.SyntaxContext.(T) -> Unit
-        ): GeneratedArguments<T> = generateSyntaxes(clazz).also { it.applySyntax(this, beforeArguments, afterArguments, lambda) }
-
-    }
-
-}
-
 /**
  * Can generate a list of Arguments from a class.
  *
@@ -182,7 +51,7 @@ class GeneratedArguments<T : Any>(
  *
  * @throws NullPointerException If the constructor or any arguments are invalid.
  */
-inline fun <reified T : Any> generateSyntaxes(): GeneratedArguments<T> =
+inline fun <reified T : Any> generateSyntaxes(): List<List<Argument<*>>> =
     generateSyntaxes(T::class)
 
 /**
@@ -194,18 +63,18 @@ inline fun <reified T : Any> generateSyntaxes(): GeneratedArguments<T> =
  *
  * @throws NullPointerException If the constructor or any arguments are invalid.
  */
-fun <T : Any> generateSyntaxes(clazz: KClass<T>): GeneratedArguments<T> {
+fun generateSyntaxes(clazz: KClass<*>): List<List<Argument<*>>> {
     if (clazz.isSealed && clazz.sealedSubclasses.isNotEmpty()) {
-        return GeneratedArguments(clazz, clazz.sealedSubclasses.map {
+        return clazz.sealedSubclasses.map {
             argumentsFromFunction(it
                 .constructors.firstOrNull { con -> con.hasAnnotation<GenerationConstructor>() }
                 ?: it.primaryConstructor!!)
-        }.flatten())
+        }.flatten()
     }
 
-    return GeneratedArguments(clazz, argumentsFromFunction(clazz
+    return argumentsFromFunction(clazz
         .constructors.firstOrNull { con -> con.hasAnnotation<GenerationConstructor>() }
-        ?: clazz.primaryConstructor!!))
+        ?: clazz.primaryConstructor!!)
 }
 
 /**

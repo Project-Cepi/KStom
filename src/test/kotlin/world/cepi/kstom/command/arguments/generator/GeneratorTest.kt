@@ -9,11 +9,12 @@ import net.minestom.server.command.builder.arguments.number.ArgumentInteger
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import world.cepi.kstom.command.arguments.ArgumentPrintableGroup
+import world.cepi.kstom.command.arguments.generation.argumentsFromClass
 import world.cepi.kstom.command.arguments.generation.generateSyntaxes
 
 class GeneratorTest : StringSpec({
     "basic classes should generate correctly" {
-        val catSyntaxes = generateSyntaxes<Animal.Cat>().args
+        val catSyntaxes = argumentsFromClass<Animal.Cat>().arguments
 
         catSyntaxes.size shouldBe 1 // One combination
         catSyntaxes[0].size shouldBe 2 // Two elements
@@ -29,7 +30,7 @@ class GeneratorTest : StringSpec({
     }
 
     "sealed classes should generate correctly" {
-        val fullSyntaxes = generateSyntaxes<FetchType>().args
+        val fullSyntaxes = argumentsFromClass<FetchType>().arguments
 
         fullSyntaxes.size shouldBe 2
 
