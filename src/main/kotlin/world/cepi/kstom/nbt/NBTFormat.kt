@@ -11,6 +11,7 @@ import kotlinx.serialization.modules.SerializersModuleBuilder
 import kotlinx.serialization.modules.contextual
 import net.minestom.server.instance.block.Block
 import org.jglrxavpok.hephaistos.nbt.*
+import org.jglrxavpok.hephaistos.parser.SNBTParser
 import world.cepi.kstom.serializer.*
 import java.io.StringReader
 

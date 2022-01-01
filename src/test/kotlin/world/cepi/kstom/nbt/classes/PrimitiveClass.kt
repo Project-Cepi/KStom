@@ -1,7 +1,9 @@
 package world.cepi.kstom.nbt.classes
 
 import kotlinx.serialization.Serializable
-import org.jglrxavpok.hephaistos.nbt.NBTCompound
+import org.jglrxavpok.hephaistos.nbt.NBT
+import org.jglrxavpok.hephaistos.nbt.NBTInt
+import org.jglrxavpok.hephaistos.nbt.NBTString
 
 @Serializable
 data class PrimitiveClass(
@@ -10,12 +12,10 @@ data class PrimitiveClass(
     val third: Short,
     val fourth: String
 ) {
-    fun createNonAutoNBT(): NBTCompound {
-        val compound = NBTCompound()
-        compound.setInt("first", first)
-        compound.setInt("second", second.toInt())
-        compound.setInt("third", third.toInt())
-        compound.setString("fourth", fourth)
-        return compound
+    fun createNonAutoNBT() = NBT.Kompound {
+        this["first"] = NBTInt(first)
+        this["second"] = NBTInt(second.toInt())
+        this["third"] = NBTInt(third.toInt())
+        this["fourth"] = NBTString(fourth)
     }
 }

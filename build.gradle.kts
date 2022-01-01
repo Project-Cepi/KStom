@@ -1,6 +1,6 @@
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.6.10"
+    kotlin("jvm") version "1.6.10"
     // Kotlinx serialization for any data format
     kotlin("plugin.serialization") version "1.6.10"
     // Shade the plugin
@@ -41,8 +41,8 @@ dependencies {
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
 
     // Compile Minestom into project
-    compileOnly("com.github.Minestom", "Minestom", "3843cacef5")
-    compileOnly("com.github.jglrxavpok", "Hephaistos", "1.1.8")
+    compileOnly("com.github.Minestom", "Minestom", "529_extension_improvement-SNAPSHOT")
+    compileOnly("io.github.jglrxavpok.hephaistos", "common", "2.3.2")
 
     // import kotlinx serialization
     compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")

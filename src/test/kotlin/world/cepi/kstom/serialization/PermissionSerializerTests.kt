@@ -5,7 +5,9 @@ import io.kotest.matchers.shouldBe
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import net.minestom.server.permission.Permission
+import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
+import org.jglrxavpok.hephaistos.nbt.NBTString
 import world.cepi.kstom.serializer.MinestomJSON
 
 class PermissionSerializerTests: StringSpec({
@@ -19,7 +21,7 @@ class PermissionSerializerTests: StringSpec({
     }
 
     "Test permission serializer with nbt data" {
-        val nbtCompound = NBTCompound().apply { setString("testing", "123") }
+        val nbtCompound = NBT.Kompound { this["testing"] = NBTString("123") }
         val expected = Permission("hello-world", nbtCompound)
 
         val encodeToString = MinestomJSON.encodeToString(expected)
