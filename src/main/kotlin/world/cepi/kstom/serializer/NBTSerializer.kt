@@ -10,7 +10,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.encodeStructure
 import org.jglrxavpok.hephaistos.nbt.NBT
-import org.jglrxavpok.hephaistos.nbt.SNBTParser
+import org.jglrxavpok.hephaistos.parser.SNBTParser
 import java.io.StringReader
 
 @Serializer(forClass = NBT::class)

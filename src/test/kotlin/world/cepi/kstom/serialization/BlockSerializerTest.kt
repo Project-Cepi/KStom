@@ -3,7 +3,9 @@ package world.cepi.kstom.serialization
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import net.minestom.server.instance.block.Block
+import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
+import org.jglrxavpok.hephaistos.nbt.NBTString
 import world.cepi.kstom.serializer.BlockSerializer
 import world.cepi.kstom.serializer.MinestomJSON
 
@@ -18,8 +20,9 @@ class BlockSerializerTest: StringSpec ({
     }
 
     "block with nbt data should serialize correct" {
-        val nbtCompound = NBTCompound()
-        nbtCompound.setString("data", "my awesome data!")
+        val nbtCompound = NBT.Kompound {
+            this["data"] = NBTString("my awesome data!")
+        }
 
         val block = Block.CHEST.withNbt(nbtCompound)
 

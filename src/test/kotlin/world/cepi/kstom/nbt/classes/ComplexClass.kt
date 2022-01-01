@@ -1,7 +1,7 @@
 package world.cepi.kstom.nbt.classes
 
 import kotlinx.serialization.Serializable
-import org.jglrxavpok.hephaistos.nbt.NBTCompound
+import org.jglrxavpok.hephaistos.nbt.*
 
 @Serializable
 data class InterestingClass(
@@ -17,15 +17,14 @@ data class ComplexClass(
     val boolean: Boolean,
     val interesting: InterestingClass
 ) {
-    fun createNonAutoNBT(): NBTCompound {
-        val compound = NBTCompound()
-            .setInt("first", first)
-            .setInt("second", second.toInt())
-            .setInt("third", third.toInt())
-            .setByte("boolean", if (boolean) 1 else 0)
-
-        compound["interesting"] =
-            NBTCompound().setString("woo", interesting.woo).setString("ooo", interesting.ooo.toString())
-        return compound
+    fun createNonAutoNBT() = NBT.Kompound {
+        this["first"] = NBTInt(first)
+        this["second"] = NBTInt(second.toInt())
+        this["third"] = NBTInt(third.toInt())
+        this["boolean"] = NBTByte(if (boolean) 1 else 0)
+        this["interesting"] = NBT.Kompound {
+            this["woo"] = NBTString(interesting.woo)
+            this["ooo"] = NBTString(interesting.ooo.toString())
+        }
     }
 }

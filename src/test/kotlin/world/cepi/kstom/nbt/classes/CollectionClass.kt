@@ -1,10 +1,9 @@
 package world.cepi.kstom.nbt.classes
 
 import kotlinx.serialization.Serializable
-import org.jglrxavpok.hephaistos.nbt.NBTCompound
+import org.jglrxavpok.hephaistos.nbt.NBT
 import org.jglrxavpok.hephaistos.nbt.NBTInt
-import org.jglrxavpok.hephaistos.nbt.NBTList
-import org.jglrxavpok.hephaistos.nbt.NBTTypes
+import org.jglrxavpok.hephaistos.nbt.NBTType.Companion.TAG_Int
 
 @Serializable
 data class CollectionClass(
@@ -13,11 +12,10 @@ data class CollectionClass(
     val third: Short,
     val list: List<Int>
 ) {
-    fun createNonAutoNBT(): NBTCompound {
-        val compound = NBTCompound().setInt("first", first).setInt("second", second.toInt()).setInt("third", third.toInt())
-        compound["list"] = NBTList<NBTInt>(NBTTypes.TAG_Int).apply {
-            list.forEach { add(NBTInt(it)) }
-        }
-        return compound
+    fun createNonAutoNBT() = NBT.Kompound {
+        this["first"] = NBTInt(first)
+        this["second"] = NBTInt(second.toInt())
+        this["third"] = NBTInt(third.toInt())
+        this["list"] = NBT.List(TAG_Int, list.map { NBTInt(it) })
     }
 }
