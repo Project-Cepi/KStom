@@ -42,7 +42,7 @@ dependencies {
 
     // Compile Minestom into project
     compileOnly("com.github.Minestom", "Minestom", "529_extension_improvement-SNAPSHOT")
-    compileOnly("io.github.jglrxavpok.hephaistos", "common", "2.3.2")
+    compileOnly("io.github.jglrxavpok.hephaistos", "common", "2.3.3")
 
     // import kotlinx serialization
     compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
