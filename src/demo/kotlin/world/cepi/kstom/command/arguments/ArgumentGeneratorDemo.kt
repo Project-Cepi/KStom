@@ -1,5 +1,6 @@
 package world.cepi.kstom.command.arguments
 
+import world.cepi.kstom.command.arguments.generation.ClassArgumentGenerator
 import world.cepi.kstom.command.arguments.generation.ClassArgumentGenerator.Companion.syntaxesFrom
 import world.cepi.kstom.command.arguments.generation.annotations.MaxAmount
 import world.cepi.kstom.command.arguments.generation.annotations.MinAmount
@@ -21,7 +22,7 @@ object ArgumentGeneratorDemo : Kommand({
         sender.sendMessage(instance.toString())
     }
 
-    val alternativeArgumentGenerator = argumentsFromClass(CoolItem::class)
+    val alternativeArgumentGenerator = ClassArgumentGenerator(CoolItem::class)
 
     alternativeArgumentGenerator.applySyntax(this) { instance ->
         sender.sendMessage(instance.toString())

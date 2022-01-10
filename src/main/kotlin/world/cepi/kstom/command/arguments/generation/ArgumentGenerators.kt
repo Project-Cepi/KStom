@@ -1,46 +1,25 @@
 package world.cepi.kstom.command.arguments.generation
 
-import net.kyori.adventure.text.Component
-import net.minestom.server.color.Color
-import net.minestom.server.command.CommandSender
-import net.minestom.server.command.builder.CommandContext
-import net.minestom.server.command.builder.CommandResult
 import net.minestom.server.command.builder.arguments.Argument
-import net.minestom.server.command.builder.arguments.ArgumentEnum
-import net.minestom.server.command.builder.arguments.ArgumentType
-import net.minestom.server.coordinate.Point
-import net.minestom.server.coordinate.Vec
-import net.minestom.server.entity.Entity
-import net.minestom.server.entity.EntityType
-import net.minestom.server.instance.block.Block
-import net.minestom.server.item.Enchantment
-import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
-import net.minestom.server.potion.PotionEffect
 import net.minestom.server.sound.SoundEvent
-import net.minestom.server.utils.entity.EntityFinder
-import net.minestom.server.utils.location.RelativeVec
-import net.minestom.server.utils.math.FloatRange
-import net.minestom.server.utils.math.IntRange
-import net.minestom.server.utils.time.TimeUnit
-import org.jglrxavpok.hephaistos.nbt.NBT
-import org.jglrxavpok.hephaistos.nbt.NBTCompound
 import world.cepi.kstom.command.arguments.*
 import world.cepi.kstom.command.arguments.generation.annotations.*
-import world.cepi.kstom.command.arguments.context.ContextParser
-import world.cepi.kstom.command.kommand.Kommand
-import world.cepi.kstom.serializer.SerializableEntityFinder
 import world.cepi.kstom.tree.CombinationNode
-import java.lang.IllegalArgumentException
-import java.time.Duration
 import java.util.*
 import kotlin.IllegalStateException
 import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
-import kotlin.reflect.jvm.jvmErasure
+import kotlin.reflect.jvm.jvmName
+
+data class PotentialArgument(val name: String, val clazz: KClass<*>, val annotations: List<Annotation>)
+
+val whitelistedSealedClasses = arrayOf(
+    SoundEvent::class,
+    Material::class
+)
 
 /**
  * Can generate a list of Arguments from a class.
@@ -51,8 +30,13 @@ import kotlin.reflect.jvm.jvmErasure
  *
  * @throws NullPointerException If the constructor or any arguments are invalid.
  */
-inline fun <reified T : Any> generateSyntaxes(): List<List<Argument<*>>> =
-    generateSyntaxes(T::class)
+inline fun <reified T : Any> generateSyntaxes() = generateSyntaxes(T::class)
+
+fun KClass<*>.bestConstructor() = constructors.firstOrNull { con -> con.hasAnnotation<GenerationConstructor>() }
+        ?: primaryConstructor
+        ?: constructors.firstOrNull()
+
+val KClass<*>.name get() = simpleName ?: jvmName
 
 /**
  * Can generate a list of Arguments from a class.
@@ -61,52 +45,68 @@ inline fun <reified T : Any> generateSyntaxes(): List<List<Argument<*>>> =
  *
  * @return A organized hashmap of arguments and its classifier
  *
- * @throws NullPointerException If the constructor or any arguments are invalid.
+ * @throws Exception If the constructor or any arguments are invalid.
  */
 fun generateSyntaxes(clazz: KClass<*>): List<List<Argument<*>>> {
     if (clazz.isSealed && clazz.sealedSubclasses.isNotEmpty()) {
         return clazz.sealedSubclasses.map {
-            argumentsFromFunction(it
-                .constructors.firstOrNull { con -> con.hasAnnotation<GenerationConstructor>() }
-                ?: it.primaryConstructor!!)
+            argumentsFromClass(it) ?: throw IllegalStateException("Could not generate arguments for class $it in $clazz")
         }.flatten()
     }
 
-    return argumentsFromFunction(clazz
-        .constructors.firstOrNull { con -> con.hasAnnotation<GenerationConstructor>() }
-        ?: clazz.primaryConstructor!!)
+    return argumentsFromClass(clazz) ?: throw IllegalStateException("Could not generate arguments for class $clazz")
 }
+
+fun argumentsFromClass(clazz: KClass<*>) =
+    if (clazz.java.isRecord)
+        argumentsFromPotentialArguments(clazz.java.recordComponents.map {
+            PotentialArgument(
+                it.name,
+                it.type.kotlin,
+                it.annotations.toList()
+            )
+        })
+    else clazz.bestConstructor()?.let { constructor ->
+        argumentsFromPotentialArguments(
+            constructor.valueParameters.map {
+                PotentialArgument(
+                    it.name ?: it.kind.name,
+                    it.type.classifier as KClass<*>,
+                    it.annotations
+                )
+            }
+        )
+    }
+
 
 /**
  * Can generate a list of Arguments from a function.
  *
  * Example:
- * Attack (sealed): (energy: Int) / (clickType: Enum)
+ * Attack [sealed class], with EnergyAttack(energy: Int) and ClickAttack(clickType: Enum)
  * (damage: Int, attack: Attack)
  *
  * Should generate:
- * (damage: Int, energy, energy: Int) / (damage: Int, clickType, clickType: Enum)
+ * (damage: Int, energy: Literal, energy: Int) and (damage: Int, clickType: Literal, clickType: Enum)
  *
  * @param function The function to generate args from.
  *
  * @return A list of lists; the first list is possible argument combinations. The second list is a list of arguments.
  */
-fun argumentsFromFunction(function: KFunction<*>): List<List<Argument<*>>> {
+fun argumentsFromPotentialArguments(potentialArguments: List<PotentialArgument>): List<List<Argument<*>>> {
     // list of all combinations ordered.
     // EX, if you have [damage: Int, energy, energy: Int] / [damage: Int, clickType, clickType: Enum],
     // the list would be: [[damage]], [[energy, energy: Int], [clickType, clickType: Int]]
-    val args: List<Array<Argument<*>>> = function.valueParameters.mapIndexed { index, parameter ->
+    val args: List<Array<Argument<*>>> = potentialArguments.mapIndexed { index, arg ->
 
-        val clazz = parameter.type.classifier!! as KClass<*>
-
-        if (clazz.isSealed) {
+        if (arg.clazz.isSealed && !whitelistedSealedClasses.contains(arg.clazz)) {
             // list(list(energy, energy: Int), list(clickType, clickType: Int))
-            return@mapIndexed clazz.sealedSubclasses.map { subClass ->
+            return@mapIndexed arg.clazz.sealedSubclasses.map { subClass ->
                 ArgumentPrintableGroup(
-                    subClass.simpleName!!,
+                    subClass.name,
                     arrayOf(
-                        subClass.simpleName!!.replaceFirstChar { it.lowercase() }.literal(),
-                        *argumentsFromFunction(subClass.primaryConstructor!!)
+                        (subClass.name).replaceFirstChar { it.lowercase() }.literal(),
+                        *(argumentsFromClass(subClass) ?: throw IllegalStateException("Could not generate arguments for class $subClass"))
                             .flatten().toTypedArray()
                     )
                 )
@@ -116,10 +116,10 @@ fun argumentsFromFunction(function: KFunction<*>): List<List<Argument<*>>> {
 
         arrayOf(
             argumentFromClass(
-                parameter.name ?: parameter.type.jvmErasure.simpleName!!,
-                clazz,
-                parameter.annotations,
-                function.valueParameters.size - 1 == index
+                arg.name,
+                arg.clazz,
+                arg.annotations,
+                potentialArguments.size - 1 == index
             )
         )
 
@@ -135,137 +135,4 @@ fun argumentsFromFunction(function: KFunction<*>): List<List<Argument<*>>> {
     }
 
     return rootNode.traverseAndGenerate()
-}
-
-/**
- * Generates a Minestom argument based on the class
- *
- * @param name The name of the argument
- * @param clazz The class to base the argument off of
- *
- * @return An argument that matches with the class.
- *
- */
-fun argumentFromClass(
-    name: String,
-    clazz: KClass<*>,
-    annotations: List<Annotation> = emptyList(),
-    isLast: Boolean
-): Argument<*> {
-
-    if (annotations.any { it is ParameterContext }) {
-        val annotation = annotations.filterIsInstance<ParameterContext>().first()
-
-        val instance = annotation.parser.objectInstance!!
-
-        return instance.toArgumentContext()
-    }
-
-    if (annotations.any { it is CustomArgument }) {
-        val annotation = annotations.filterIsInstance<CustomArgument>().first()
-
-        val instance = annotation.generator.objectInstance!!
-
-        return instance.new(name, annotations)
-    }
-
-    return when (clazz) {
-        String::class -> if (isLast)
-            ArgumentType.StringArray(name).map { it.joinToString(" ") }
-        else
-            ArgumentType.String(name)
-        Int::class -> ArgumentType.Integer(name).also { argument ->
-            annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min.toInt()) }
-            annotations.filterIsInstance<MaxAmount>().firstOrNull()?.let { argument.max(it.max.toInt()) }
-            annotations.filterIsInstance<DefaultNumber>().firstOrNull()
-                ?.let { argument.defaultValue(it.number.toInt()) }
-        }
-        Double::class -> ArgumentType.Double(name).also { argument ->
-            annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min) }
-            annotations.filterIsInstance<MaxAmount>().firstOrNull()?.let { argument.max(it.max) }
-            annotations.filterIsInstance<DefaultNumber>().firstOrNull()?.let { argument.defaultValue(it.number) }
-        }
-        Color::class -> ArgumentType.Color(name)
-        EntityType::class -> ArgumentType.EntityType(name)
-        Material::class -> ArgumentMaterial(name)
-        Boolean::class -> ArgumentType.Boolean(name).also { argument ->
-            annotations.filterIsInstance<DefaultBoolean>().firstOrNull()
-                ?.let { argument.defaultValue(it.boolean) }
-        }
-        Float::class -> ArgumentType.Float(name).also { argument ->
-            annotations.filterIsInstance<MinAmount>().firstOrNull()?.let { argument.min(it.min.toFloat()) }
-            annotations.filterIsInstance<MaxAmount>().firstOrNull()?.let { argument.max(it.max.toFloat()) }
-            annotations.filterIsInstance<DefaultNumber>().firstOrNull()
-                ?.let { argument.defaultValue(it.number.toFloat()) }
-        }
-        ItemStack::class, Material::class -> ArgumentType.ItemStack(name).also { argument ->
-            annotations.filterIsInstance<DefaultMaterial>().firstOrNull()
-                ?.let { argument.defaultValue(ItemStack.of(Material.fromNamespaceId(it.material) ?: error("Invalid Material ${it.material}!"))) }
-        }
-        NBTCompound::class -> ArgumentType.NbtCompound(name)
-        NBT::class -> ArgumentType.NBT(name)
-        Component::class -> ArgumentType.Component(name)
-        Duration::class -> ArgumentType.Time(name).also { argument ->
-            annotations.filterIsInstance<DefaultChronoDuration>().firstOrNull()
-                ?.let { argument.defaultValue(Duration.of(it.amount, it.timeUnit)) }
-
-            annotations.filterIsInstance<DefaultTickDuration>().firstOrNull()
-                ?.let {
-                    argument.defaultValue(
-                        Duration.of(
-                            it.amount,
-                            if (it.isClient) TimeUnit.CLIENT_TICK else TimeUnit.SERVER_TICK
-                        )
-                    )
-                }
-        }
-        IntRange::class -> ArgumentType.IntRange(name)
-        FloatRange::class -> ArgumentType.FloatRange(name).also { argument ->
-            annotations.filterIsInstance<DefaultFloatRange>().firstOrNull()
-                ?.let { argument.defaultValue(FloatRange(it.minimum, it.maximum)) }
-        }
-        SerializableEntityFinder::class -> ArgumentType.Entity(name)
-        Enchantment::class -> ArgumentType.Enchantment(name)
-        RelativeVec::class -> ArgumentType.RelativeVec3(name)
-        Vec::class -> ArgumentType.RelativeVec3(name)
-        SoundEvent::class -> ArgumentSound(name)
-        Byte::class -> ArgumentByte(name).also { argument ->
-            annotations.filterIsInstance<DefaultNumber>().firstOrNull()
-                ?.let { argument.defaultValue(it.number.toInt().toByte().coerceAtLeast(Byte.MIN_VALUE).coerceAtMost(Byte.MAX_VALUE)) }
-
-        }
-        Block::class -> ArgumentType.BlockState(name).also { argument ->
-            annotations.filterIsInstance<DefaultBlock>().firstOrNull()
-                ?.let { argument.defaultValue(Block.fromNamespaceId(it.block)) }
-        }
-        Point::class -> ArgumentType.RelativeVec3(name)
-        CommandResult::class -> ArgumentType.Command(name)
-        PotionEffect::class -> ArgumentType.Potion(name).also { argument ->
-            annotations.filterIsInstance<DefaultPotionEffect>().firstOrNull()
-                ?.let { argument.defaultValue(PotionEffect.fromNamespaceId(it.potionEffect)) }
-        }
-        UUID::class -> ArgumentType.UUID(name)
-        else -> {
-
-            if (clazz.java.enumConstants == null) throw IllegalStateException("Class ${clazz.qualifiedName} must be a valid argument!")
-
-            @Suppress("UNCHECKED_CAST") // We already check if the class is an enum or not.
-            return (ArgumentEnum(name, clazz.java as Class<Enum<*>>)).also { enumArgument ->
-                val annotation = annotations.filterIsInstance<EnumArgument>().firstOrNull() ?: return@also
-
-                val enumConstraints = (clazz.java as Class<Enum<*>>).enumConstants
-
-                enumArgument.setFormat(annotation.flattenType)
-                enumArgument.defaultValue(enumConstraints.firstOrNull { it.name.lowercase() == annotation.default.lowercase() })
-            }
-        }
-    }.also {
-        if (annotations.any { it is DynamicWord }) {
-            val annotation = annotations.filterIsInstance<DynamicWord>().first()
-
-            val instance = annotation.generator.objectInstance!!
-
-            it.suggestComplex(lambda = { instance.grab(sender) })
-        }
-    }
 }

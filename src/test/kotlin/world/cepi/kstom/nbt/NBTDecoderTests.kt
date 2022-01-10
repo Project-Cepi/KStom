@@ -13,7 +13,6 @@ import world.cepi.kstom.nbt.classes.InterestingClass
 import world.cepi.kstom.nbt.classes.PrimitiveClass
 
 class NBTDecoderTests : StringSpec({
-    println(1)
     "primitive classes are decoded correctly" {
         val primitive = PrimitiveClass(5, 6, 5, "\"Hi\"")
 
