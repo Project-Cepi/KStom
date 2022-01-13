@@ -1,6 +1,7 @@
 package world.cepi.kstom.command.arguments.generation
 
 import net.minestom.server.command.builder.arguments.Argument
+import net.minestom.server.coordinate.Point
 import net.minestom.server.item.Material
 import net.minestom.server.potion.PotionEffect
 import net.minestom.server.sound.SoundEvent
@@ -20,7 +21,8 @@ data class PotentialArgument(val name: String, val clazz: KClass<*>, val annotat
 val whitelistedSealedClasses = arrayOf(
     SoundEvent::class,
     Material::class,
-    PotionEffect::class
+    PotionEffect::class,
+    Point::class
 )
 
 /**
