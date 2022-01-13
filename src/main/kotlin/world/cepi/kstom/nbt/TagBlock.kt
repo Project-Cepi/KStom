@@ -9,6 +9,6 @@ fun TagBlock(name: String) = Tag.String(name).map<Block>(
         return@get Block.fromNamespaceId(map)
     },
     set@ { value ->
-        value.namespace().namespace()
+        value.namespace().toString()
     }
 )
