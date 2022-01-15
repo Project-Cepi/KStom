@@ -50,13 +50,13 @@ abstract class ArgumentGenerator<T : Any>(
         argumentsBefore: Array<out Argument<*>>,
         argumentsAfter: Array<out Argument<*>>,
         lambda: Kommand.SyntaxContext.(T) -> Unit
-    ) = arguments.forEach {
+    ) = arguments.forEachIndexed { index, it ->
         command.syntax(*argumentsBefore, *it.toTypedArray(), *argumentsAfter) {
-            val instance = generate(Kommand.SyntaxContext(sender, context), it.map { it.id })
+            val instance = generate(Kommand.SyntaxContext(sender, context), it.map { it.id }, index)
 
             lambda(this, instance)
         }
     }
 
-    abstract fun generate(syntax: Kommand.SyntaxContext, args: List<String>): T
+    abstract fun generate(syntax: Kommand.SyntaxContext, args: List<String>, index: Int): T
 }

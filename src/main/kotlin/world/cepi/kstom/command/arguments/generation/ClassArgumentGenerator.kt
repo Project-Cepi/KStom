@@ -5,6 +5,7 @@ import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.entity.Entity
 import net.minestom.server.utils.entity.EntityFinder
 import net.minestom.server.utils.location.RelativeVec
+import world.cepi.kstom.command.arguments.ArgumentContext
 import world.cepi.kstom.command.arguments.ArgumentContextValue
 import world.cepi.kstom.command.arguments.generation.annotations.GenerationConstructor
 import world.cepi.kstom.command.kommand.Kommand
@@ -15,9 +16,14 @@ import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
 
-class ClassArgumentGenerator<T : Any>(override val clazz: KClass<T>): ArgumentGenerator<T>(clazz, generateSyntaxes(clazz)) {
+class ClassArgumentGenerator<T : Any>(override val clazz: KClass<T>): ArgumentGenerator<T>(
+    clazz,
+    generateSyntaxes(clazz).map { syntax -> syntax.filter { it !is ArgumentContext<*> } }
+) {
 
-    override fun generate(syntax: Kommand.SyntaxContext, args: List<String>): T = with(syntax) {
+    val generatedSyntaxes = generateSyntaxes(clazz)
+
+    override fun generate(syntax: Kommand.SyntaxContext, args: List<String>, fullIndex: Int): T = with(syntax) {
         val constructor = clazz.constructors
             .firstOrNull { it.hasAnnotation<GenerationConstructor>() }
             ?: clazz.primaryConstructor
@@ -28,6 +34,12 @@ class ClassArgumentGenerator<T : Any>(override val clazz: KClass<T>): ArgumentGe
         }
 
         val generatedArguments = args.mapIndexed { index, argument ->
+
+            if (generatedSyntaxes.size > index) {
+                if (generatedSyntaxes[fullIndex][index] is ArgumentContext<*>) {
+                    return@mapIndexed (generatedSyntaxes[fullIndex][index] as ArgumentContext<*>).lambda(sender)
+                }
+            }
 
             val value = context.get<Any>(argument)
             val clazz = classes[index]
@@ -47,7 +59,8 @@ class ClassArgumentGenerator<T : Any>(override val clazz: KClass<T>): ArgumentGe
 
                 return@mapIndexed ClassArgumentGenerator(clazz.sealedSubclasses.first { it.simpleName == value.first }).generate(
                     Kommand.SyntaxContext(sender, value.second),
-                    value.second.map.keys.toMutableList().also { it.removeAt(0) }
+                    value.second.map.keys.toMutableList().also { it.removeAt(0) },
+                    -1
                 )
             }
 
