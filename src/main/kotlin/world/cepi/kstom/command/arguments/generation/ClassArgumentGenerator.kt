@@ -18,10 +18,8 @@ import kotlin.reflect.full.valueParameters
 
 class ClassArgumentGenerator<T : Any>(override val clazz: KClass<T>): ArgumentGenerator<T>(
     clazz,
-    generateSyntaxes(clazz).map { syntax -> syntax.filter { it !is ArgumentContext<*> } }
+    generateSyntaxes(clazz)
 ) {
-
-    val generatedSyntaxes = generateSyntaxes(clazz)
 
     override fun generate(syntax: Kommand.SyntaxContext, args: List<String>, fullIndex: Int): T = with(syntax) {
         val constructor = clazz.constructors
@@ -34,12 +32,6 @@ class ClassArgumentGenerator<T : Any>(override val clazz: KClass<T>): ArgumentGe
         }
 
         val generatedArguments = args.mapIndexed { index, argument ->
-
-            if (generatedSyntaxes.size > index) {
-                if (generatedSyntaxes[fullIndex][index] is ArgumentContext<*>) {
-                    return@mapIndexed (generatedSyntaxes[fullIndex][index] as ArgumentContext<*>).lambda(sender)
-                }
-            }
 
             val value = context.get<Any>(argument)
             val clazz = classes[index]
