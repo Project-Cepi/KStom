@@ -77,26 +77,26 @@ class ClassArgumentGenerator<T : Any>(override val clazz: KClass<T>): ArgumentGe
         inline fun <reified T: Any> Kommand.syntaxesFrom(
             vararg arguments: Argument<*>,
             noinline lambda: Kommand.SyntaxContext.(T) -> Unit
-        ): ArgumentGenerator<T> = ClassArgumentGenerator(T::class).also { it.applySyntax(this, arguments, emptyArray(), lambda) }
+        ): ArgumentGenerator<T> = ChosenArgumentGeneration(T::class).also { it.applySyntax(this, arguments, emptyArray(), lambda) }
 
         fun <T : Any> Kommand.syntaxesFrom(
             clazz: KClass<T>,
             vararg arguments: Argument<*>,
             lambda: Kommand.SyntaxContext.(T) -> Unit
-        ): ArgumentGenerator<T> = ClassArgumentGenerator(clazz).also { it.applySyntax(this, arguments, emptyArray(), lambda) }
+        ): ArgumentGenerator<T> = ChosenArgumentGeneration(clazz).also { it.applySyntax(this, arguments, emptyArray(), lambda) }
 
         inline fun <reified T: Any> Kommand.syntaxesFrom(
             beforeArguments: Array<Argument<*>>,
             afterArguments: Array<Argument<*>>,
             noinline lambda: Kommand.SyntaxContext.(T) -> Unit
-        ): ArgumentGenerator<T> = ClassArgumentGenerator(T::class).also { it.applySyntax(this, beforeArguments, afterArguments, lambda) }
+        ): ArgumentGenerator<T> = ChosenArgumentGeneration(T::class).also { it.applySyntax(this, beforeArguments, afterArguments, lambda) }
 
         fun <T: Any> Kommand.syntaxesFrom(
             clazz: KClass<T>,
             beforeArguments: Array<Argument<*>>,
             afterArguments: Array<Argument<*>>,
             lambda: Kommand.SyntaxContext.(T) -> Unit
-        ): ArgumentGenerator<T> = ClassArgumentGenerator(clazz).also { it.applySyntax(this, beforeArguments, afterArguments, lambda) }
+        ): ArgumentGenerator<T> = ChosenArgumentGeneration(clazz).also { it.applySyntax(this, beforeArguments, afterArguments, lambda) }
     }
 
 }
