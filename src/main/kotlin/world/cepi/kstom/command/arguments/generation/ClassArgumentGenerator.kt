@@ -101,5 +101,5 @@ class ClassArgumentGenerator<T : Any>(override val clazz: KClass<T>): ArgumentGe
 
 }
 
-fun <T: Any> argumentsFromClass(clazz: KClass<T>) = ClassArgumentGenerator(clazz)
-inline fun <reified T: Any> argumentsFromClass() = ClassArgumentGenerator(T::class)
+fun <T: Any> argumentsFromClass(clazz: KClass<T>) = ChosenArgumentGeneration(clazz)
+inline fun <reified T: Any> argumentsFromClass() = ChosenArgumentGeneration(T::class)
