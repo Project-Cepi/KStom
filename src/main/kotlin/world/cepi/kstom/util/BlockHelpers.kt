@@ -1,11 +1,17 @@
 package world.cepi.kstom.util
 
+import net.minestom.server.adventure.audience.PacketGroupingAudience
+import net.minestom.server.coordinate.Point
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.coordinate.Vec
 import net.minestom.server.instance.Chunk
 import net.minestom.server.instance.Instance
+import net.minestom.server.instance.block.Block
+import net.minestom.server.network.packet.server.play.BlockBreakAnimationPacket
+import net.minestom.server.network.packet.server.play.EffectPacket
 import net.minestom.server.utils.block.BlockUtils
 import net.minestom.server.utils.chunk.ChunkUtils
+import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
@@ -15,6 +21,15 @@ fun Chunk.getCustomBlockId(position: Pos): Short = this.getCustomBlockId(positio
 
 fun Instance.blockUtilsAt(position: Pos): BlockUtils = BlockUtils(this, position)
 fun Pos.blockUtilsIn(instance: Instance): BlockUtils = BlockUtils(instance, this)
+
+fun PacketGroupingAudience.sendBlockDamage(destroyStage: Byte, point: Point) {
+    val packet = BlockBreakAnimationPacket(ThreadLocalRandom.current().nextInt(10000000), point, destroyStage)
+    sendGroupedPacket(packet)
+}
+
+fun PacketGroupingAudience.sendBreakBlockEffect(point: Point, block: Block) {
+    sendGroupedPacket(EffectPacket(2001 /*Block break + block break sound*/, point, block.stateId().toInt(), false))
+}
 
 fun Instance.chunksInRange(position: Pos, range: Int): List<Pair<Int, Int>> {
 
