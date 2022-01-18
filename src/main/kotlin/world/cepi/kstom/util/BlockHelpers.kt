@@ -23,8 +23,8 @@ fun Chunk.getCustomBlockId(position: Pos): Short = this.getCustomBlockId(positio
 fun Instance.blockUtilsAt(position: Pos): BlockUtils = BlockUtils(this, position)
 fun Pos.blockUtilsIn(instance: Instance): BlockUtils = BlockUtils(instance, this)
 
-fun PacketGroupingAudience.sendBlockDamage(destroyStage: Byte, point: Point) {
-    val packet = BlockBreakAnimationPacket(ThreadLocalRandom.current().nextInt(10000000), point, destroyStage)
+fun PacketGroupingAudience.sendBlockDamage(destroyStage: Byte, point: Point, entityID: Int) {
+    val packet = BlockBreakAnimationPacket(entityID, point, destroyStage)
     sendGroupedPacket(packet)
 }
 
@@ -32,8 +32,8 @@ fun PacketGroupingAudience.sendBreakBlockEffect(point: Point, block: Block) {
     sendGroupedPacket(EffectPacket(2001 /*Block break + block break sound*/, point, block.stateId().toInt(), false))
 }
 
-fun Viewable.sendBlockDamage(destroyStage: Byte, point: Point) {
-    val packet = BlockBreakAnimationPacket(ThreadLocalRandom.current().nextInt(10000000), point, destroyStage)
+fun Viewable.sendBlockDamage(destroyStage: Byte, point: Point, entityID: Int) {
+    val packet = BlockBreakAnimationPacket(entityID, point, destroyStage)
     sendPacketToViewersAndSelf(packet)
 }
 
