@@ -1,5 +1,6 @@
 package world.cepi.kstom.util
 
+import net.minestom.server.Viewable
 import net.minestom.server.adventure.audience.PacketGroupingAudience
 import net.minestom.server.coordinate.Point
 import net.minestom.server.coordinate.Pos
@@ -29,6 +30,15 @@ fun PacketGroupingAudience.sendBlockDamage(destroyStage: Byte, point: Point) {
 
 fun PacketGroupingAudience.sendBreakBlockEffect(point: Point, block: Block) {
     sendGroupedPacket(EffectPacket(2001 /*Block break + block break sound*/, point, block.stateId().toInt(), false))
+}
+
+fun Viewable.sendBlockDamage(destroyStage: Byte, point: Point) {
+    val packet = BlockBreakAnimationPacket(ThreadLocalRandom.current().nextInt(10000000), point, destroyStage)
+    sendPacketToViewersAndSelf(packet)
+}
+
+fun Viewable.sendBreakBlockEffect(point: Point, block: Block) {
+    sendPacketToViewersAndSelf(EffectPacket(2001 /*Block break + block break sound*/, point, block.stateId().toInt(), false))
 }
 
 fun Instance.chunksInRange(position: Pos, range: Int): List<Pair<Int, Int>> {
