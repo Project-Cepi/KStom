@@ -1,17 +1,21 @@
 package world.cepi.kstom.nbt
 
 import net.minestom.server.tag.Tag
+import org.jglrxavpok.hephaistos.nbt.NBTLongArray
 import java.util.*
 
-fun TagUUID(name: String) = Tag.LongArray(name).map<UUID>(
+fun TagUUID(name: String) = Tag.NBT<NBTLongArray>(name).map<UUID>(
     get@ { map ->
+
+        if (map.size != 2) return@get null
+
         return@get UUID(
-            map.getOrNull(0) ?: return@get null,
-            map.getOrNull(1) ?: return@get null
+            map[0],
+            map[1]
         )
     },
     set@ { value ->
-        longArrayOf(
+        NBTLongArray(
             value?.mostSignificantBits ?: return@set null,
             value.leastSignificantBits
         )
