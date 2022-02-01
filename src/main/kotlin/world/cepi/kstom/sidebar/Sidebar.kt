@@ -1,12 +1,12 @@
 package world.cepi.kstom.sidebar
 
 import net.kyori.adventure.text.Component
+import net.minestom.server.Viewable
 import net.minestom.server.scoreboard.Sidebar
 import net.minestom.server.scoreboard.Sidebar.ScoreboardLine
 
 
-class KSidebar(title: Component) {
-    val internalSidebar = Sidebar(title)
+class KSidebar(title: Component, val internalSidebar: Sidebar = Sidebar(title)): Viewable by internalSidebar {
 
     inline fun line(id: String, index: Int, generationalLambda: () -> Component) = line(id, index, generationalLambda())
 
