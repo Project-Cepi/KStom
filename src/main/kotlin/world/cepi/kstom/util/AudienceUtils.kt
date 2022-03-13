@@ -5,6 +5,8 @@ import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.minestom.server.adventure.audience.PacketGroupingAudience
 import net.minestom.server.coordinate.Point
+import net.minestom.server.coordinate.Vec
+import net.minestom.server.entity.Entity
 import net.minestom.server.entity.Player
 
 /**
@@ -16,7 +18,9 @@ import net.minestom.server.entity.Player
 fun Audience.playSound(sound: Sound, position: Point) =
     playSound(sound, position.x(), position.y(), position.z())
 
-val Player.viewersAndSelf get() = listOf(*viewers.toTypedArray(), this)
-val Player.viewersAndSelfAsAudience get() = PacketGroupingAudience.of(viewersAndSelf);
+val Entity.viewersAndSelf get() = listOf(*viewers.toTypedArray(), this as? Player).filterNotNull()
+val Entity.viewersAndSelfAsAudience get() = PacketGroupingAudience.of(viewersAndSelf)
+fun Entity.playSoundToViewersAndSelf(sound: Sound, position: Point = this.position) = viewersAndSelfAsAudience.playSound(sound, position)
+fun Entity.playSoundToViewersAndSelf(sound: Sound, x: Double, y: Double, z: Double) = playSoundToViewersAndSelf(sound, Vec(x, y, z))
 
 fun Audience.sendMessage(message: String) = this.sendMessage(Component.text(message))
