@@ -28,14 +28,14 @@ repositories {
 dependencies {
 
     // Use the Kotlin JDK 8 standard library.
-    compileOnly(kotlin("stdlib", "1.5.0"))
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.6.10")
 
     // Use the Kotlin reflect library.
-    compileOnly(kotlin("reflect", "1.5.0"))
+    compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
 
     // Use the kotlin test library
-    testImplementation("io.kotest:kotest-assertions-core:4.6.4")
-    testImplementation("io.kotest:kotest-runner-junit5:4.6.4")
+    testImplementation("io.kotest:kotest-assertions-core:5.1.0")
+    testImplementation("io.kotest:kotest-runner-junit5:5.1.0")
 
     // Add support for kotlinx courotines
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")

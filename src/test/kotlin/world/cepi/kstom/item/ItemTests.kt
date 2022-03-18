@@ -1,6 +1,5 @@
 package world.cepi.kstom.item
 
-import io.kotest.core.plan.Descriptor.EngineDescriptor.displayName
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
