@@ -52,14 +52,14 @@ interface Schemable<T> {
 abstract class Schema {
     lateinit var block: Block
 
-    fun grabProps(): List<Schemable<*>> {
+    fun grabPropTags(): List<Schemable<*>> {
         return this::class.declaredMemberProperties
             .asSequence()
             .onEach { it.isAccessible = true }
-            .map { (it as KProperty1<in Schema, *>).getDelegate(this) }
-            .filter(Schemable::class::isInstance)
-            .map(Schemable::class::safeCast)
-            .filterNotNull()
+            .map { it.name to (it as KProperty1<in Schema, *>).getDelegate(this) }
+            .map { it.first to DelegatedSingleSchemable::class.safeCast(it.second) }
+            .filter { it.second != null }
+            .map { it.second!!.tag ?: SingleSchemable(it.second!!.tagGenerator.invoke(it.first) as Tag<Any>, it.second!!.defaultValue as Any) }
             .toList()
     }
 }
@@ -71,7 +71,7 @@ fun schemaString(defaultValue: String?) = DelegatedSingleSchemable(defaultValue)
 fun schemaFlag(defaultValue: Boolean?) = DelegatedSingleSchemable(defaultValue) { TagBoolean(it) }
 
 fun <T : Schema> Block.applySchema(schema: T): Block =
-    schema.grabProps().fold(this) { block, prop ->
+    schema.grabPropTags().fold(this) { block, prop ->
         prop.apply(block, null)
     }
 
