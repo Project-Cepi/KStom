@@ -6,41 +6,61 @@ import net.minestom.server.tag.TagWritable
 import world.cepi.kstom.nbt.TagBoolean
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
+import kotlin.reflect.KProperty1
+import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.safeCast
 
 class DelegatedSingleSchemable<T>(val defaultValue: T?, val tagGenerator: (String) -> Tag<T>) {
 
     var tag: SingleSchemable<T>? = null
 
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): SingleSchemable<T> {
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): T? {
 
         if (tag == null) {
             tag = SingleSchemable(tagGenerator(property.name), defaultValue)
         }
 
-        return tag!!
+        return tag!!.get((thisRef as Schema).block)
     }
 
-    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-        println("$value has been assigned to '${property.name}' in $thisRef.")
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T?) {
+        if (tag == null) {
+            tag = SingleSchemable(tagGenerator(property.name), defaultValue)
+        }
+
+        if (thisRef is Schema) {
+            thisRef.block = tag!!.apply(thisRef.block, value)
+        }
     }
 }
 
-class SingleSchemable<T>(val tag: Tag<T>, val defaultValue: T?): Schemable {
-    override fun apply(block: Block) = block.withTag(tag, defaultValue)
-    override fun apply(writer: TagWritable) = writer.setTag(tag, defaultValue)
+class SingleSchemable<T>(val tag: Tag<T>, val defaultValue: T?): Schemable<T> {
+    override fun apply(block: Block, value: T?) = block.withTag(tag, value ?: defaultValue)
+    override fun apply(writer: TagWritable, value: T?) = writer.setTag(tag, value ?: defaultValue)
+    override fun get(block: Block): T? = block.getTag(tag)
 }
 
-interface Schemable {
-    fun apply(block: Block): Block
-    fun apply(writer: TagWritable)
+interface Schemable<T> {
+    fun apply(block: Block, value: T?): Block
+    fun apply(writer: TagWritable, value: T?)
+    fun get(block: Block): T?
 }
 
 abstract class Schema {
-    protected open val properties: List<Schemable>? = null
+    lateinit var block: Block
 
-    fun grabProps(): List<Schemable> {
-        return properties ?: this::class.memberProperties.filterIsInstance<Schemable>()
+    fun grabProps(): List<Schemable<*>> {
+        return this::class.declaredMemberProperties
+            .asSequence()
+            .onEach { it.isAccessible = true }
+            .map { (it as KProperty1<in Schema, *>).getDelegate(this) }
+            .filter(Schemable::class::isInstance)
+            .map(Schemable::class::safeCast)
+            .filterNotNull()
+            .toList()
     }
 }
 
@@ -52,7 +72,24 @@ fun schemaFlag(defaultValue: Boolean?) = DelegatedSingleSchemable(defaultValue) 
 
 fun <T : Schema> Block.applySchema(schema: T): Block =
     schema.grabProps().fold(this) { block, prop ->
-        prop.apply(block)
+        prop.apply(block, null)
     }
 
-fun <T : Schema> Block.withSchema(clazz: KClass<T>) {}
+fun <T : Schema> Block.withSchema(clazz: KClass<T>, lambda: T.() -> Unit): Block {
+
+    val constructor = try {
+        clazz.java.getDeclaredConstructor()
+    } catch (e: Exception) {
+        throw NullPointerException("You need an empty constructor! (None Found)")
+    }
+
+    val instance = constructor.newInstance() as T
+
+    instance.block = this
+
+    lambda(instance)
+
+    return instance.block
+}
+
+inline fun <reified T : Schema> Block.withSchema(noinline lambda: T.() -> Unit) = withSchema(T::class, lambda)
