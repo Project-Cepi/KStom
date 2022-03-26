@@ -19,11 +19,7 @@ fun Component.legacyAmpersand(): String = LegacyComponentSerializer.legacyAmpers
 fun Component.noItalic() = decoration(TextDecoration.ITALIC, false)
 fun ComponentBuilder<*, *>.noItalic() = decoration(TextDecoration.ITALIC, false)
 
-fun component(vararg components: Component) = components.fold(Component.text()) { acc, item ->
-    acc.append(item)
-}.build()
-
-fun componentNoItalic(vararg components: Component) = components.fold(Component.text().noItalic()) { acc, item ->
+fun component(vararg components: Component) = components.fold(Component.text().noItalic()) { acc, item ->
     acc.append(item)
 }.build()
 
