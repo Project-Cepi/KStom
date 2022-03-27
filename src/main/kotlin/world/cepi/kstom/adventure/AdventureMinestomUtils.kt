@@ -6,14 +6,14 @@ import net.kyori.adventure.text.ComponentBuilder
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.kyori.adventure.text.minimessage.template.TemplateResolver
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 
-fun String.asMini(templateResolver: TemplateResolver = TemplateResolver.empty()): Component = MiniMessage.miniMessage()
+fun String.asMini(templateResolver: TagResolver = TagResolver.empty()): Component = MiniMessage.miniMessage()
     .deserialize(this, templateResolver)
 
-fun Audience.sendMiniMessage(miniMessage: String, templateResolver: TemplateResolver = TemplateResolver.empty()): Unit =
+fun Audience.sendMiniMessage(miniMessage: String, templateResolver: TagResolver = TagResolver.empty()): Unit =
     this.sendMessage(miniMessage.asMini(templateResolver))
 
 fun Component.plainText(): String = PlainTextComponentSerializer.plainText().serialize(this)
