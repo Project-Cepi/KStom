@@ -2,6 +2,7 @@ package world.cepi.kstom.raycast
 
 import net.minestom.server.coordinate.Point
 import net.minestom.server.coordinate.Vec
+import net.minestom.server.entity.Entity
 import net.minestom.server.entity.LivingEntity
 
 /**
@@ -13,5 +14,5 @@ data class Result(
     /** What type of object it hit. */
     val hitType: HitType,
     /** The entity it hit, if any. */
-    val hitEntity: LivingEntity?
+    val hitEntity: Entity?
 )

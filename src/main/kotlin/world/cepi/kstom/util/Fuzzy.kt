@@ -4,6 +4,7 @@ import net.minestom.server.collision.BoundingBox
 import net.minestom.server.coordinate.Point
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.coordinate.Vec
+import net.minestom.server.entity.Entity
 import net.minestom.server.entity.LivingEntity
 import net.minestom.server.instance.Instance
 import java.util.concurrent.ThreadLocalRandom
@@ -24,15 +25,14 @@ object Fuzzy {
     fun positionInEntity(
         instance: Instance,
         position: Point,
-        origin: LivingEntity?,
+        origin: Entity?,
         margin: Double = 0.125
-    ): LivingEntity? {
+    ): Entity? {
         // get all the entities in the chunk
         val chunkEntities = instance.getChunkEntities(instance.getChunkAt(position))
 
         // find the first entity that isn't this entity and that the position is in this entity.
         return chunkEntities
-            .filterIsInstance<LivingEntity>()
             .firstOrNull { it != origin && collides(it.boundingBox, position, margin) }
     }
 
