@@ -17,6 +17,10 @@ operator fun Entity.component1() = this.position.x()
 operator fun Entity.component2() = this.position.y()
 operator fun Entity.component3() = this.position.z()
 
+val Point.x get() = this.x()
+val Point.y get() = this.y()
+val Point.z get() = this.z()
+
 fun Point.asVec(): Vec = Vec(this.x(), this.y(), this.z())
 fun Point.asPos(): Pos = Pos(this)
 
