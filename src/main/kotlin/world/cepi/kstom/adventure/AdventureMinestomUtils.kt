@@ -9,7 +9,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 
-fun String.asMini(placeholders: Map<String, String> = mapOf()): Component = MiniMessage.get().parse(this, placeholders)
+fun String.asMini(placeholders: Map<String, String> = mapOf()): Component = MiniMessage.miniMessage().deserialize(this, placeholders)
 
 fun Audience.sendMiniMessage(miniMessage: String, placeholders: Map<String, String> = mapOf()): Unit =
     this.sendMessage(miniMessage.asMini(placeholders))
