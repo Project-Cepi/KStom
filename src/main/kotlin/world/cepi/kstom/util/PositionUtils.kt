@@ -33,3 +33,11 @@ fun Vec.rotateAroundZDegrees(degrees: Double) = rotateAroundZ(degrees * (PI/180)
 
 fun Vec.rotateDegrees(degreesX: Double, degreesY: Double, degreesZ: Double) =
     rotate(degreesX * (PI/180), degreesY * (PI/180), degreesZ * (PI/180))
+
+// Division is not needed as it already works
+operator fun Point.plus(other: Point) = this.add(other)
+operator fun Point.minus(other: Point) = this.add(other)
+operator fun Point.times(other: Point) = this.add(other)
+
+operator fun Vec.unaryMinus() = this.neg()
+operator fun Vec.unaryPlus() = this.abs()
