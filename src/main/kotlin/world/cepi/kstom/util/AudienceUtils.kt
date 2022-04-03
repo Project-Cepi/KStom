@@ -19,7 +19,7 @@ fun Audience.playSound(sound: Sound, position: Point) =
     playSound(sound, position.x(), position.y(), position.z())
 
 val Entity.viewersAndSelf get() = listOf(*viewers.toTypedArray(), this as? Player).filterNotNull()
-val Entity.viewersAndSelfAsAudience get() = PacketGroupingAudience.of(viewersAndSelf)
+val Entity.viewersAndSelfAsAudience get() = PacketGroupingAudience.of(this.viewers.let { if (this is Player) it + this else it })
 fun Entity.playSoundToViewersAndSelf(sound: Sound, position: Point = this.position) = viewersAndSelfAsAudience.playSound(sound, position)
 fun Entity.playSoundToViewersAndSelf(sound: Sound, x: Double, y: Double, z: Double) = playSoundToViewersAndSelf(sound, Vec(x, y, z))
 

@@ -1,6 +1,5 @@
 package world.cepi.kstom.command.arguments
 
-import com.google.common.annotations.Beta
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentLiteral
 import net.minestom.server.command.builder.arguments.ArgumentType
@@ -65,7 +64,6 @@ open class SuggestionIgnoreOption(val modifier: (String) -> String = { it }) {
  *
  * @return The argument that had its suggestion callback set
  */
-@Beta
 @Contract("_ -> this")
 fun <T> Argument<T>.suggestComplex(
     suggestionIgnoreOption: SuggestionIgnoreOption = SuggestionIgnoreOption.NONE,

@@ -3,7 +3,6 @@ package world.cepi.kstom
 import net.kyori.adventure.bossbar.BossBar
 import net.minestom.server.MinecraftServer
 import net.minestom.server.MinecraftServer.*
-import net.minestom.server.UpdateManager
 import net.minestom.server.advancements.AdvancementManager
 import net.minestom.server.adventure.bossbar.BossBarManager
 import net.minestom.server.command.CommandManager
@@ -41,7 +40,6 @@ object Manager {
     val advancement: AdvancementManager get() = getAdvancementManager()
     val bossBar: BossBarManager get() = getBossBarManager()
     val extension: ExtensionManager get() = getExtensionManager()
-    val update: UpdateManager get() = getUpdateManager()
     val globalEvent: GlobalEventHandler get() = getGlobalEventHandler()
 
 }

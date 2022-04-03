@@ -11,9 +11,6 @@ import java.util.concurrent.ThreadLocalRandom
 
 object Fuzzy {
 
-    fun collides(boundingBox: BoundingBox, pos: Point, margin: Double = 0.125) =
-        boundingBox.expand(margin, margin, margin).intersect(pos)
-
     /**
      * Check if this position is inside a [LivingEntity]
      *
@@ -33,7 +30,7 @@ object Fuzzy {
 
         // find the first entity that isn't this entity and that the position is in this entity.
         return chunkEntities
-            .firstOrNull { it != origin && collides(it.boundingBox, position, margin) }
+            .firstOrNull { it != origin && it.intersect(position, it.boundingBox.expand(margin)) }
     }
 
 }
