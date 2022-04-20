@@ -1,6 +1,6 @@
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    kotlin("jvm") version "1.6.20"
+    kotlin("jvm") version "1.6.21"
     // Kotlinx serialization for any data format
     kotlin("plugin.serialization") version "1.6.20"
     // Shade the plugin
