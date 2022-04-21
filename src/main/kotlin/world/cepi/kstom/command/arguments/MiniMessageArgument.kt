@@ -3,7 +3,7 @@ package world.cepi.kstom.command.arguments
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.command.builder.suggestion.SuggestionEntry
-import world.cepi.kstom.adventure.asMini
+import world.cepi.kstom.adventure.formatMini
 
 object MiniMessageArgument {
     private val contentRegex = Regex("(?<=<)[A-z1-9#:]+\$")
@@ -26,7 +26,7 @@ object MiniMessageArgument {
     )
 
     val vararg = ArgumentType.StringArray("message").map {
-        it.joinToString(" ").asMini()
+        it.joinToString(" ").formatMini()
     }.let { argument ->
         argument.setSuggestionCallback { _, _, suggestion ->
             val input = suggestion.input
@@ -36,13 +36,13 @@ object MiniMessageArgument {
             val startIndex = input.lastIndexOf('<').also {
                 // < needs to appear for this to suggest
                 if (it == -1) {
-                    suggestion.addEntry(SuggestionEntry(input, input.asMini()))
+                    suggestion.addEntry(SuggestionEntry(input, input.formatMini()))
                     return@setSuggestionCallback
                 }
 
                 // > shouldn't appear after the last occurance of <
                 if (endIndex > it) {
-                    suggestion.addEntry(SuggestionEntry(input, input.asMini()))
+                    suggestion.addEntry(SuggestionEntry(input, input.formatMini()))
                     return@setSuggestionCallback
                 }
             }
@@ -51,7 +51,7 @@ object MiniMessageArgument {
                     -1 -> Int.MAX_VALUE
                     else -> input.indexOf("<pre>")
                 } < startIndex) {
-                suggestion.addEntry(SuggestionEntry(input, input.asMini()))
+                suggestion.addEntry(SuggestionEntry(input, input.formatMini()))
                 return@setSuggestionCallback
             }
 
@@ -69,13 +69,13 @@ object MiniMessageArgument {
                 .map { SuggestionEntry("$input$it>") }
                 .also {
                     if (it.isEmpty())
-                        suggestion.addEntry(SuggestionEntry(input, input.asMini()))
+                        suggestion.addEntry(SuggestionEntry(input, input.formatMini()))
                 }
                 .forEach(suggestion::addEntry)
         }
     }
 
     fun single(id: String) = ArgumentType.String(id).map {
-        it.asMini()
+        it.formatMini()
     }
 }

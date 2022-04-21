@@ -10,5 +10,5 @@ fun old() {
 
 fun new() {
     Audiences.all().sendMiniMessage("<red>Hello World!")
-    "<red>Hello World!".asMini()
+    "<red>Hello World!".formatMini()
 }

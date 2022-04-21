@@ -7,7 +7,6 @@ import net.minestom.server.event.Event
 import net.minestom.server.event.EventNode
 import net.minestom.server.event.player.PlayerStartFlyingEvent
 import net.minestom.server.event.player.PlayerStopFlyingEvent
-import world.cepi.kstom.adventure.asMini
 import world.cepi.kstom.event.listenOnly
 
 fun attatchSidebar(player: Player, node: EventNode<Event>) = sidebar(Component.text("Cool sidebar")) {
