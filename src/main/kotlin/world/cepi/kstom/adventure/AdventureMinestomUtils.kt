@@ -10,10 +10,10 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 
-fun String.formatMini(tagResolver: TagResolver = TagResolver.empty()): Component = MiniMessage.miniMessage().deserialize(this, tagResolver)
+fun String.asMini(tagResolver: TagResolver = TagResolver.empty()): Component = MiniMessage.miniMessage().deserialize(this, tagResolver)
 
 fun Audience.sendMiniMessage(miniMessage: String, templateResolver: TagResolver = TagResolver.empty()): Unit =
-    this.sendMessage(miniMessage.formatMini(templateResolver))
+    this.sendMessage(miniMessage.asMini(templateResolver))
 
 fun Component.plainText(): String = PlainTextComponentSerializer.plainText().serialize(this)
 fun Component.legacyAmpersand(): String = LegacyComponentSerializer.legacyAmpersand().serialize(this)
@@ -49,5 +49,6 @@ fun component(vararg components: Component) = components.fold(Component.text().n
     acc.append(item)
 }.build()
 
-fun Any.asComponent(color: TextColor) = Component.text(this.toString(), color)
+fun Any.color(color: TextColor) = Component.text(this.toString(), color)
 fun Any.asComponent() = Component.text(this.toString())
+fun Any.decorate(decoration: TextDecoration) = Component.text(this.toString()).decorate(decoration)

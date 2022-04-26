@@ -2,7 +2,7 @@ package world.cepi.kstom.item
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
-import world.cepi.kstom.adventure.formatMini
+import world.cepi.kstom.adventure.asMini
 
 class KLore internal constructor(private val tagResolver: TagResolver = TagResolver.empty()) {
 
@@ -13,7 +13,7 @@ class KLore internal constructor(private val tagResolver: TagResolver = TagResol
     }
 
     operator fun String.unaryPlus() {
-        list.add(this.formatMini(tagResolver))
+        list.add(this.asMini(tagResolver))
     }
 
 }
