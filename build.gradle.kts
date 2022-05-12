@@ -45,7 +45,7 @@ dependencies {
     compileOnly("io.github.jglrxavpok.hephaistos", "common", "2.4.4")
 
     // import kotlinx serialization
-    compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
 
     // Add MiniMessage
     implementation("net.kyori:adventure-text-minimessage:4.10.1")
