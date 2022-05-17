@@ -18,7 +18,7 @@ abstract class MinestomRunnable : Runnable {
     private var repeatSchedule: TaskSchedule = TaskSchedule.stop()
     private var executionType: ExecutionType = ExecutionType.SYNC
 
-    constructor(delay: Duration = Duration.ZERO, repeat: Duration = Duration.ZERO, executionType: ExecutionType = ExecutionType.SYNC) {
+    constructor(delay: Duration, repeat: Duration, executionType: ExecutionType = ExecutionType.SYNC) {
         delay(delay)
         repeat(repeat)
         executionType(executionType)
