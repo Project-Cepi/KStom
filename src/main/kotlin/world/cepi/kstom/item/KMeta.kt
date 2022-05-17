@@ -5,15 +5,12 @@ import net.minestom.server.item.*
 /**
  * DSL for Meta of specific type.
  */
-fun <T : ItemMetaBuilder> ItemStackBuilder.withMeta(init: T.() -> Unit) =
-    this.meta { it: T ->
-        it.init()
-        return@meta it
-    }
+inline fun <reified V : ItemMetaView.Builder, reified T : ItemMetaView<V>> ItemStack.Builder.withMeta(noinline init: V.() -> Unit) =
+    this.meta(T::class.java, init)
 
 /**
  * DSL for Meta.
  */
 @JvmName("withMetaDefault") // Doesn't matter because this library won't be used from Java
-fun ItemStackBuilder.withMeta(init: ItemMetaBuilder.() -> Unit) =
-    this.withMeta<ItemMetaBuilder>(init)
+fun ItemStack.Builder.withMeta(init: ItemMeta.Builder.() -> Unit) =
+    this.meta { init(it); it }

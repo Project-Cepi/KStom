@@ -13,7 +13,7 @@ import world.cepi.kstom.nbt.classes.ComplexClass
 import world.cepi.kstom.nbt.classes.InterestingClass
 
 class ItemTests : StringSpec({
-    val item = item<WrittenBookMeta.Builder>(material = Material.WRITTEN_BOOK, amount = 5) {
+    val item = item<WrittenBookMeta.Builder, WrittenBookMeta>(material = Material.WRITTEN_BOOK, amount = 5) {
         displayName = Component.text("Hey!")
         damage = 5
         unbreakable = true
@@ -42,16 +42,16 @@ class ItemTests : StringSpec({
         val data = ComplexClass(5, 4, 2, true, InterestingClass("hey", 'h'))
         val otherData = CollectionClass(5, 9, 3, listOf(4, 3))
 
-        item.meta.get<ComplexClass>("complexData") shouldBe data
-        item.meta.get<CollectionClass>("complexListData") shouldBe otherData
+        item.meta().get<ComplexClass>("complexData") shouldBe data
+        item.meta().get<CollectionClass>("complexListData") shouldBe otherData
     }
 
     "data should return null if not found" {
-        item.meta.get<ComplexClass>("weirdData").shouldBeNull()
+        item.meta().get<ComplexClass>("weirdData").shouldBeNull()
     }
     
     "book meta author should be Notch" {
-        (item.meta as WrittenBookMeta).author.shouldBe("Notch")
+        item.meta(WrittenBookMeta::class.java).author.shouldBe("Notch")
     }
 
     "item lore should have 2 lines containing 'Hello' and 'Minestom!'" {

@@ -11,7 +11,7 @@ plugins {
     // Apply the application plugin to add support for building a jar
     java
     // Dokka documentation w/ kotlin
-    id("org.jetbrains.dokka") version "1.6.20"
+    id("org.jetbrains.dokka") version "1.6.21"
 }
 
 
@@ -34,18 +34,18 @@ dependencies {
     compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
 
     // Use the kotlin test library
-    testImplementation("io.kotest:kotest-assertions-core:5.2.3")
-    testImplementation("io.kotest:kotest-runner-junit5:5.2.3")
+    testImplementation("io.kotest:kotest-assertions-core:5.3.0")
+    testImplementation("io.kotest:kotest-runner-junit5:5.3.0")
 
     // Add support for kotlinx courotines
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
 
     // Compile Minestom into project
-    compileOnly("com.github.LeoDog896", "Minestom", "feb29c7912")
+    compileOnly("com.github.Minestom", "Minestom", "7867313290")
     compileOnly("io.github.jglrxavpok.hephaistos", "common", "2.4.4")
 
     // import kotlinx serialization
-    compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
 
     // Add MiniMessage
     implementation("net.kyori:adventure-text-minimessage:4.10.1")
