@@ -16,6 +16,16 @@ abstract class MinestomRunnable : Runnable {
     private var delaySchedule: TaskSchedule = TaskSchedule.immediate()
     private var repeatSchedule: TaskSchedule = TaskSchedule.stop()
 
+    constructor(delay: Duration = Duration.ZERO, repeat: Duration = Duration.ZERO) {
+        delay(delay)
+        repeat(repeat)
+    }
+
+    constructor(delay: TaskSchedule = TaskSchedule.immediate(), repeat: TaskSchedule = TaskSchedule.stop()) {
+        delay(delay)
+        repeat(repeat)
+    }
+
     fun delay(duration: Duration) = this.also { delaySchedule = if(duration != Duration.ZERO) TaskSchedule.duration(duration) else TaskSchedule.immediate() }
     fun delay(schedule: TaskSchedule) = this.also { delaySchedule = schedule }
 
