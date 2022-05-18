@@ -90,6 +90,10 @@ open class Kommand(val k: Kommand.() -> Unit = {}, name: String, vararg aliases:
         subcommands.forEach { command.addSubcommand(it.command) }
     }
 
+    fun subcommand(name: String, vararg aliases: String, subK: Kommand.() -> Unit) {
+        addSubcommands(Kommand(subK, name, *aliases))
+    }
+
     fun register() {
         Manager.command.register(command)
     }
