@@ -7,7 +7,7 @@ easy command building with the kotlin DSL
 
 ```kotlin
 object New : Kommand({
-    val add by literal
+    val add by literal // shorthand for val add = ArgumentType.Literal("add")
     val remove by literal
     val set by literal
 
