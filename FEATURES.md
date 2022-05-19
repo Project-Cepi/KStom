@@ -95,3 +95,32 @@ fun new(position: Pos) {
     val (x, y, z, yaw, pitch) = position
 }
 ```
+
+## Items
+
+Use KStom's item DSL to easily create items of any type!
+
+```kotlin
+// Reified generics for item meta
+val item = item<WrittenBookMeta.Builder, WrittenBookMeta>(material = Material.WRITTEN_BOOK, amount = 5) {
+    // Use setters for managing your item properties
+    displayName = Component.text("Hey!")
+    damage = 5
+    unbreakable = true
+
+    lore {
+        +"Hello"
+        +"<red>Minestom!</red>"
+    }
+
+    title("My first book")
+    author("Notch")
+    pages(Component.text("This is the first page"))
+
+    // Store data with kotlinx.serialization & the tag API. (Works on all taggable objects)
+    this["complexData"] = ComplexClass(5, 4, 2, true, InterestingClass("hey", 'h'))
+    this["complexListData"] = CollectionClass(5, 9, 3, listOf(4, 3))
+}.withAmount(7).and {
+    displayName(Component.text("Hay!"))
+}
+```
