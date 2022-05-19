@@ -43,6 +43,9 @@ object New : Kommand({
 }, "hey")
 ```
 
+You can register commands by using `CommandObject.register()` somewhere
+in your extension's initialize function. (`#unregister` works as well.)
+
 ## Events
 
 Use reified generics to make listening to events a much more pleasent experience.
