@@ -52,23 +52,33 @@ object New : Kommand({
     val remove by literal
     val set by literal
 
-    val amount by ArgumentType::Integer.delegate { min(0) }
+    val amount = ArgumentType.Integer("amount").min(0)
 
     syntax {
         sender.sendMessage("Usage: add|remove|set <amount>")
     }
 
-    syntax(add, amount).onlyPlayers {
+    subcommand("sub") {
+        onlyPlayers()
+
+        val delete by literal
+
+        syntax(delete, amount) {
+            player.level += !amount
+        }
+    }
+
+    syntax(add, amount) {
         player.level += !amount
-    }
+    }.onlyPlayers()
 
-    syntax(remove, amount).onlyPlayers {
+    syntax(remove, amount) {
         player.level = (player.level - !amount).coerceAtLeast(0)
-    }
+    }.onlyPlayers()
 
-    syntax(set, amount).onlyPlayers {
+    syntax(set, amount) {
         player.level = !amount
-    }
+    }.condition { player?.level == 5 } // not realistic but demonstrates custom conditions
 
 
 }, "hey")

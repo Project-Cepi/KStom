@@ -15,31 +15,29 @@ abstract class Kondition<T : Kondition<T>> {
         return t
     }
 
-    val onlyPlayers: T
-        get() = run {
-            conditions += condition@{
-                if (sender !is Player) {
-                    kommandReference.playerCallbackFailMessage(sender)
-                    return@condition false
-                }
-
-                return@condition true
+    fun onlyPlayers(): T {
+        conditions += condition@{
+            if (sender !is Player) {
+                kommandReference.playerCallbackFailMessage(sender)
+                return@condition false
             }
 
-            return t
+            return@condition true
         }
 
-    val onlyConsole: T
-        get() = run {
-            conditions += condition@{
-                if (sender !is ConsoleSender) {
-                    kommandReference.consoleCallbackFailMessage(sender)
-                    return@condition false
-                }
+        return t
+    }
 
-                return@condition true
+    fun onlyConsole(): T {
+        conditions += condition@{
+            if (sender !is ConsoleSender) {
+                kommandReference.consoleCallbackFailMessage(sender)
+                return@condition false
             }
 
-            return t
+            return@condition true
         }
+
+        return t
+    }
 }

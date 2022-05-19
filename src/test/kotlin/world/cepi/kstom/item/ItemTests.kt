@@ -34,7 +34,7 @@ class ItemTests : StringSpec({
     }
 
     "item should be mutated" {
-        item.amount shouldBe 7
+        item.amount() shouldBe 7
         item.displayName shouldBe Component.text("Hay!")
     }
 

@@ -22,19 +22,6 @@ class Literal {
     }
 }
 
-class AnyArgument<T : Argument<out Any>>(
-    val lambda: (String) -> T,
-    val receiver: T.() -> Unit = { }
-) {
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        return lambda(property.name).also { it.receiver() }
-    }
-
-    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-
-    }
-}
-
 /**
  * Automatically generates an [ArgumentLiteral] based on the String being passed
  *
@@ -43,10 +30,6 @@ class AnyArgument<T : Argument<out Any>>(
 val literal get() = Literal()
 
 fun String.literal() = ArgumentLiteral(this)
-
-fun <T : Argument<out Any>> ((String) -> T).delegate(lambda: T.() -> Unit = { }) = AnyArgument(this, { lambda(
-    this
-) })
 
 fun <T> Argument<T>.defaultValue(value: T): Argument<T> =
     this.setDefaultValue { value }

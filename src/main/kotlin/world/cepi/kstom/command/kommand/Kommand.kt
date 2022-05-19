@@ -38,7 +38,7 @@ open class Kommand(val k: Kommand.() -> Unit = {}, name: String, vararg aliases:
         operator fun <T> Argument<T>.not(): T = context[this]
     }
 
-    data class ConditionContext(val sender: CommandSender, val input: String)
+    data class ConditionContext(val sender: CommandSender, val player: Player?, val input: String)
     data class ArgumentCallbackContext(val sender: CommandSender, val exception: ArgumentSyntaxException)
 
     @Contract(pure = true)
@@ -50,7 +50,7 @@ open class Kommand(val k: Kommand.() -> Unit = {}, name: String, vararg aliases:
     fun syntax(
         vararg arguments: Argument<*> = arrayOf(),
         executor: SyntaxContext.() -> Unit
-    ) = KSyntax(*arguments, conditions = conditions.toMutableList(), kommandReference = this).invoke(executor)
+    ) = KSyntax(*arguments, conditions = conditions.toMutableList(), kommandReference = this).also { it.invoke(executor) }
 
     @Contract(pure = true)
     fun syntaxSuspending(

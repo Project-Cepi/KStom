@@ -7,7 +7,7 @@ import net.minestom.server.item.Material
 
 class ArgumentMaterial(id: String) : Argument<Material>(id) {
 
-    override fun parse(input: String) = parse(ArgumentItemStack(input)).material
+    override fun parse(input: String) = parse(ArgumentItemStack(input)).material()
     override fun processNodes(nodeMaker: NodeMaker, executable: Boolean) {
         val argumentNode = simpleArgumentNode(this, executable, false, false)
         argumentNode.parser = "minecraft:item_stack"
