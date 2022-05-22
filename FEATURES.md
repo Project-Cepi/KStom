@@ -124,3 +124,45 @@ val item = item<WrittenBookMeta.Builder, WrittenBookMeta>(material = Material.WR
     displayName(Component.text("Hay!"))
 }
 ```
+
+## Component Utilities
+
+We have easy to use methods for using Kyori's Adventure API fast and readable
+
+```kotlin
+/** Using MiniMessage */
+var component = "<gradient:dark_red:red>Rose".asMini()
+/** Easily decorate */
+component = component.italic().bold().strikethrough()
+/** Easily undecorate */
+component = component.noItalic()
+component = component.undecorate(TextDecoration.STRIKETHROUGH)
+```
+
+[and more](https://github.com/Project-Cepi/KStom/blob/main/src/main/kotlin/world/cepi/kstom/adventure/AdventureMinestomUtils.kt)
+
+## Runnables
+
+`MinestomRunnable`s are an easy way to make tasks running in Minestom's Task Scheduler
+
+```kotlin
+private val runnable = object : MinestomRunnable(repeat = TaskSchedule.nextTick(), executionType = ExecutionType.SYNC) {
+    val text = "This gets executed"
+    
+    override fun run() {
+        println("$text every tick")
+    }
+}.also {
+    it.schedule() // <- registers it to Minestom's TickScheduler and starts it
+}
+```
+
+## BlockHandlers
+
+Easily register BlockHandlers with 
+
+```kotlin
+myBlockHandler.register() // <- this uses the namespace of myBlockHandler.getNamespaceId()
+// or with a special namespace:
+myBlockHandler.register("myNamespace")
+```
