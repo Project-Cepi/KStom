@@ -48,7 +48,7 @@ dependencies {
     compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
 
     // Add MiniMessage
-    implementation("net.kyori:adventure-text-minimessage:4.10.1")
+    implementation("net.kyori:adventure-text-minimessage:4.11.0")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
