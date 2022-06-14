@@ -31,7 +31,7 @@ dependencies {
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.6.21")
 
     // Use the Kotlin reflect library.
-    compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
+    compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.0")
 
     // Use the kotlin test library
     testImplementation("io.kotest:kotest-assertions-core:5.3.1")
