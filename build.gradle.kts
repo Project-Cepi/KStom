@@ -28,7 +28,7 @@ repositories {
 dependencies {
 
     // Use the Kotlin JDK 8 standard library.
-    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.6.21")
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.7.0")
 
     // Use the Kotlin reflect library.
     compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.0")
