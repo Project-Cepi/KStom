@@ -29,3 +29,7 @@ val item = item<WrittenBookMeta.Builder, WrittenBookMeta>(material = Material.WR
 }.withAmount(7).and {
     displayName(Component.text("Hay!"))
 }
+
+val simpleItem = item(Material.BLUE_BANNER) {
+    displayName(Component.text("Simple item!"))
+}
