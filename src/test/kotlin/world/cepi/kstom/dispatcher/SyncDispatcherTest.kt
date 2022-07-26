@@ -15,14 +15,11 @@ class SyncDispatcherTest : StringSpec({
         every { process.isAlive } returns false
         val schedulerManager = mockk<SchedulerManager>()
         every { process.scheduler() } returns schedulerManager
-        every { schedulerManager.scheduleNextProcess(mockk(), mockk()) } returns mockk()
 
         val dispatcher = SyncCoroutineDispatcher(process)
+        dispatcher.dispatch(mockk()) {}
 
-        val runnable = mockk<Runnable>()
-        dispatcher.dispatch(mockk(), runnable)
-
-        verify(exactly = 1) { schedulerManager.scheduleNextProcess(runnable, ExecutionType.SYNC) }
+        verify(exactly = 1) { schedulerManager.scheduleNextProcess(any(), any()) }
         verify(exactly = 0) { schedulerManager.scheduleNextTick(any()) }
     }
 
