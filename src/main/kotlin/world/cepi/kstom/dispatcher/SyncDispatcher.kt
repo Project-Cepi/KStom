@@ -1,6 +1,7 @@
 package world.cepi.kstom.dispatcher
 
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import net.minestom.server.MinecraftServer
 import net.minestom.server.ServerProcess
 import net.minestom.server.timer.ExecutionType
@@ -9,7 +10,7 @@ import kotlin.coroutines.CoroutineContext
 /**
  * @see [SyncCoroutineDispatcher]
  */
-val syncDispatcher: CoroutineDispatcher get() = SyncCoroutineDispatcher(MinecraftServer.process())
+val Dispatchers.MinestomSync: CoroutineDispatcher get() = SyncCoroutineDispatcher(MinecraftServer.process())
 
 /**
  * Dispatcher to execute task in a [sync][ExecutionType.SYNC] context of the server.
