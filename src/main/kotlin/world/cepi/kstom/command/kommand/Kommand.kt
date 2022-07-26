@@ -1,7 +1,6 @@
 package world.cepi.kstom.command.kommand
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.*
@@ -10,6 +9,7 @@ import net.minestom.server.command.builder.exception.ArgumentSyntaxException
 import net.minestom.server.entity.Player
 import org.jetbrains.annotations.Contract
 import world.cepi.kstom.Manager
+import world.cepi.kstom.dispatcher.asyncDispatcher
 import kotlin.coroutines.CoroutineContext
 
 open class Kommand(val k: Kommand.() -> Unit = {}, name: String, vararg aliases: String) : Kondition<Kommand>() {
@@ -54,7 +54,7 @@ open class Kommand(val k: Kommand.() -> Unit = {}, name: String, vararg aliases:
 
     @Contract(pure = true)
     fun syntaxSuspending(
-        context: CoroutineContext = Dispatchers.IO,
+        context: CoroutineContext = asyncDispatcher,
         vararg arguments: Argument<*> = arrayOf(),
         executor: suspend SyntaxContext.() -> Unit
     ) = KSyntax(*arguments, conditions = conditions.toMutableList(), kommandReference = this).invoke {
@@ -76,7 +76,7 @@ open class Kommand(val k: Kommand.() -> Unit = {}, name: String, vararg aliases:
         command.defaultExecutor = CommandExecutor { sender, args -> block(SyntaxContext(sender, args)) }
     }
 
-    inline fun defaultSuspending(context: CoroutineContext = Dispatchers.IO, crossinline block: suspend SyntaxContext.() -> Unit) {
+    inline fun defaultSuspending(context: CoroutineContext = asyncDispatcher, crossinline block: suspend SyntaxContext.() -> Unit) {
         command.defaultExecutor = CommandExecutor { sender, args ->
             CoroutineScope(context).launch { block(SyntaxContext(sender, args)) }
         }

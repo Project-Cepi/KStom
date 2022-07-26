@@ -1,11 +1,11 @@
 package world.cepi.kstom.event
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.minestom.server.event.Event
 import net.minestom.server.event.EventListener
 import net.minestom.server.event.EventNode
+import world.cepi.kstom.dispatcher.asyncDispatcher
 import kotlin.coroutines.CoroutineContext
 
 class KEventListener<T : Event>(val eventListener: EventListener.Builder<T>) {
@@ -20,7 +20,7 @@ class KEventListener<T : Event>(val eventListener: EventListener.Builder<T>) {
 
     fun handler(lambda: T.() -> Unit) = eventListener.handler(lambda)
 
-    fun suspendingHandler(context: CoroutineContext = Dispatchers.IO, lambda: suspend T.() -> Unit) = eventListener.handler {
+    fun suspendingHandler(context: CoroutineContext = asyncDispatcher, lambda: suspend T.() -> Unit) = eventListener.handler {
         CoroutineScope(context).launch {
             lambda(it)
         }
