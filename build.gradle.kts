@@ -34,7 +34,7 @@ dependencies {
     compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.10")
 
     // Use the kotlin test library
-    testImplementation("io.kotest:kotest-assertions-core:5.4.1")
+    testImplementation("io.kotest:kotest-assertions-core:5.4.2")
     testImplementation("io.kotest:kotest-runner-junit5:5.4.1")
 
     // Add support for kotlinx courotines
