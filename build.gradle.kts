@@ -35,7 +35,7 @@ dependencies {
 
     // Use the kotlin test library
     testImplementation("io.kotest:kotest-assertions-core:5.5.3")
-    testImplementation("io.kotest:kotest-runner-junit5:5.5.2")
+    testImplementation("io.kotest:kotest-runner-junit5:5.5.3")
 
     // Add support for kotlinx courotines
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
