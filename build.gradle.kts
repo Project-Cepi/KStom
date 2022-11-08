@@ -1,8 +1,8 @@
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    kotlin("jvm") version "1.7.20"
+    kotlin("jvm") version "1.7.21"
     // Kotlinx serialization for any data format
-    kotlin("plugin.serialization") version "1.7.20"
+    kotlin("plugin.serialization") version "1.7.21"
     // Shade the plugin
     id("com.github.johnrengelman.shadow") version "7.1.0"
     // Allow publishing
@@ -28,10 +28,10 @@ repositories {
 dependencies {
 
     // Use the Kotlin JDK 8 standard library.
-    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.7.20")
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.7.21")
 
     // Use the Kotlin reflect library.
-    compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.20")
+    compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.21")
 
     // Use the kotlin test library
     testImplementation("io.kotest:kotest-assertions-core:5.5.4")
