@@ -28,10 +28,10 @@ repositories {
 dependencies {
 
     // Use the Kotlin JDK 8 standard library.
-    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.7.22")
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.9.23")
 
     // Use the Kotlin reflect library.
-    compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.22")
+    compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.9.23")
 
     // Use the kotlin test library
     testImplementation("io.kotest:kotest-assertions-core:5.5.4")
